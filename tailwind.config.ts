@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,21 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+                // Custom tenant dashboard colors
+                tenant: {
+                    purple: '#8B5CF6',
+                    teal: '#0EA5E9',
+                    orange: '#F97316',
+                    pink: '#D946EF',
+                    green: '#10B981',
+                    yellow: '#FBBF24',
+                    'soft-blue': '#93C5FD',
+                    'soft-purple': '#E5DEFF',
+                    'soft-pink': '#FFDEE2',
+                    'soft-peach': '#FDE1D3',
+                    'soft-teal': '#99F6E4'
+                }
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +99,31 @@ export default {
 					to: {
 						height: '0'
 					}
-				}
+				},
+                'float': {
+                    '0%, 100%': { transform: 'translateY(0)' },
+                    '50%': { transform: 'translateY(-10px)' }
+                },
+                'pulse-gentle': {
+                    '0%, 100%': { opacity: '1' },
+                    '50%': { opacity: '0.8' }
+                },
+                'fade-in': {
+                    '0%': { opacity: '0', transform: 'translateY(10px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' }
+                },
+                'slide-in-right': {
+                    '0%': { transform: 'translateX(100%)', opacity: '0' },
+                    '100%': { transform: 'translateX(0)', opacity: '1' }
+                }
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+                'float': 'float 6s ease-in-out infinite',
+                'pulse-gentle': 'pulse-gentle 4s ease-in-out infinite',
+                'fade-in': 'fade-in 0.6s ease-out',
+                'slide-in-right': 'slide-in-right 0.5s ease-out'
 			}
 		}
 	},
