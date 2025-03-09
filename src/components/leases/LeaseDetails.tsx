@@ -158,6 +158,69 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
             </Card>
           </div>
           
+          {/* Property Details Section - MOVED ABOVE Premises Schedule */}
+          <div className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Property Details</CardTitle>
+                <CardDescription>Additional information about the property</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-medium mb-2 flex items-center gap-2">
+                      <Building className="h-4 w-4 text-tenant-green" />
+                      Property Specifications
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      <li className="flex justify-between">
+                        <span className="text-muted-foreground">Property Type:</span>
+                        <span>{name.includes('Office') ? 'Commercial Office' : 'Retail Space'}</span>
+                      </li>
+                      <li className="flex justify-between">
+                        <span className="text-muted-foreground">Floor Area:</span>
+                        <span>{name.includes('Office') ? '1,500 sq ft' : '2,200 sq ft'}</span>
+                      </li>
+                      <li className="flex justify-between">
+                        <span className="text-muted-foreground">Year Built:</span>
+                        <span>2010</span>
+                      </li>
+                      <li className="flex justify-between">
+                        <span className="text-muted-foreground">Parking Spaces:</span>
+                        <span>{name.includes('Office') ? '2 Reserved' : '4 Reserved'}</span>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium mb-2 flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-tenant-green" />
+                      Lease Terms
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      <li className="flex justify-between">
+                        <span className="text-muted-foreground">Lease Type:</span>
+                        <span>Full Service</span>
+                      </li>
+                      <li className="flex justify-between">
+                        <span className="text-muted-foreground">Lease Start:</span>
+                        <span>April 1, 2023</span>
+                      </li>
+                      <li className="flex justify-between">
+                        <span className="text-muted-foreground">Lease Duration:</span>
+                        <span>{name.includes('Office') ? '12 months' : '9 months'}</span>
+                      </li>
+                      <li className="flex justify-between">
+                        <span className="text-muted-foreground">Security Deposit:</span>
+                        <span>${(rentalFee * 2).toLocaleString()}</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
           {/* Premises Schedule Section */}
           <div className="mt-6">
             <Card>
@@ -218,69 +281,6 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
                 ) : (
                   <p className="text-muted-foreground italic">No incentives defined for this lease</p>
                 )}
-              </CardContent>
-            </Card>
-          </div>
-          
-          {/* Property Details Section */}
-          <div className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Property Details</CardTitle>
-                <CardDescription>Additional information about the property</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-medium mb-2 flex items-center gap-2">
-                      <Building className="h-4 w-4 text-tenant-green" />
-                      Property Specifications
-                    </h4>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex justify-between">
-                        <span className="text-muted-foreground">Property Type:</span>
-                        <span>{name.includes('Office') ? 'Commercial Office' : 'Retail Space'}</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span className="text-muted-foreground">Floor Area:</span>
-                        <span>{name.includes('Office') ? '1,500 sq ft' : '2,200 sq ft'}</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span className="text-muted-foreground">Year Built:</span>
-                        <span>2010</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span className="text-muted-foreground">Parking Spaces:</span>
-                        <span>{name.includes('Office') ? '2 Reserved' : '4 Reserved'}</span>
-                      </li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium mb-2 flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-tenant-green" />
-                      Lease Terms
-                    </h4>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex justify-between">
-                        <span className="text-muted-foreground">Lease Type:</span>
-                        <span>Full Service</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span className="text-muted-foreground">Lease Start:</span>
-                        <span>April 1, 2023</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span className="text-muted-foreground">Lease Duration:</span>
-                        <span>{name.includes('Office') ? '12 months' : '9 months'}</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span className="text-muted-foreground">Security Deposit:</span>
-                        <span>${(rentalFee * 2).toLocaleString()}</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
               </CardContent>
             </Card>
           </div>
