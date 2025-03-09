@@ -10,19 +10,31 @@ import {
   ResponsiveContainer,
   Legend
 } from 'recharts';
-import { Zap, Droplets, Flame } from 'lucide-react';
-import { UtilityData } from '@/types/property';
+import { Zap, Droplets, Flame, ChevronDown } from 'lucide-react';
+import { UtilityData, Property } from '@/types/property';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface UtilityChartProps {
   data: UtilityData[];
+  properties?: Property[];
 }
 
-const UtilityChart: React.FC<UtilityChartProps> = ({ data }) => {
+const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) => {
   const [activeUtilities, setActiveUtilities] = useState({
     gas: true,
     water: true,
     electricity: true
   });
+  
+  const [selectedProperty, setSelectedProperty] = useState<string>(
+    properties.length > 0 ? properties[0].id : 'all'
+  );
 
   const toggleUtility = (utility: keyof typeof activeUtilities) => {
     setActiveUtilities(prev => ({
@@ -83,7 +95,26 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data }) => {
   return (
     <div className="utility-chart-container animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-        <h3 className="text-lg font-bold mb-3 sm:mb-0">Utility Usage</h3>
+        <div className="flex flex-col mb-3 sm:mb-0">
+          <h3 className="text-lg font-bold">Utility Usage</h3>
+          {properties.length > 0 && (
+            <div className="mt-2">
+              <Select value={selectedProperty} onValueChange={setSelectedProperty}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select property" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Properties</SelectItem>
+                  {properties.map((property) => (
+                    <SelectItem key={property.id} value={property.id}>
+                      {property.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        </div>
         <div className="flex flex-wrap gap-2">
           <button 
             className={utilityClasses.gas.button}

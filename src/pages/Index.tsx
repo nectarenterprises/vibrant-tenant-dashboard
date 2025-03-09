@@ -93,7 +93,7 @@ const Index = () => {
           </div>
           
           <div className="mt-8">
-            <UtilityChart data={mockUtilityData} />
+            <UtilityChart data={mockUtilityData} properties={mockProperties} />
           </div>
         </div>
       </main>
