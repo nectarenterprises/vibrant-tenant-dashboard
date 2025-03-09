@@ -10,6 +10,7 @@ import Leases from "./pages/Leases";
 import Calendar from "./pages/Calendar";
 import Utilities from "./pages/Utilities";
 import Compliance from "./pages/Compliance";
+import ServiceCharge from "./pages/ServiceCharge";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/utilities" element={<Utilities />} />
           <Route path="/compliance" element={<Compliance />} />
+          <Route path="/service-charge" element={<ServiceCharge />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

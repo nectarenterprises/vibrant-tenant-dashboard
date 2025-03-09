@@ -6,7 +6,7 @@ import { Property } from '@/types/property';
 import { cn } from '@/lib/utils';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import LeaseDetails from '@/components/leases/LeaseDetails';
+import ServiceChargeDetails from '@/components/service-charge/ServiceChargeDetails';
 
 // Mock data - using the same properties from the dashboard
 const mockProperties: Property[] = [
@@ -28,7 +28,7 @@ const mockProperties: Property[] = [
   }
 ];
 
-const Leases = () => {
+const ServiceCharge = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
@@ -50,7 +50,7 @@ const Leases = () => {
         )}
       >
         <div className="container mx-auto p-6">
-          <h1 className="text-3xl font-bold mb-6">Leases</h1>
+          <h1 className="text-3xl font-bold mb-6">Service Charge</h1>
           
           {/* Search Bar */}
           <div className="relative mb-6">
@@ -72,9 +72,9 @@ const Leases = () => {
                 onClick={() => setSelectedProperty(null)}
                 className="mb-4 text-sm flex items-center gap-1 text-tenant-green hover:text-tenant-darkGreen transition-colors"
               >
-                ← Back to all leases
+                ← Back to all properties
               </button>
-              <LeaseDetails property={selectedProperty} />
+              <ServiceChargeDetails property={selectedProperty} />
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -105,4 +105,4 @@ const Leases = () => {
   );
 };
 
-export default Leases;
+export default ServiceCharge;

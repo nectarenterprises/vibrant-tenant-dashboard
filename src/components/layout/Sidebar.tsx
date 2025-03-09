@@ -8,8 +8,9 @@ import {
   Key, 
   Calendar, 
   Zap, 
-  CheckSquare, 
-  ChevronLeft
+  CheckSquare,
+  ChevronLeft,
+  DollarSign
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -24,6 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
     { name: 'Documents', path: '/documents', icon: FileText },
     { name: 'Leases', path: '/leases', icon: Key },
+    { name: 'Service Charge', path: '/service-charge', icon: DollarSign },
     { name: 'Calendar', path: '/calendar', icon: Calendar },
     { name: 'Utilities', path: '/utilities', icon: Zap },
     { name: 'Compliance', path: '/compliance', icon: CheckSquare },
