@@ -26,7 +26,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
   return (
     <div 
       className={cn(
-        "rounded-xl overflow-hidden card-gradient shadow-md hover:shadow-xl transition-all duration-300 animate-fade-in",
+        "rounded-xl overflow-hidden card-gradient shadow-md hover:shadow-xl transition-all duration-300 animate-fade-in h-full flex flex-col",
         "border border-gray-100 dark:border-gray-800"
       )}
       style={{ animationDelay: `${delay * 0.1}s` }}
@@ -39,7 +39,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
         </div>
       </div>
       
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-4 flex-grow flex flex-col">
         {!isCompliancePage && (
           <>
             <div className="flex justify-between items-center">
@@ -65,7 +65,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
           </>
         )}
         
-        <button className="w-full mt-2 flex items-center justify-center gap-2 py-2 rounded-lg bg-tenant-yellow text-black hover:bg-tenant-gold transition-colors">
+        <button className="w-full mt-auto flex items-center justify-center gap-2 py-2 rounded-lg bg-tenant-yellow text-black hover:bg-tenant-gold transition-colors">
           <span>View Details</span>
           <ArrowRight className="h-4 w-4" />
         </button>

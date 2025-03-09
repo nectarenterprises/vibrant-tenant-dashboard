@@ -80,14 +80,14 @@ const Index = () => {
           <WelcomeHeader userName="Jack" />
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 h-full">
               <h2 className="text-xl font-semibold mb-4">Your Properties</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[calc(100%-2rem)]">
                 {mockProperties.map((property, index) => (
                   <PropertyCard 
                     key={property.id} 
                     property={property} 
-                    delay={index} 
+                    delay={index}
                   />
                 ))}
               </div>
