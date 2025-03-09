@@ -67,7 +67,7 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
                     <DollarSign className="h-4 w-4 text-tenant-green" />
                     <span className="text-muted-foreground">Monthly Rent</span>
                   </div>
-                  <span className="font-medium">${rentalFee.toLocaleString()}</span>
+                  <span className="font-medium">£{rentalFee.toLocaleString()}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
@@ -118,7 +118,7 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
                   <p className="text-sm text-muted-foreground mb-1">Contact Person</p>
                   <p className="font-medium">John Smith</p>
                   <p className="text-sm">john.smith@acme.com</p>
-                  <p className="text-sm">(555) 123-4567</p>
+                  <p className="text-sm">(020) 7123 4567</p>
                 </div>
               </CardContent>
             </Card>
@@ -158,7 +158,7 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
             </Card>
           </div>
           
-          {/* Property Details Section - MOVED ABOVE Premises Schedule */}
+          {/* Property Details Section */}
           <div className="mt-6">
             <Card>
               <CardHeader>
@@ -179,7 +179,7 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
                       </li>
                       <li className="flex justify-between">
                         <span className="text-muted-foreground">Floor Area:</span>
-                        <span>{name.includes('Office') ? '1,500 sq ft' : '2,200 sq ft'}</span>
+                        <span>{name.includes('Office') ? '140 sq m' : '205 sq m'}</span>
                       </li>
                       <li className="flex justify-between">
                         <span className="text-muted-foreground">Year Built:</span>
@@ -212,7 +212,7 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
                       </li>
                       <li className="flex justify-between">
                         <span className="text-muted-foreground">Security Deposit:</span>
-                        <span>${(rentalFee * 2).toLocaleString()}</span>
+                        <span>£{(rentalFee * 2).toLocaleString()}</span>
                       </li>
                     </ul>
                   </div>
@@ -269,7 +269,7 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
                           </div>
                           <p className="text-sm">{incentive.description}</p>
                           {incentive.value && (
-                            <p className="text-sm mt-1 font-medium">${incentive.value.toLocaleString()}</p>
+                            <p className="text-sm mt-1 font-medium">£{incentive.value.toLocaleString()}</p>
                           )}
                           {incentive.period && (
                             <p className="text-sm text-muted-foreground">{incentive.period}</p>

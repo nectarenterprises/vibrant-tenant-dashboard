@@ -46,7 +46,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
               <span className="text-sm text-muted-foreground">
                 {isServiceChargePage ? 'Monthly Service Charge' : 'Monthly Rent'}
               </span>
-              <span className="font-semibold text-lg">${rentalFee.toLocaleString()}</span>
+              <span className="font-semibold text-lg">£{rentalFee.toLocaleString()}</span>
             </div>
             
             <div className="space-y-2">

@@ -12,17 +12,17 @@ import { cn } from '@/lib/utils';
 const mockProperties: Property[] = [
   {
     id: '1',
-    name: '123 Main Office',
-    address: '123 Main St, Suite 101, San Francisco, CA',
-    rentalFee: 2500,
+    name: 'Victoria Office',
+    address: '123 Buckingham Palace Road, Victoria, London SW1W 9SH',
+    rentalFee: 3500,
     nextPaymentDate: '2023-04-15',
     leaseExpiry: '2024-03-31',
   },
   {
     id: '2',
-    name: 'Downtown Retail',
-    address: '456 Market St, San Francisco, CA',
-    rentalFee: 3200,
+    name: 'Covent Garden Retail',
+    address: '45 Long Acre, Covent Garden, London WC2E 9JT',
+    rentalFee: 4200,
     nextPaymentDate: '2023-04-10',
     leaseExpiry: '2023-12-31',
   }
@@ -35,7 +35,7 @@ const mockEvents: EventData[] = [
     date: '2023-04-15',
     type: 'rent',
     propertyId: '1',
-    propertyName: '123 Main Office'
+    propertyName: 'Victoria Office'
   },
   {
     id: '2',
@@ -43,7 +43,7 @@ const mockEvents: EventData[] = [
     date: '2023-04-20',
     type: 'inspection',
     propertyId: '2',
-    propertyName: 'Downtown Retail'
+    propertyName: 'Covent Garden Retail'
   },
   {
     id: '3',
@@ -51,7 +51,7 @@ const mockEvents: EventData[] = [
     date: '2023-04-25',
     type: 'maintenance',
     propertyId: '1',
-    propertyName: '123 Main Office'
+    propertyName: 'Victoria Office'
   }
 ];
 

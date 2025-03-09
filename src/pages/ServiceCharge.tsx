@@ -8,21 +8,21 @@ import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import ServiceChargeDetails from '@/components/service-charge/ServiceChargeDetails';
 
-// Mock data - using the same properties from the dashboard
+// Mock data - using updated London properties
 const mockProperties: Property[] = [
   {
     id: '1',
-    name: '123 Main Office',
-    address: '123 Main St, Suite 101, San Francisco, CA',
-    rentalFee: 2500,
+    name: 'Victoria Office',
+    address: '123 Buckingham Palace Road, Victoria, London SW1W 9SH',
+    rentalFee: 3500,
     nextPaymentDate: '2023-04-15',
     leaseExpiry: '2024-03-31',
   },
   {
     id: '2',
-    name: 'Downtown Retail',
-    address: '456 Market St, San Francisco, CA',
-    rentalFee: 3200,
+    name: 'Covent Garden Retail',
+    address: '45 Long Acre, Covent Garden, London WC2E 9JT',
+    rentalFee: 4200,
     nextPaymentDate: '2023-04-10',
     leaseExpiry: '2023-12-31',
   }
