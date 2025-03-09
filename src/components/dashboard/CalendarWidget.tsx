@@ -1,17 +1,32 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import { Calendar as CalendarIcon, DollarSign, Wrench, ClipboardCheck } from 'lucide-react';
-import { EventData } from '@/types/property';
+import { EventData, Property } from '@/types/property';
 import { cn } from '@/lib/utils';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface CalendarWidgetProps {
   events: EventData[];
+  properties?: Property[];
 }
 
-const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events }) => {
+const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events, properties = [] }) => {
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string>("all");
+  
+  // Filter events by selected property (if a property is selected)
+  const filteredEvents = selectedPropertyId === "all" 
+    ? events 
+    : events.filter(event => event.propertyId === selectedPropertyId);
+  
   // Sort events by date (closest first)
-  const sortedEvents = [...events].sort((a, b) => 
+  const sortedEvents = [...filteredEvents].sort((a, b) => 
     new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
@@ -46,10 +61,31 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events }) => {
   return (
     <div className="rounded-xl overflow-hidden card-gradient shadow-md border border-gray-100 dark:border-gray-800 animate-fade-in h-full">
       <div className="mellow-gradient p-4">
-        <h3 className="text-black font-bold text-lg flex items-center">
-          <CalendarIcon className="mr-2 h-5 w-5" />
-          Upcoming Events
-        </h3>
+        <div className="flex justify-between items-center">
+          <h3 className="text-black font-bold text-lg flex items-center">
+            <CalendarIcon className="mr-2 h-5 w-5" />
+            Upcoming Events
+          </h3>
+          
+          {properties.length > 0 && (
+            <Select 
+              value={selectedPropertyId} 
+              onValueChange={setSelectedPropertyId}
+            >
+              <SelectTrigger className="w-[180px] h-8 bg-white/90 text-sm">
+                <SelectValue placeholder="All Properties" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Properties</SelectItem>
+                {properties.map(property => (
+                  <SelectItem key={property.id} value={property.id}>
+                    {property.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
       </div>
       
       <div className="p-4 space-y-4 max-h-[320px] overflow-y-auto">
@@ -71,6 +107,11 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events }) => {
                 <p className="text-xs text-muted-foreground mt-1">
                   {format(parseISO(event.date), 'EEEE, MMMM d, yyyy')}
                 </p>
+                {event.propertyName && (
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {event.propertyName}
+                  </p>
+                )}
               </div>
             </div>
           ))

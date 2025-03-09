@@ -21,4 +21,6 @@ export interface EventData {
   title: string;
   date: string;
   type: 'rent' | 'maintenance' | 'inspection' | 'other';
+  propertyId?: string;
+  propertyName?: string;
 }

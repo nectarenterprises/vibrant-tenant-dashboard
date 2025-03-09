@@ -33,19 +33,25 @@ const mockEvents: EventData[] = [
     id: '1',
     title: 'Rent Due',
     date: '2023-04-15',
-    type: 'rent'
+    type: 'rent',
+    propertyId: '1',
+    propertyName: '123 Main Office'
   },
   {
     id: '2',
     title: 'Quarterly Inspection',
     date: '2023-04-20',
-    type: 'inspection'
+    type: 'inspection',
+    propertyId: '2',
+    propertyName: 'Downtown Retail'
   },
   {
     id: '3',
     title: 'HVAC Maintenance',
     date: '2023-04-25',
-    type: 'maintenance'
+    type: 'maintenance',
+    propertyId: '1',
+    propertyName: '123 Main Office'
   }
 ];
 
@@ -88,7 +94,7 @@ const Index = () => {
             </div>
             
             <div>
-              <CalendarWidget events={mockEvents} />
+              <CalendarWidget events={mockEvents} properties={mockProperties} />
             </div>
           </div>
           
