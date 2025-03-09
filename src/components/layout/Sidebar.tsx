@@ -40,7 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
         <div>
           <div className="flex items-center justify-between mb-8 mt-2">
             {!collapsed && (
-              <h1 className="text-sidebar-foreground text-2xl font-bold">TenantHub</h1>
+              <h1 className="text-sidebar-foreground text-2xl font-bold">SweetLease</h1>
             )}
             <button
               onClick={() => setCollapsed(!collapsed)}

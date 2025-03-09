@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -63,15 +64,18 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
                 tenant: {
-                    yellow: '#E9BC4F',
-                    gold: '#DBA727',
+                    green: '#2D6A4F',
+                    lightGreen: '#40916C',
+                    darkGreen: '#1B4332',
                     black: '#000000',
-                    softYellow: '#FEF7CD',
-                    softOrange: '#FEC6A1',
-                    cream: '#FFF8E1',
-                    warmGray: '#E5E0D5',
+                    softGreen: '#F2FCE2',
+                    emerald: '#087F5B',
+                    forestGreen: '#2D6A4F',
+                    sage: '#74C69D',
+                    mint: '#B7E4C7',
                     orange: '#F97316',
-                    green: '#10B981',
+                    teal: '#0EA5E9',
+                    purple: '#8B5CF6',
                 }
 			},
 			borderRadius: {
