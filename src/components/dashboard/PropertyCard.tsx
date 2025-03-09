@@ -19,8 +19,9 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
   const formattedNextPayment = format(parseISO(nextPaymentDate), 'dd MMM yyyy');
   const formattedLeaseExpiry = format(parseISO(leaseExpiry), 'dd MMM yyyy');
 
-  // Determine if we're on the service charge page
+  // Determine which page we're on
   const isServiceChargePage = location.pathname.includes('service-charge');
+  const isCompliancePage = location.pathname.includes('compliance');
   
   return (
     <div 
@@ -39,26 +40,30 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
       </div>
       
       <div className="p-4 space-y-4">
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-muted-foreground">
-            {isServiceChargePage ? 'Monthly Service Charge' : 'Monthly Rent'}
-          </span>
-          <span className="font-semibold text-lg">${rentalFee.toLocaleString()}</span>
-        </div>
-        
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm">
-            <CalendarIcon className="h-4 w-4 text-tenant-gold" />
-            <span className="text-muted-foreground">Next Payment:</span>
-            <span className="font-medium">{formattedNextPayment}</span>
-          </div>
-          
-          <div className="flex items-center gap-2 text-sm">
-            <CalendarIcon className="h-4 w-4 text-tenant-orange" />
-            <span className="text-muted-foreground">Lease Expiry:</span>
-            <span className="font-medium">{formattedLeaseExpiry}</span>
-          </div>
-        </div>
+        {!isCompliancePage && (
+          <>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">
+                {isServiceChargePage ? 'Monthly Service Charge' : 'Monthly Rent'}
+              </span>
+              <span className="font-semibold text-lg">${rentalFee.toLocaleString()}</span>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm">
+                <CalendarIcon className="h-4 w-4 text-tenant-gold" />
+                <span className="text-muted-foreground">Next Payment:</span>
+                <span className="font-medium">{formattedNextPayment}</span>
+              </div>
+              
+              <div className="flex items-center gap-2 text-sm">
+                <CalendarIcon className="h-4 w-4 text-tenant-orange" />
+                <span className="text-muted-foreground">Lease Expiry:</span>
+                <span className="font-medium">{formattedLeaseExpiry}</span>
+              </div>
+            </div>
+          </>
+        )}
         
         <button className="w-full mt-2 flex items-center justify-center gap-2 py-2 rounded-lg bg-tenant-yellow text-black hover:bg-tenant-gold transition-colors">
           <span>View Details</span>
