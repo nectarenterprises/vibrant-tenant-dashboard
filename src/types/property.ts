@@ -10,10 +10,13 @@ export interface Property {
 }
 
 export interface UtilityData {
-  date: string;
-  gas?: number;
-  water?: number;
-  electricity?: number;
+  month: string;
+  gasUsage?: number;
+  gasCost?: number;
+  waterUsage?: number;
+  waterCost?: number;
+  electricityUsage?: number;
+  electricityCost?: number;
 }
 
 export interface EventData {

@@ -75,28 +75,52 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
       return (
         <div className="glass-morphism p-3 rounded-lg shadow-lg text-sm">
           <p className="font-medium">{label}</p>
-          {payload.map((entry: any, index: number) => (
-            <div key={`item-${index}`} className="flex items-center gap-2 mt-1.5">
-              <div 
-                className="w-3 h-3 rounded-full" 
-                style={{ backgroundColor: entry.color }}
-              />
-              <p style={{ color: entry.color }}>
-                {entry.name}: {entry.value} units
-              </p>
-            </div>
-          ))}
+          {payload.map((entry: any, index: number) => {
+            // Determine if this is a cost or usage entry
+            const isCost = entry.dataKey.includes('Cost');
+            const matchingItem = payload.find((item: any) => 
+              item.dataKey.includes(entry.dataKey.split('Cost')[0]+'Usage')
+            );
+            
+            const usageValue = isCost && matchingItem ? matchingItem.value : null;
+            
+            return (
+              <div key={`item-${index}`} className="flex items-center gap-2 mt-1.5">
+                <div 
+                  className="w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: entry.color }}
+                />
+                <p style={{ color: entry.color }}>
+                  {isCost ? (
+                    <>
+                      ${entry.value.toFixed(2)}
+                      {usageValue && <span className="text-xs ml-1">({getUtilityUnit(entry.dataKey)}: {usageValue})</span>}
+                    </>
+                  ) : !entry.dataKey.includes('Usage') && (
+                    `${entry.value.toFixed(2)} units`
+                  )}
+                </p>
+              </div>
+            );
+          })}
         </div>
       );
     }
     return null;
+  };
+  
+  const getUtilityUnit = (dataKey: string) => {
+    if (dataKey.includes('gas')) return 'm³';
+    if (dataKey.includes('water')) return 'm³';
+    if (dataKey.includes('electricity')) return 'kWh';
+    return 'units';
   };
 
   return (
     <div className="utility-chart-container animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div className="flex flex-col mb-3 sm:mb-0">
-          <h3 className="text-lg font-bold">Utility Usage</h3>
+          <h3 className="text-lg font-bold">Utility Usage & Costs</h3>
           {properties.length > 0 && (
             <div className="mt-2">
               <Select value={selectedProperty} onValueChange={setSelectedProperty}>
@@ -148,53 +172,90 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis 
-              dataKey="date" 
+              dataKey="month" 
               tick={{ fontSize: 12 }}
               tickMargin={10}
             />
             <YAxis 
               tick={{ fontSize: 12 }}
               tickMargin={10}
+              label={{ value: 'Cost ($)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
             {activeUtilities.gas && (
-              <Line 
-                type="monotone" 
-                dataKey="gas" 
-                name="Gas"
-                stroke="#F97316" 
-                strokeWidth={2}
-                dot={{ stroke: '#F97316', strokeWidth: 2, r: 3, fill: '#F97316' }}
-                activeDot={{ r: 6 }}
-                animationDuration={1000}
-              />
+              <>
+                <Line 
+                  type="monotone" 
+                  dataKey="gasCost" 
+                  name="Gas"
+                  stroke="#F97316" 
+                  strokeWidth={2}
+                  dot={{ stroke: '#F97316', strokeWidth: 2, r: 3, fill: '#F97316' }}
+                  activeDot={{ r: 6 }}
+                  animationDuration={1000}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="gasUsage" 
+                  name="Gas Usage"
+                  stroke="#F97316" 
+                  strokeWidth={0}
+                  dot={{ stroke: 'transparent', r: 0 }}
+                  activeDot={{ r: 0 }}
+                  style={{ display: 'none' }}
+                />
+              </>
             )}
             {activeUtilities.water && (
-              <Line 
-                type="monotone" 
-                dataKey="water" 
-                name="Water"
-                stroke="#0EA5E9" 
-                strokeWidth={2}
-                dot={{ stroke: '#0EA5E9', strokeWidth: 2, r: 3, fill: '#0EA5E9' }}
-                activeDot={{ r: 6 }}
-                animationDuration={1000}
-                animationBegin={300}
-              />
+              <>
+                <Line 
+                  type="monotone" 
+                  dataKey="waterCost" 
+                  name="Water"
+                  stroke="#0EA5E9" 
+                  strokeWidth={2}
+                  dot={{ stroke: '#0EA5E9', strokeWidth: 2, r: 3, fill: '#0EA5E9' }}
+                  activeDot={{ r: 6 }}
+                  animationDuration={1000}
+                  animationBegin={300}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="waterUsage" 
+                  name="Water Usage"
+                  stroke="#0EA5E9" 
+                  strokeWidth={0}
+                  dot={{ stroke: 'transparent', r: 0 }}
+                  activeDot={{ r: 0 }}
+                  style={{ display: 'none' }}
+                />
+              </>
             )}
             {activeUtilities.electricity && (
-              <Line 
-                type="monotone" 
-                dataKey="electricity" 
-                name="Electricity"
-                stroke="#8B5CF6" 
-                strokeWidth={2}
-                dot={{ stroke: '#8B5CF6', strokeWidth: 2, r: 3, fill: '#8B5CF6' }}
-                activeDot={{ r: 6 }}
-                animationDuration={1000}
-                animationBegin={600}
-              />
+              <>
+                <Line 
+                  type="monotone" 
+                  dataKey="electricityCost" 
+                  name="Electricity"
+                  stroke="#8B5CF6" 
+                  strokeWidth={2}
+                  dot={{ stroke: '#8B5CF6', strokeWidth: 2, r: 3, fill: '#8B5CF6' }}
+                  activeDot={{ r: 6 }}
+                  animationDuration={1000}
+                  animationBegin={600}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="electricityUsage" 
+                  name="Electricity Usage"
+                  stroke="#8B5CF6" 
+                  strokeWidth={0}
+                  dot={{ stroke: 'transparent', r: 0 }}
+                  activeDot={{ r: 0 }}
+                  style={{ display: 'none' }}
+                />
+              </>
             )}
           </LineChart>
         </ResponsiveContainer>

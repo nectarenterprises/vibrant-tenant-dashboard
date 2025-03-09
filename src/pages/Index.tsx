@@ -56,11 +56,42 @@ const mockEvents: EventData[] = [
 ];
 
 const mockUtilityData: UtilityData[] = [
-  { date: '2.5', gas: 120, water: 140, electricity: 180 },
-  { date: '2.6', gas: 130, water: 150, electricity: 200 },
-  { date: '2.7', gas: 110, water: 145, electricity: 190 },
-  { date: '2.8', gas: 125, water: 160, electricity: 210 },
-  { date: '2.9', gas: 135, water: 170, electricity: 220 }
+  { 
+    month: 'Jan', 
+    gasUsage: 250, gasCost: 125, 
+    waterUsage: 42, waterCost: 36, 
+    electricityUsage: 320, electricityCost: 80 
+  },
+  { 
+    month: 'Feb', 
+    gasUsage: 280, gasCost: 140, 
+    waterUsage: 38, waterCost: 33, 
+    electricityUsage: 300, electricityCost: 75 
+  },
+  { 
+    month: 'Mar', 
+    gasUsage: 220, gasCost: 110, 
+    waterUsage: 45, waterCost: 38, 
+    electricityUsage: 340, electricityCost: 85 
+  },
+  { 
+    month: 'Apr', 
+    gasUsage: 180, gasCost: 90, 
+    waterUsage: 40, waterCost: 34, 
+    electricityUsage: 280, electricityCost: 70 
+  },
+  { 
+    month: 'May', 
+    gasUsage: 160, gasCost: 80, 
+    waterUsage: 43, waterCost: 37, 
+    electricityUsage: 290, electricityCost: 72.5 
+  },
+  { 
+    month: 'Jun', 
+    gasUsage: 140, gasCost: 70, 
+    waterUsage: 48, waterCost: 41, 
+    electricityUsage: 350, electricityCost: 87.5 
+  }
 ];
 
 const Index = () => {
