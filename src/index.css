@@ -5,82 +5,83 @@
 
 @layer base {
   :root {
-    --background: 240 20% 99%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 45 55% 97%;
+    --foreground: 0 0% 0%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 0%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 0%;
 
-    --primary: 263 55% 63%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 45 67% 52%;
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 219 80% 48%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 38 52% 44%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 45 20% 92%;
+    --muted-foreground: 0 0% 40%;
 
-    --accent: 263 85% 95%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 45 80% 92%;
+    --accent-foreground: 0 0% 0%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 45 30% 85%;
+    --input: 45 30% 85%;
+    --ring: 45 67% 52%;
 
     --radius: 1rem;
 
-    --sidebar-background: 263 55% 63%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 0 0% 100%;
-    --sidebar-primary-foreground: 263 55% 63%;
-    --sidebar-accent: 263 65% 58%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 263 65% 53%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 45 67% 52%;
+    --sidebar-foreground: 0 0% 0%;
+    --sidebar-primary: 0 0% 0%;
+    --sidebar-primary-foreground: 45 67% 52%;
+    --sidebar-accent: 38 52% 44%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 38 52% 34%;
+    --sidebar-ring: 38 52% 44%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 10%;
+    --foreground: 45 40% 80%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 12%;
+    --card-foreground: 45 40% 80%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 45 40% 80%;
 
-    --primary: 263 55% 63%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 45 67% 52%;
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 38 52% 34%;
+    --secondary-foreground: 45 40% 80%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 45 20% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 38 52% 34%;
+    --accent-foreground: 45 40% 80%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 45 40% 80%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 263 55% 40%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 0 0% 100%; 
-    --sidebar-primary-foreground: 263 55% 40%;
-    --sidebar-accent: 263 65% 35%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 263 65% 30%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 38 52% 24%;
+    --input: 38 52% 24%;
+    --ring: 45 67% 52%;
+    
+    --sidebar-background: 45 67% 40%;
+    --sidebar-foreground: 0 0% 0%;
+    --sidebar-primary: 0 0% 0%; 
+    --sidebar-primary-foreground: 45 67% 40%;
+    --sidebar-accent: 38 52% 34%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 38 52% 24%;
+    --sidebar-ring: 38 52% 44%;
   }
 }
 
@@ -100,7 +101,7 @@
   }
   
   .card-gradient {
-    @apply bg-gradient-to-br from-white to-tenant-soft-purple/20 dark:from-gray-900 dark:to-tenant-purple/20;
+    @apply bg-gradient-to-br from-white to-tenant-softYellow/40 dark:from-gray-900 dark:to-tenant-gold/20;
   }
   
   .dashboard-grid {
@@ -111,5 +112,9 @@
   
   .utility-chart-container {
     @apply rounded-xl p-4 bg-white dark:bg-gray-800 shadow-md transition-all duration-300 hover:shadow-lg;
+  }
+
+  .mellow-gradient {
+    @apply bg-gradient-to-r from-tenant-gold to-tenant-yellow;
   }
 }

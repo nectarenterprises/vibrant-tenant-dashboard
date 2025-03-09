@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -63,19 +62,16 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-                // Custom tenant dashboard colors
                 tenant: {
-                    purple: '#8B5CF6',
-                    teal: '#0EA5E9',
+                    yellow: '#E9BC4F',
+                    gold: '#DBA727',
+                    black: '#000000',
+                    softYellow: '#FEF7CD',
+                    softOrange: '#FEC6A1',
+                    cream: '#FFF8E1',
+                    warmGray: '#E5E0D5',
                     orange: '#F97316',
-                    pink: '#D946EF',
                     green: '#10B981',
-                    yellow: '#FBBF24',
-                    'soft-blue': '#93C5FD',
-                    'soft-purple': '#E5DEFF',
-                    'soft-pink': '#FFDEE2',
-                    'soft-peach': '#FDE1D3',
-                    'soft-teal': '#99F6E4'
                 }
 			},
 			borderRadius: {

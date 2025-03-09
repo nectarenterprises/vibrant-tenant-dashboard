@@ -23,9 +23,9 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events }) => {
       case 'maintenance':
         return <Wrench className="h-5 w-5 text-tenant-orange" />;
       case 'inspection':
-        return <ClipboardCheck className="h-5 w-5 text-tenant-teal" />;
+        return <ClipboardCheck className="h-5 w-5 text-tenant-black" />;
       default:
-        return <CalendarIcon className="h-5 w-5 text-tenant-purple" />;
+        return <CalendarIcon className="h-5 w-5 text-tenant-gold" />;
     }
   };
 
@@ -37,16 +37,16 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events }) => {
       case 'maintenance':
         return 'bg-tenant-orange/10 border-tenant-orange/20';
       case 'inspection':
-        return 'bg-tenant-teal/10 border-tenant-teal/20';
+        return 'bg-tenant-black/10 border-tenant-black/20';
       default:
-        return 'bg-tenant-purple/10 border-tenant-purple/20';
+        return 'bg-tenant-gold/10 border-tenant-gold/20';
     }
   };
 
   return (
     <div className="rounded-xl overflow-hidden card-gradient shadow-md border border-gray-100 dark:border-gray-800 animate-fade-in h-full">
-      <div className="bg-gradient-to-r from-tenant-teal to-tenant-purple p-4">
-        <h3 className="text-white font-bold text-lg flex items-center">
+      <div className="mellow-gradient p-4">
+        <h3 className="text-black font-bold text-lg flex items-center">
           <CalendarIcon className="mr-2 h-5 w-5" />
           Upcoming Events
         </h3>
