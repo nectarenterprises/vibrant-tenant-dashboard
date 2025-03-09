@@ -4,6 +4,7 @@ import { Calendar as CalendarIcon, ArrowRight } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Property } from '@/types/property';
 import { cn } from '@/lib/utils';
+import { useLocation } from 'react-router-dom';
 
 interface PropertyCardProps {
   property: Property;
@@ -12,10 +13,14 @@ interface PropertyCardProps {
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
   const { name, address, rentalFee, nextPaymentDate, leaseExpiry } = property;
+  const location = useLocation();
   
   // Format dates
   const formattedNextPayment = format(parseISO(nextPaymentDate), 'dd MMM yyyy');
   const formattedLeaseExpiry = format(parseISO(leaseExpiry), 'dd MMM yyyy');
+
+  // Determine if we're on the service charge page
+  const isServiceChargePage = location.pathname.includes('service-charge');
   
   return (
     <div 
@@ -35,7 +40,9 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
       
       <div className="p-4 space-y-4">
         <div className="flex justify-between items-center">
-          <span className="text-sm text-muted-foreground">Monthly Rent</span>
+          <span className="text-sm text-muted-foreground">
+            {isServiceChargePage ? 'Monthly Service Charge' : 'Monthly Rent'}
+          </span>
           <span className="font-semibold text-lg">${rentalFee.toLocaleString()}</span>
         </div>
         
