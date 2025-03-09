@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { format, parseISO } from 'date-fns';
-import { Calendar as CalendarIcon, DollarSign, Tool, ClipboardCheck } from 'lucide-react';
+import { Calendar as CalendarIcon, DollarSign, Wrench, ClipboardCheck } from 'lucide-react';
 import { EventData } from '@/types/property';
 import { cn } from '@/lib/utils';
 
@@ -21,7 +21,7 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events }) => {
       case 'rent':
         return <DollarSign className="h-5 w-5 text-tenant-green" />;
       case 'maintenance':
-        return <Tool className="h-5 w-5 text-tenant-orange" />;
+        return <Wrench className="h-5 w-5 text-tenant-orange" />;
       case 'inspection':
         return <ClipboardCheck className="h-5 w-5 text-tenant-teal" />;
       default:
