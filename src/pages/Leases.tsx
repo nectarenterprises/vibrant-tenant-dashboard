@@ -8,7 +8,7 @@ import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import LeaseDetails from '@/components/leases/LeaseDetails';
 
-// Mock data - using the same properties from the dashboard
+// Mock data - using the same properties from the dashboard but with additional fields
 const mockProperties: Property[] = [
   {
     id: '1',
@@ -17,6 +17,26 @@ const mockProperties: Property[] = [
     rentalFee: 2500,
     nextPaymentDate: '2023-04-15',
     leaseExpiry: '2024-03-31',
+    premisesSchedule: 'The demised premises consists of Suite 101 located on the first floor of the building known as 123 Main St, San Francisco, CA, with a total rentable area of 1,500 square feet. The premises includes access to common areas including lobbies, elevators, stairways, and restrooms. Tenant has exclusive use of 2 reserved parking spaces located in the underground parking garage.',
+    incentives: [
+      {
+        type: 'rent-free',
+        description: 'First month rent-free upon lease commencement',
+        value: 2500,
+        period: '1 month'
+      },
+      {
+        type: 'fitout',
+        description: 'Contribution towards office fit-out and customization',
+        value: 10000,
+        period: 'One-time payment'
+      },
+      {
+        type: 'break-option',
+        description: 'Option to terminate lease after 6 months with 60 days notice',
+        period: 'After 6 months'
+      }
+    ]
   },
   {
     id: '2',
@@ -25,6 +45,21 @@ const mockProperties: Property[] = [
     rentalFee: 3200,
     nextPaymentDate: '2023-04-10',
     leaseExpiry: '2023-12-31',
+    premisesSchedule: 'The premises consists of a ground floor retail unit with approximately 2,200 square feet of usable space at 456 Market St, San Francisco, CA. The unit includes a main retail area, storage room, and staff facilities. Tenant has access to the service corridor at the rear of the building for deliveries and waste disposal. The premises includes the right to install and maintain signage on the building façade subject to landlord approval and local regulations.',
+    incentives: [
+      {
+        type: 'rent-free',
+        description: 'Three months rent-free period',
+        value: 9600,
+        period: '3 months'
+      },
+      {
+        type: 'other',
+        description: 'Reduced service charge in year one (50% discount)',
+        value: 4800,
+        period: '12 months'
+      }
+    ]
   }
 ];
 

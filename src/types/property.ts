@@ -7,6 +7,15 @@ export interface Property {
   nextPaymentDate: string;
   leaseExpiry: string;
   image?: string;
+  premisesSchedule?: string;
+  incentives?: Incentive[];
+}
+
+export interface Incentive {
+  type: 'rent-free' | 'fitout' | 'break-option' | 'other';
+  description: string;
+  value?: number;
+  period?: string;
 }
 
 export interface UtilityData {
