@@ -80,9 +80,9 @@ const Index = () => {
           <WelcomeHeader userName="Jack" />
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div className="lg:col-span-2 h-full">
+            <div className="lg:col-span-2">
               <h2 className="text-xl font-semibold mb-4">Your Properties</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[calc(100%-2rem)]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ minHeight: '400px' }}>
                 {mockProperties.map((property, index) => (
                   <PropertyCard 
                     key={property.id} 
@@ -93,7 +93,7 @@ const Index = () => {
               </div>
             </div>
             
-            <div>
+            <div style={{ minHeight: '480px' }}>
               <CalendarWidget events={mockEvents} properties={mockProperties} />
             </div>
           </div>
