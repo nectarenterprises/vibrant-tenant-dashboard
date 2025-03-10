@@ -198,12 +198,12 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
                 <Line 
                   type="monotone" 
                   dataKey="gasUsage" 
-                  name="Gas Usage"
-                  stroke="#F97316" 
+                  name=""  // Empty name to not show in legend
+                  stroke="transparent"  // Make the line invisible
                   strokeWidth={0}
                   dot={{ stroke: 'transparent', r: 0 }}
                   activeDot={{ r: 0 }}
-                  hide={true} // Hide from legend
+                  legendType="none"  // Remove from legend completely
                 />
               </>
             )}
@@ -223,12 +223,12 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
                 <Line 
                   type="monotone" 
                   dataKey="waterUsage" 
-                  name="Water Usage"
-                  stroke="#0EA5E9" 
+                  name=""  // Empty name to not show in legend
+                  stroke="transparent"  // Make the line invisible
                   strokeWidth={0}
                   dot={{ stroke: 'transparent', r: 0 }}
                   activeDot={{ r: 0 }}
-                  hide={true} // Hide from legend
+                  legendType="none"  // Remove from legend completely
                 />
               </>
             )}
@@ -248,12 +248,12 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
                 <Line 
                   type="monotone" 
                   dataKey="electricityUsage" 
-                  name="Electricity Usage"
-                  stroke="#8B5CF6" 
+                  name=""  // Empty name to not show in legend
+                  stroke="transparent"  // Make the line invisible
                   strokeWidth={0}
                   dot={{ stroke: 'transparent', r: 0 }}
                   activeDot={{ r: 0 }}
-                  hide={true} // Hide from legend
+                  legendType="none"  // Remove from legend completely
                 />
               </>
             )}

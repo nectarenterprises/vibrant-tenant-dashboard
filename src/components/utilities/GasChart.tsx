@@ -35,9 +35,9 @@ const GasChart: React.FC = () => {
                 style={{ backgroundColor: entry.color }}
               />
               <p style={{ color: entry.color }}>
-                {entry.name === 'usage' 
+                {entry.name === 'Usage (m³)' 
                   ? `${entry.value} m³` 
-                  : `$${entry.value}`}
+                  : `£${entry.value}`}
               </p>
             </div>
           ))}
@@ -75,6 +75,7 @@ const GasChart: React.FC = () => {
               tick={{ fontSize: 12 }}
               tickMargin={10}
               domain={[0, 'dataMax + 50']}
+              label={{ value: 'Usage (m³)', angle: -90, position: 'insideLeft' }}
             />
             <YAxis 
               yAxisId="right"
@@ -82,6 +83,7 @@ const GasChart: React.FC = () => {
               tick={{ fontSize: 12 }}
               tickMargin={10}
               domain={[0, 'dataMax + 20']}
+              label={{ value: 'Cost (£)', angle: 90, position: 'insideRight' }}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
@@ -100,7 +102,7 @@ const GasChart: React.FC = () => {
               yAxisId="right"
               type="monotone" 
               dataKey="cost" 
-              name="Cost ($)"
+              name="Cost (£)"
               stroke="#C2410C" 
               strokeWidth={2}
               dot={{ stroke: '#C2410C', strokeWidth: 2, r: 3, fill: '#C2410C' }}

@@ -35,9 +35,9 @@ const WaterChart: React.FC = () => {
                 style={{ backgroundColor: entry.color }}
               />
               <p style={{ color: entry.color }}>
-                {entry.name === 'usage' 
+                {entry.name === 'Usage (m³)' 
                   ? `${entry.value} m³` 
-                  : `$${entry.value}`}
+                  : `£${entry.value}`}
               </p>
             </div>
           ))}
@@ -75,6 +75,7 @@ const WaterChart: React.FC = () => {
               tick={{ fontSize: 12 }}
               tickMargin={10}
               domain={[0, 'dataMax + 10']}
+              label={{ value: 'Usage (m³)', angle: -90, position: 'insideLeft' }}
             />
             <YAxis 
               yAxisId="right"
@@ -82,6 +83,7 @@ const WaterChart: React.FC = () => {
               tick={{ fontSize: 12 }}
               tickMargin={10}
               domain={[0, 'dataMax + 5']}
+              label={{ value: 'Cost (£)', angle: 90, position: 'insideRight' }}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
@@ -100,7 +102,7 @@ const WaterChart: React.FC = () => {
               yAxisId="right"
               type="monotone" 
               dataKey="cost" 
-              name="Cost ($)"
+              name="Cost (£)"
               stroke="#0369A1" 
               strokeWidth={2}
               dot={{ stroke: '#0369A1', strokeWidth: 2, r: 3, fill: '#0369A1' }}
