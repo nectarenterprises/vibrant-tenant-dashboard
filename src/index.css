@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -24,6 +25,10 @@
     --input: 120 30% 85%;
     --ring: 120 40% 40%;
     --radius: 1rem;
+    --sidebar-background: 120 40% 40%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-accent: 130 40% 30%;
+    --sidebar-border: 120 30% 35%;
   }
 
   .dark {
@@ -50,13 +55,6 @@
     --sidebar-foreground: 0 0% 98%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-border: 240 3.7% 15.9%;
-  }
-
-  :root {
-    --sidebar-background: 120 40% 40%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-accent: 130 40% 30%;
-    --sidebar-border: 120 30% 35%;
   }
 }
 
