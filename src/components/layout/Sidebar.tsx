@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { 
   LayoutDashboard, 
   FileText, 
@@ -32,12 +32,10 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
   ];
 
   return (
-    <div 
-      className={cn(
-        "fixed left-0 top-0 z-40 h-full bg-sidebar transition-all duration-300 ease-in-out",
-        collapsed ? "w-20" : "w-64"
-      )}
-    >
+    <div className={cn(
+      "fixed left-0 top-0 z-40 h-full bg-sidebar transition-all duration-300 ease-in-out",
+      collapsed ? "w-20" : "w-64"
+    )}>
       <div className="flex h-full flex-col justify-between p-4">
         <div>
           <div className="flex items-center justify-between mb-8 mt-2">
@@ -72,32 +70,35 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
           </nav>
         </div>
         
-        <div className="rounded-lg bg-sidebar-accent p-4 text-center text-sidebar-foreground">
-          {!collapsed ? (
-            <div className="space-y-2">
-              <p className="text-sm">Need help?</p>
-              <button className="w-full rounded-md bg-white text-sidebar py-2 font-medium transition-colors hover:bg-opacity-90">
-                Contact Support
-              </button>
-            </div>
-          ) : (
-            <div className="flex justify-center">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-          )}
+        <div className="space-y-4">
+          <ThemeToggle />
+          <div className="rounded-lg bg-sidebar-accent p-4 text-center text-sidebar-foreground">
+            {!collapsed ? (
+              <div className="space-y-2">
+                <p className="text-sm">Need help?</p>
+                <button className="w-full rounded-md bg-white text-sidebar py-2 font-medium transition-colors hover:bg-opacity-90">
+                  Contact Support
+                </button>
+              </div>
+            ) : (
+              <div className="flex justify-center">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
