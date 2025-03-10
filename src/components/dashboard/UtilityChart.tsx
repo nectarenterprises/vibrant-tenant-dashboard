@@ -93,7 +93,7 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
                 <p style={{ color: entry.color }}>
                   {isCost ? (
                     <>
-                      ${entry.value.toFixed(2)}
+                      £{entry.value.toFixed(2)}
                       {usageValue && <span className="text-xs ml-1">({getUtilityUnit(entry.dataKey)}: {usageValue})</span>}
                     </>
                   ) : !entry.dataKey.includes('Usage') && (
@@ -179,7 +179,7 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
             <YAxis 
               tick={{ fontSize: 12 }}
               tickMargin={10}
-              label={{ value: 'Cost ($)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
+              label={{ value: 'Cost (£)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
@@ -203,7 +203,7 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
                   strokeWidth={0}
                   dot={{ stroke: 'transparent', r: 0 }}
                   activeDot={{ r: 0 }}
-                  style={{ display: 'none' }}
+                  hide={true} // Hide from legend
                 />
               </>
             )}
@@ -228,7 +228,7 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
                   strokeWidth={0}
                   dot={{ stroke: 'transparent', r: 0 }}
                   activeDot={{ r: 0 }}
-                  style={{ display: 'none' }}
+                  hide={true} // Hide from legend
                 />
               </>
             )}
@@ -253,7 +253,7 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
                   strokeWidth={0}
                   dot={{ stroke: 'transparent', r: 0 }}
                   activeDot={{ r: 0 }}
-                  style={{ display: 'none' }}
+                  hide={true} // Hide from legend
                 />
               </>
             )}
