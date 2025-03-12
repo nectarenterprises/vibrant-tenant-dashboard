@@ -1,7 +1,9 @@
+
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   LayoutDashboard, 
   FileText, 
@@ -10,8 +12,10 @@ import {
   Zap, 
   CheckSquare,
   ChevronLeft,
-  DollarSign
+  DollarSign,
+  LogOut
 } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -20,6 +24,9 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
   const location = useLocation();
+  const { signOut, user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   
   const menuItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -30,6 +37,15 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
     { name: 'Utilities', path: '/utilities', icon: Zap },
     { name: 'Compliance', path: '/compliance', icon: CheckSquare },
   ];
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({
+      title: "Signed out",
+      description: "You have been successfully signed out.",
+    });
+    navigate('/auth');
+  };
 
   return (
     <div className={cn(
@@ -72,6 +88,16 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
         
         <div className="space-y-4">
           <ThemeToggle />
+          
+          {/* Sign out button */}
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-2 w-full rounded-lg p-3 text-sidebar-foreground transition-all duration-200 hover:bg-sidebar-accent"
+          >
+            <LogOut className="h-5 w-5" />
+            {!collapsed && <span>Sign Out</span>}
+          </button>
+          
           <div className="rounded-lg bg-sidebar-accent p-4 text-center text-sidebar-foreground">
             {!collapsed ? (
               <div className="space-y-2">
