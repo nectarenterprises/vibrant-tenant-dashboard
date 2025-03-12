@@ -39,9 +39,11 @@ export type Database = {
           created_at: string
           id: string
           image_path: string | null
+          incentives: Json | null
           lease_expiry: string
           name: string
           next_payment_date: string
+          premises_schedule: string | null
           rental_fee: number
           updated_at: string
           user_id: string
@@ -51,9 +53,11 @@ export type Database = {
           created_at?: string
           id?: string
           image_path?: string | null
+          incentives?: Json | null
           lease_expiry: string
           name: string
           next_payment_date: string
+          premises_schedule?: string | null
           rental_fee: number
           updated_at?: string
           user_id: string
@@ -63,9 +67,11 @@ export type Database = {
           created_at?: string
           id?: string
           image_path?: string | null
+          incentives?: Json | null
           lease_expiry?: string
           name?: string
           next_payment_date?: string
+          premises_schedule?: string | null
           rental_fee?: number
           updated_at?: string
           user_id?: string

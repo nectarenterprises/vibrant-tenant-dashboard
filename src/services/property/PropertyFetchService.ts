@@ -44,6 +44,8 @@ export const fetchUserProperties = async (): Promise<Property[]> => {
       rentalFee: Number(property.rental_fee),
       nextPaymentDate: property.next_payment_date,
       leaseExpiry: property.lease_expiry,
+      premisesSchedule: property.premises_schedule,
+      incentives: property.incentives,
       createdAt: property.created_at,
       updatedAt: property.updated_at,
       image: property.image_path ? getPropertyImageUrl(property.image_path) : undefined
