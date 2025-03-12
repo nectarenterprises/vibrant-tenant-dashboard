@@ -9,6 +9,8 @@ export interface Property {
   image?: string;
   premisesSchedule?: string;
   incentives?: Incentive[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Incentive {
@@ -35,4 +37,14 @@ export interface EventData {
   type: 'rent' | 'maintenance' | 'inspection' | 'other';
   propertyId?: string;
   propertyName?: string;
+}
+
+export interface PropertyDocument {
+  id: string;
+  propertyId: string;
+  name: string;
+  description?: string;
+  filePath: string;
+  documentType: 'lease' | 'utility' | 'compliance' | 'service-charge' | 'other';
+  uploadDate: string;
 }

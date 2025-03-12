@@ -33,6 +33,83 @@ export type Database = {
         }
         Relationships: []
       }
+      properties: {
+        Row: {
+          address: string
+          created_at: string
+          id: string
+          lease_expiry: string
+          name: string
+          next_payment_date: string
+          rental_fee: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          id?: string
+          lease_expiry: string
+          name: string
+          next_payment_date: string
+          rental_fee: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          id?: string
+          lease_expiry?: string
+          name?: string
+          next_payment_date?: string
+          rental_fee?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      property_documents: {
+        Row: {
+          description: string | null
+          document_type: string
+          file_path: string
+          id: string
+          name: string
+          property_id: string
+          upload_date: string
+          user_id: string
+        }
+        Insert: {
+          description?: string | null
+          document_type: string
+          file_path: string
+          id?: string
+          name: string
+          property_id: string
+          upload_date?: string
+          user_id: string
+        }
+        Update: {
+          description?: string | null
+          document_type?: string
+          file_path?: string
+          id?: string
+          name?: string
+          property_id?: string
+          upload_date?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_documents_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
