@@ -2,18 +2,19 @@
 import { supabase } from '@/integrations/supabase/client';
 import { PropertyDocument, DocumentType } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
+import { FolderType, DOCUMENT_TYPES } from './document/types';
+import { uploadFile, downloadFile, deleteFile, getFilePublicUrl } from './document/storage';
+import { saveDocumentMetadata, fetchDocumentMetadata, deleteDocumentMetadata } from './document/metadata';
+import { getPropertyFolderStructure, createDocumentPath } from './document/folders';
 
-export type FolderType = DocumentType;
+const STORAGE_BUCKET = 'property_documents';
 
-const DOCUMENT_TYPES: Record<DocumentType, string> = {
-  'lease': 'Lease Documents',
-  'utility': 'Utilities Invoices',
-  'compliance': 'Compliance Documents',
-  'service-charge': 'Service Charge Info',
-  'other': 'Other Documents'
-};
+export { FolderType, DOCUMENT_TYPES };
+export { getPropertyFolderStructure };
 
+/**
+ * Uploads a property document to Supabase Storage and saves its metadata
+ */
 export const uploadPropertyDocument = async (
   propertyId: string,
   file: File,
@@ -35,63 +36,29 @@ export const uploadPropertyDocument = async (
     }
 
     // Create a path with folder structure: property_id/document_type/filename
-    const filePath = `${propertyId}/${documentType}/${file.name}`;
+    const filePath = createDocumentPath(propertyId, documentType, file.name);
     const fileName = name || file.name;
 
     // Upload the file to Supabase Storage
-    const { data: fileData, error: uploadError } = await supabase.storage
-      .from('property_documents')
-      .upload(filePath, file, {
-        upsert: true
-      });
-
-    if (uploadError) {
-      toast({
-        variant: "destructive",
-        title: "Upload failed",
-        description: uploadError.message,
-      });
-      return null;
-    }
+    const uploaded = await uploadFile(STORAGE_BUCKET, filePath, file);
+    if (!uploaded) return null;
 
     // Save document metadata to the database
-    const { data: docData, error: dbError } = await supabase
-      .from('property_documents')
-      .insert({
-        property_id: propertyId,
-        user_id: user.id,
-        name: fileName,
-        description: description || '',
-        file_path: filePath,
-        document_type: documentType
-      })
-      .select()
-      .single();
+    const document = await saveDocumentMetadata(
+      propertyId,
+      user.id,
+      fileName,
+      filePath,
+      documentType,
+      description
+    );
 
-    if (dbError) {
+    if (document) {
       toast({
-        variant: "destructive",
-        title: "Document metadata error",
-        description: dbError.message,
+        title: "Document uploaded",
+        description: `${fileName} has been uploaded successfully.`,
       });
-      return null;
     }
-
-    // Transform to frontend model
-    const document: PropertyDocument = {
-      id: docData.id,
-      propertyId: docData.property_id,
-      name: docData.name,
-      description: docData.description,
-      filePath: docData.file_path,
-      documentType: docData.document_type as DocumentType,
-      uploadDate: docData.upload_date
-    };
-
-    toast({
-      title: "Document uploaded",
-      description: `${fileName} has been uploaded successfully.`,
-    });
 
     return document;
   } catch (error: any) {
@@ -104,119 +71,35 @@ export const uploadPropertyDocument = async (
   }
 };
 
+/**
+ * Fetches property documents from the database
+ */
 export const getPropertyDocuments = async (
   propertyId: string, 
   documentType?: FolderType
 ): Promise<PropertyDocument[]> => {
-  try {
-    let query = supabase
-      .from('property_documents')
-      .select('*')
-      .eq('property_id', propertyId);
-    
-    if (documentType) {
-      query = query.eq('document_type', documentType);
-    }
-    
-    const { data, error } = await query.order('upload_date', { ascending: false });
-    
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Failed to fetch documents",
-        description: error.message,
-      });
-      return [];
-    }
-    
-    // Transform to frontend model
-    return data.map(doc => ({
-      id: doc.id,
-      propertyId: doc.property_id,
-      name: doc.name,
-      description: doc.description,
-      filePath: doc.file_path,
-      documentType: doc.document_type as DocumentType,
-      uploadDate: doc.upload_date
-    }));
-  } catch (error: any) {
-    toast({
-      variant: "destructive",
-      title: "Failed to fetch documents",
-      description: error.message || "An error occurred while fetching documents",
-    });
-    return [];
-  }
+  return fetchDocumentMetadata(propertyId, documentType);
 };
 
+/**
+ * Downloads a document from Supabase Storage
+ */
 export const downloadDocument = async (filePath: string): Promise<void> => {
-  try {
-    const { data, error } = await supabase.storage
-      .from('property_documents')
-      .download(filePath);
-      
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Download failed",
-        description: error.message,
-      });
-      return;
-    }
-    
-    // Create a download link and trigger download
-    const url = URL.createObjectURL(data);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filePath.split('/').pop() || 'document';
-    document.body.appendChild(a);
-    a.click();
-    URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-    
-    toast({
-      title: "Download started",
-      description: "Your document is being downloaded.",
-    });
-  } catch (error: any) {
-    toast({
-      variant: "destructive",
-      title: "Download failed",
-      description: error.message || "An error occurred during download",
-    });
-  }
+  return downloadFile(STORAGE_BUCKET, filePath);
 };
 
+/**
+ * Deletes a document from Supabase Storage and its metadata from the database
+ */
 export const deleteDocument = async (documentId: string, filePath: string): Promise<boolean> => {
   try {
     // Delete from storage
-    const { error: storageError } = await supabase.storage
-      .from('property_documents')
-      .remove([filePath]);
-      
-    if (storageError) {
-      toast({
-        variant: "destructive",
-        title: "Delete failed",
-        description: storageError.message,
-      });
-      return false;
-    }
+    const storageDeleted = await deleteFile(STORAGE_BUCKET, filePath);
+    if (!storageDeleted) return false;
     
     // Delete metadata from database
-    const { error: dbError } = await supabase
-      .from('property_documents')
-      .delete()
-      .eq('id', documentId);
-      
-    if (dbError) {
-      toast({
-        variant: "destructive",
-        title: "Delete failed",
-        description: dbError.message,
-      });
-      return false;
-    }
+    const metadataDeleted = await deleteDocumentMetadata(documentId);
+    if (!metadataDeleted) return false;
     
     toast({
       title: "Document deleted",
@@ -234,19 +117,9 @@ export const deleteDocument = async (documentId: string, filePath: string): Prom
   }
 };
 
+/**
+ * Gets the public URL for a document
+ */
 export const getDocumentPublicUrl = (filePath: string): string => {
-  const { data } = supabase.storage
-    .from('property_documents')
-    .getPublicUrl(filePath);
-    
-  return data.publicUrl;
-};
-
-export const getPropertyFolderStructure = (propertyId: string) => {
-  return Object.entries(DOCUMENT_TYPES).map(([key, label]) => ({
-    id: key,
-    name: label,
-    path: `${propertyId}/${key}`,
-    type: key as FolderType
-  }));
+  return getFilePublicUrl(STORAGE_BUCKET, filePath);
 };

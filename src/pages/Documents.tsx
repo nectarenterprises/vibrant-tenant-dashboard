@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import { cn } from '@/lib/utils';
@@ -16,9 +15,15 @@ import { FileText, Folder, FolderPlus, Upload, Download, Trash2, FileUp, Search,
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/use-toast';
 import { format } from 'date-fns';
-import { FolderType, uploadPropertyDocument, getPropertyDocuments, downloadDocument, deleteDocument, getPropertyFolderStructure } from '@/services/FileStorageService';
+import { 
+  FolderType, 
+  uploadPropertyDocument, 
+  getPropertyDocuments, 
+  downloadDocument, 
+  deleteDocument, 
+  getPropertyFolderStructure 
+} from '@/services/FileStorageService';
 
-// Fetch properties from Supabase
 const fetchProperties = async (userId: string): Promise<Property[]> => {
   const { data, error } = await supabase
     .from('properties')
@@ -52,21 +57,18 @@ const Documents = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Fetch properties
   const { data: properties = [], isLoading: propertiesLoading } = useQuery({
     queryKey: ['properties', user?.id],
     queryFn: () => fetchProperties(user?.id || ''),
     enabled: !!user?.id
   });
 
-  // Fetch documents for selected property and folder
   const { data: documents = [], isLoading: documentsLoading, refetch: refetchDocuments } = useQuery({
     queryKey: ['property-documents', selectedProperty?.id, selectedFolder?.type],
     queryFn: () => getPropertyDocuments(selectedProperty?.id || '', selectedFolder?.type),
     enabled: !!selectedProperty?.id && !!selectedFolder
   });
 
-  // Upload document mutation
   const uploadMutation = useMutation({
     mutationFn: async () => {
       if (!fileUpload || !selectedProperty || !selectedFolder) return null;
@@ -86,7 +88,6 @@ const Documents = () => {
     }
   });
 
-  // Delete document mutation
   const deleteMutation = useMutation({
     mutationFn: async ({ id, filePath }: { id: string; filePath: string }) => {
       return deleteDocument(id, filePath);
@@ -96,14 +97,12 @@ const Documents = () => {
     }
   });
 
-  // Reset upload form
   const resetUploadForm = () => {
     setFileUpload(null);
     setDocumentName('');
     setDocumentDescription('');
   };
 
-  // Filter documents by search query
   const filteredDocuments = searchQuery 
     ? documents.filter(doc => 
         doc.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -111,33 +110,27 @@ const Documents = () => {
       )
     : documents;
 
-  // Get folder structure for selected property
   const folderStructure = selectedProperty 
     ? getPropertyFolderStructure(selectedProperty.id)
     : [];
 
-  // Handle property selection
   const handlePropertySelect = (propertyId: string) => {
     const property = properties.find(p => p.id === propertyId);
     setSelectedProperty(property || null);
     setSelectedFolder(null);
   };
 
-  // Handle folder selection
   const handleFolderSelect = (folder: { id: string; name: string; path: string; type: FolderType }) => {
     setSelectedFolder(folder);
   };
 
-  // Handle file selection for upload
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFileUpload(e.target.files[0]);
-      // Default document name to file name
       setDocumentName(e.target.files[0].name);
     }
   };
 
-  // Handle document upload
   const handleUpload = () => {
     if (!fileUpload) {
       toast({
@@ -151,12 +144,10 @@ const Documents = () => {
     uploadMutation.mutate();
   };
 
-  // Handle document download
   const handleDownload = (document: PropertyDocument) => {
     downloadDocument(document.filePath);
   };
 
-  // Handle document delete
   const handleDelete = (document: PropertyDocument) => {
     if (confirm(`Are you sure you want to delete "${document.name}"?`)) {
       deleteMutation.mutate({ id: document.id, filePath: document.filePath });
@@ -177,9 +168,7 @@ const Documents = () => {
           <h1 className="text-3xl font-bold mb-6">Document Management</h1>
           
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            {/* Properties and Folders Sidebar */}
             <div className="md:col-span-3 space-y-6">
-              {/* Property Selection */}
               <Card>
                 <CardHeader>
                   <CardTitle>Properties</CardTitle>
@@ -212,7 +201,6 @@ const Documents = () => {
                 </CardContent>
               </Card>
               
-              {/* Folder Structure */}
               {selectedProperty && (
                 <Card>
                   <CardHeader>
@@ -238,7 +226,6 @@ const Documents = () => {
               )}
             </div>
             
-            {/* Document List and Management */}
             <div className="md:col-span-9">
               {!selectedProperty ? (
                 <Card className="h-96 flex items-center justify-center text-center">
@@ -357,7 +344,6 @@ const Documents = () => {
                   </CardHeader>
                   
                   <CardContent>
-                    {/* Search */}
                     <div className="relative mb-6">
                       <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -368,7 +354,6 @@ const Documents = () => {
                       />
                     </div>
                     
-                    {/* Document List */}
                     {documentsLoading ? (
                       <div className="flex items-center justify-center h-40">
                         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
