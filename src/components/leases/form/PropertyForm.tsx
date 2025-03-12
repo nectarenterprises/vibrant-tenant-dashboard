@@ -50,15 +50,20 @@ const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
     setIsSubmitting(true);
     
     try {
-      // We need to fix the type error here by not passing the File directly
-      const property = await addProperty({
+      // Fix the type error by properly creating a property object without image field
+      // and then passing the actual File separately
+      const propertyData = {
         name,
         address,
         rentalFee: parseFloat(rentalFee),
         nextPaymentDate: format(nextPaymentDate, 'yyyy-MM-dd'),
         leaseExpiry: format(leaseExpiry, 'yyyy-MM-dd'),
-        // Instead of passing the File directly, we'll handle it in the service
-        image: propertyImage ? 'file_present' : undefined
+      };
+      
+      // Pass the propertyData and the image file separately
+      const property = await addProperty({
+        ...propertyData,
+        image: propertyImage // Pass the actual File object here
       });
       
       if (property) {

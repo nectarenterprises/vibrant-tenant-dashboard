@@ -4,12 +4,15 @@ import { Property } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
 import { uploadPropertyImage, getPropertyImageUrl } from './PropertyImageService';
 
+// Define a more specific type for the property parameter
+interface PropertyInput extends Omit<Property, 'id' | 'createdAt' | 'updatedAt'> {
+  image?: File | null;
+}
+
 /**
  * Adds a new property for the current authenticated user
  */
-export const addProperty = async (
-  property: Omit<Property, 'id' | 'createdAt' | 'updatedAt'> & { image?: File | null }
-): Promise<Property | null> => {
+export const addProperty = async (property: PropertyInput): Promise<Property | null> => {
   try {
     // Get the current user's ID
     const { data: { user } } = await supabase.auth.getUser();
@@ -25,7 +28,7 @@ export const addProperty = async (
 
     // Upload image if provided
     let imagePath = null;
-    if (property.image) {
+    if (property.image instanceof File) {
       imagePath = await uploadPropertyImage(property.image);
     }
 
