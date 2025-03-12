@@ -31,12 +31,17 @@ const DatePickerField = ({ label, selected, onSelect }: DatePickerFieldProps) =>
             {selected ? format(selected, 'PPP') : <span>Pick a date</span>}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 z-50" align="start">
+        <PopoverContent 
+          className="w-auto p-0 z-50" 
+          align="start"
+          sideOffset={4}
+        >
           <Calendar
             mode="single"
             selected={selected}
             onSelect={onSelect}
             initialFocus
+            fixedWeeks={true}
           />
         </PopoverContent>
       </Popover>

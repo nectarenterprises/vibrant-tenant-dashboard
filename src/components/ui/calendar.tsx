@@ -50,6 +50,8 @@ function Calendar({
         day_range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
+        // Add a custom class for the calendar container
+        root: "min-h-[352px]",
         ...classNames,
       }}
       components={{
