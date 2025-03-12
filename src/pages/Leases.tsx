@@ -1,78 +1,59 @@
 
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Sidebar from '@/components/layout/Sidebar';
 import PropertyCard from '@/components/dashboard/PropertyCard';
 import { Property } from '@/types/property';
 import { cn } from '@/lib/utils';
-import { Search } from 'lucide-react';
+import { PlusCircle, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import LeaseDetails from '@/components/leases/LeaseDetails';
-
-// Mock data - using updated London properties with additional details
-const mockProperties: Property[] = [
-  {
-    id: '1',
-    name: 'Victoria Office',
-    address: '123 Buckingham Palace Road, Victoria, London SW1W 9SH',
-    rentalFee: 3500,
-    nextPaymentDate: '2023-04-15',
-    leaseExpiry: '2024-03-31',
-    premisesSchedule: 'The demised premises consists of Suite 301 located on the third floor of the building known as 123 Buckingham Palace Road, Victoria, London SW1W 9SH, with a total rentable area of 140 square metres. The premises includes access to common areas including lobbies, elevators, stairways, and restrooms. Tenant has exclusive use of 2 reserved parking spaces located in the underground parking garage.',
-    incentives: [
-      {
-        type: 'rent-free',
-        description: 'First month rent-free upon lease commencement',
-        value: 3500,
-        period: '1 month'
-      },
-      {
-        type: 'fitout',
-        description: 'Contribution towards office fit-out and customization',
-        value: 12000,
-        period: 'One-time payment'
-      },
-      {
-        type: 'break-option',
-        description: 'Option to terminate lease after 6 months with 60 days notice',
-        period: 'After 6 months'
-      }
-    ]
-  },
-  {
-    id: '2',
-    name: 'Covent Garden Retail',
-    address: '45 Long Acre, Covent Garden, London WC2E 9JT',
-    rentalFee: 4200,
-    nextPaymentDate: '2023-04-10',
-    leaseExpiry: '2023-12-31',
-    premisesSchedule: 'The premises consists of a ground floor retail unit with approximately 205 square metres of usable space at 45 Long Acre, Covent Garden, London WC2E 9JT. The unit includes a main retail area, storage room, and staff facilities. Tenant has access to the service corridor at the rear of the building for deliveries and waste disposal. The premises includes the right to install and maintain signage on the building façade subject to landlord approval and local regulations.',
-    incentives: [
-      {
-        type: 'rent-free',
-        description: 'Three months rent-free period',
-        value: 12600,
-        period: '3 months'
-      },
-      {
-        type: 'other',
-        description: 'Reduced service charge in year one (50% discount)',
-        value: 6000,
-        period: '12 months'
-      }
-    ]
-  }
-];
+import AddPropertyDialog from '@/components/leases/AddPropertyDialog';
+import { fetchUserProperties } from '@/services/PropertyService';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Leases = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const { user } = useAuth();
   
-  // Filter properties based on search query
-  const filteredProperties = mockProperties.filter(property => 
-    property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    property.address.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Fetch properties from Supabase
+  const { data: properties = [], isLoading } = useQuery({
+    queryKey: ['properties'],
+    queryFn: fetchUserProperties,
+    enabled: !!user
+  });
+  
+  // Filter properties based on search query and remove duplicates
+  const filteredProperties = properties
+    .reduce((acc: Property[], current) => {
+      const x = acc.find(item => 
+        item.name === current.name && 
+        item.address === current.address
+      );
+      if (!x) {
+        return acc.concat([current]);
+      } else {
+        return acc;
+      }
+    }, [])
+    .filter(property => 
+      property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      property.address.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+  // If not logged in, show login prompt
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-screen flex-col gap-4">
+        <h1 className="text-2xl font-bold">Please log in to view your leases</h1>
+        <p>You need to be logged in to access your property leases.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -85,21 +66,35 @@ const Leases = () => {
         )}
       >
         <div className="container mx-auto p-6">
-          <h1 className="text-3xl font-bold mb-6">Leases</h1>
-          
-          {/* Search Bar */}
-          <div className="relative mb-6">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <Search className="h-5 w-5 text-muted-foreground" />
-            </div>
-            <Input
-              type="text"
-              placeholder="Search properties..."
-              className="pl-10 bg-background"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">Leases</h1>
+            
+            {!selectedProperty && (
+              <Button 
+                onClick={() => setShowAddDialog(true)}
+                className="flex items-center gap-2"
+              >
+                <PlusCircle className="h-5 w-5" />
+                Add Property
+              </Button>
+            )}
           </div>
+          
+          {/* Search Bar (only show when no property is selected) */}
+          {!selectedProperty && (
+            <div className="relative mb-6">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <Search className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <Input
+                type="text"
+                placeholder="Search properties..."
+                className="pl-10 bg-background"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          )}
 
           {selectedProperty ? (
             <div>
@@ -112,30 +107,55 @@ const Leases = () => {
               <LeaseDetails property={selectedProperty} />
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProperties.length > 0 ? (
-                filteredProperties.map((property, index) => (
-                  <div 
-                    key={property.id} 
-                    className="cursor-pointer transition-transform hover:scale-[1.02]"
-                    onClick={() => setSelectedProperty(property)}
-                  >
-                    <PropertyCard 
-                      property={property} 
-                      delay={index} 
-                    />
-                  </div>
-                ))
+            <>
+              {isLoading ? (
+                <div className="flex items-center justify-center h-60">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                </div>
+              ) : filteredProperties.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredProperties.map((property, index) => (
+                    <div 
+                      key={property.id} 
+                      className="cursor-pointer transition-transform hover:scale-[1.02]"
+                      onClick={() => setSelectedProperty(property)}
+                    >
+                      <PropertyCard 
+                        property={property} 
+                        delay={index} 
+                      />
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <div className="col-span-full flex flex-col items-center justify-center py-12 text-muted-foreground">
                   <Search className="h-12 w-12 mb-4 opacity-50" />
-                  <p>No properties found matching "{searchQuery}"</p>
+                  {searchQuery ? (
+                    <p>No properties found matching "{searchQuery}"</p>
+                  ) : (
+                    <div className="text-center">
+                      <p className="mb-4">No properties found</p>
+                      <Button 
+                        onClick={() => setShowAddDialog(true)}
+                        className="flex items-center gap-2"
+                      >
+                        <PlusCircle className="h-5 w-5" />
+                        Add Your First Property
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
       </main>
+      
+      {/* Add Property Dialog */}
+      <AddPropertyDialog 
+        open={showAddDialog} 
+        onOpenChange={setShowAddDialog} 
+      />
     </div>
   );
 };

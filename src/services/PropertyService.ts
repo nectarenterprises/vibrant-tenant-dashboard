@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Property, EventData } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Fetches all properties for the current authenticated user
@@ -44,7 +45,8 @@ export const fetchUserProperties = async (): Promise<Property[]> => {
       nextPaymentDate: property.next_payment_date,
       leaseExpiry: property.lease_expiry,
       createdAt: property.created_at,
-      updatedAt: property.updated_at
+      updatedAt: property.updated_at,
+      image: property.image_path ? getPropertyImageUrl(property.image_path) : undefined
     }));
     
     // Remove any duplicates based on id
@@ -103,9 +105,58 @@ export const fetchPropertyEvents = async (): Promise<EventData[]> => {
 };
 
 /**
+ * Gets the public URL for a property image
+ */
+export const getPropertyImageUrl = (imagePath: string): string => {
+  const { data } = supabase.storage
+    .from('property-files')
+    .getPublicUrl(imagePath);
+    
+  return data.publicUrl;
+};
+
+/**
+ * Uploads a property image to Supabase Storage
+ */
+export const uploadPropertyImage = async (file: File): Promise<string | null> => {
+  try {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${uuidv4()}.${fileExt}`;
+    const filePath = `images/${fileName}`;
+    
+    const { data, error } = await supabase.storage
+      .from('property-files')
+      .upload(filePath, file, {
+        upsert: true,
+        contentType: file.type
+      });
+    
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Image upload failed",
+        description: error.message,
+      });
+      return null;
+    }
+    
+    return filePath;
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Image upload failed",
+      description: error.message || "An error occurred during upload",
+    });
+    return null;
+  }
+};
+
+/**
  * Adds a new property for the current authenticated user
  */
-export const addProperty = async (property: Omit<Property, 'id' | 'createdAt' | 'updatedAt'>): Promise<Property | null> => {
+export const addProperty = async (
+  property: Omit<Property, 'id' | 'createdAt' | 'updatedAt'> & { image?: File | null }
+): Promise<Property | null> => {
   try {
     // Get the current user's ID
     const { data: { user } } = await supabase.auth.getUser();
@@ -119,6 +170,12 @@ export const addProperty = async (property: Omit<Property, 'id' | 'createdAt' | 
       return null;
     }
 
+    // Upload image if provided
+    let imagePath = null;
+    if (property.image) {
+      imagePath = await uploadPropertyImage(property.image);
+    }
+
     const { data, error } = await supabase
       .from('properties')
       .insert({
@@ -127,7 +184,8 @@ export const addProperty = async (property: Omit<Property, 'id' | 'createdAt' | 
         rental_fee: property.rentalFee,
         next_payment_date: property.nextPaymentDate,
         lease_expiry: property.leaseExpiry,
-        user_id: user.id
+        user_id: user.id,
+        image_path: imagePath
       })
       .select()
       .single();
@@ -155,7 +213,8 @@ export const addProperty = async (property: Omit<Property, 'id' | 'createdAt' | 
       nextPaymentDate: data.next_payment_date,
       leaseExpiry: data.lease_expiry,
       createdAt: data.created_at,
-      updatedAt: data.updated_at
+      updatedAt: data.updated_at,
+      image: data.image_path ? getPropertyImageUrl(data.image_path) : undefined
     };
   } catch (error: any) {
     toast({
