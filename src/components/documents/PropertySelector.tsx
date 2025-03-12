@@ -18,6 +18,16 @@ const PropertySelector = ({
   isLoading, 
   onSelectProperty 
 }: PropertySelectorProps) => {
+  // Filter out duplicate properties based on their ID
+  const uniqueProperties = properties.reduce((acc: Property[], current) => {
+    const x = acc.find(item => item.id === current.id);
+    if (!x) {
+      return acc.concat([current]);
+    } else {
+      return acc;
+    }
+  }, []);
+
   return (
     <Card>
       <CardHeader>
@@ -29,13 +39,13 @@ const PropertySelector = ({
           <div className="flex items-center justify-center h-40">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
           </div>
-        ) : properties.length === 0 ? (
+        ) : uniqueProperties.length === 0 ? (
           <div className="text-center py-4">
             <p className="text-muted-foreground">No properties found</p>
           </div>
         ) : (
           <div className="space-y-2">
-            {properties.map(property => (
+            {uniqueProperties.map(property => (
               <Button
                 key={property.id}
                 variant={selectedProperty?.id === property.id ? "default" : "outline"}

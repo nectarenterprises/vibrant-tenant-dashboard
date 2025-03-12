@@ -36,7 +36,7 @@ export const fetchUserProperties = async (): Promise<Property[]> => {
     }
     
     // Transform to frontend model
-    return data.map(property => ({
+    const transformedProperties = data.map(property => ({
       id: property.id,
       name: property.name,
       address: property.address,
@@ -46,6 +46,18 @@ export const fetchUserProperties = async (): Promise<Property[]> => {
       createdAt: property.created_at,
       updatedAt: property.updated_at
     }));
+    
+    // Remove any duplicates based on id
+    const uniqueProperties = transformedProperties.reduce((acc: Property[], current) => {
+      const x = acc.find(item => item.id === current.id);
+      if (!x) {
+        return acc.concat([current]);
+      } else {
+        return acc;
+      }
+    }, []);
+    
+    return uniqueProperties;
   } catch (error: any) {
     toast({
       variant: "destructive",

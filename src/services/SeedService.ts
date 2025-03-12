@@ -24,9 +24,8 @@ export const seedInitialData = async (): Promise<void> => {
     // Check if user already has properties
     const { data: existingProperties, error: checkError } = await supabase
       .from('properties')
-      .select('id')
-      .eq('user_id', user.id)
-      .limit(1);
+      .select('name, address')
+      .eq('user_id', user.id);
     
     if (checkError) {
       console.error('Error checking for existing properties:', checkError);
