@@ -17,7 +17,7 @@ interface DatePickerFieldProps {
 const DatePickerField = ({ label, selected, onSelect }: DatePickerFieldProps) => {
   return (
     <div className="grid grid-cols-1 gap-3">
-      <Label>{label}</Label>
+      {label && <Label>{label}</Label>}
       <Popover>
         <PopoverTrigger asChild>
           <Button
