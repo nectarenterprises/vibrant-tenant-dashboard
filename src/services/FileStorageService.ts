@@ -1,16 +1,16 @@
 
-import { supabase } from '@/integrations/supabase/client';
-import { PropertyDocument, DocumentType } from '@/types/property';
+import { PropertyDocument } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
-import { FolderType, DOCUMENT_TYPES } from './document/types';
 import { uploadFile, downloadFile, deleteFile, getFilePublicUrl } from './document/storage';
 import { saveDocumentMetadata, fetchDocumentMetadata, deleteDocumentMetadata } from './document/metadata';
 import { getPropertyFolderStructure, createDocumentPath } from './document/folders';
+import { FolderType, DOCUMENT_TYPES } from './document/types';
 
 const STORAGE_BUCKET = 'property_documents';
 
-export { FolderType, DOCUMENT_TYPES };
-export { getPropertyFolderStructure };
+// Re-export types and functions
+export type { FolderType };
+export { DOCUMENT_TYPES, getPropertyFolderStructure };
 
 /**
  * Uploads a property document to Supabase Storage and saves its metadata
@@ -23,19 +23,7 @@ export const uploadPropertyDocument = async (
   description?: string
 ): Promise<PropertyDocument | null> => {
   try {
-    // Get the current user
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      toast({
-        variant: "destructive",
-        title: "Authentication error",
-        description: "User not authenticated",
-      });
-      return null;
-    }
-
-    // Create a path with folder structure: property_id/document_type/filename
+    // Get file path
     const filePath = createDocumentPath(propertyId, documentType, file.name);
     const fileName = name || file.name;
 
@@ -46,7 +34,6 @@ export const uploadPropertyDocument = async (
     // Save document metadata to the database
     const document = await saveDocumentMetadata(
       propertyId,
-      user.id,
       fileName,
       filePath,
       documentType,
