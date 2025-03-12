@@ -1,17 +1,16 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { PropertyDocument, DocumentType } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
+import { FolderType } from './types';
 
 /**
  * Saves document metadata to the database
  */
 export const saveDocumentMetadata = async (
   propertyId: string,
-  userId: string,
   fileName: string,
   filePath: string,
-  documentType: DocumentType,
+  documentType: FolderType,
   description?: string
 ): Promise<PropertyDocument | null> => {
   try {
@@ -19,7 +18,6 @@ export const saveDocumentMetadata = async (
       .from('property_documents')
       .insert({
         property_id: propertyId,
-        user_id: userId,
         name: fileName,
         description: description || '',
         file_path: filePath,
