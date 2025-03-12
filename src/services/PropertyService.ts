@@ -213,8 +213,8 @@ export const addProperty = async (
   } catch (error: any) {
     toast({
       variant: "destructive",
-        title: "Failed to add property",
-        description: error.message || "An error occurred while adding the property",
+      title: "Failed to add property",
+      description: error.message || "An error occurred while adding the property",
     });
     return null;
   }

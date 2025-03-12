@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -53,7 +52,6 @@ const AddPropertyDialog = ({ open, onOpenChange }: AddPropertyDialogProps) => {
     setIsSubmitting(true);
     
     try {
-      // Fixed: Pass the File object directly as image without casting issues
       const property = await addProperty({
         name,
         address,
@@ -90,7 +88,6 @@ const AddPropertyDialog = ({ open, onOpenChange }: AddPropertyDialogProps) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      // Check file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
         toast({
           variant: "destructive",
