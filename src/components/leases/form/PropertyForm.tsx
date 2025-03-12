@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -65,10 +64,8 @@ const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
           description: `${name} has been added successfully.`,
         });
         
-        // Refresh the properties list
         queryClient.invalidateQueries({ queryKey: ['properties'] });
         
-        // Reset form and close dialog
         resetForm();
         onSuccess();
       }
