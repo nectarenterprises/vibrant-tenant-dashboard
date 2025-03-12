@@ -15,6 +15,8 @@ import IncentivesSection from './sections/IncentivesSection';
 import PropertyDialog from './dialogs/PropertyDialog';
 import TenantDialog from './dialogs/TenantDialog';
 import DocumentDialog from './dialogs/DocumentDialog';
+import PremisesScheduleDialog from './dialogs/PremisesScheduleDialog';
+import IncentivesDialog from './dialogs/IncentivesDialog';
 
 interface LeaseDetailsProps {
   property: Property;
@@ -36,9 +38,14 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
   const [contactEmail, setContactEmail] = useState<string>('');
   const [contactPhone, setContactPhone] = useState<string>('');
   
+  const [premisesSchedule, setPremisesSchedule] = useState<string>(property.premisesSchedule || '');
+  const [incentives, setIncentives] = useState(property.incentives || []);
+  
   const [showPropertyDialog, setShowPropertyDialog] = useState(false);
   const [showTenantDialog, setShowTenantDialog] = useState(false);
   const [showDocumentDialog, setShowDocumentDialog] = useState(false);
+  const [showPremisesDialog, setShowPremisesDialog] = useState(false);
+  const [showIncentivesDialog, setShowIncentivesDialog] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [documentType, setDocumentType] = useState<'lease' | 'utility' | 'compliance' | 'service-charge' | 'other'>('lease');
   const [documentName, setDocumentName] = useState('');
@@ -52,9 +59,7 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
     address, 
     rentalFee, 
     nextPaymentDate, 
-    leaseExpiry, 
-    premisesSchedule, 
-    incentives = [] 
+    leaseExpiry,
   } = property;
   
   // Handle document upload success
@@ -158,12 +163,34 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
             onDocumentUploaded={handleDocumentUploaded}
           />
           
+          <PremisesScheduleDialog
+            showPremisesDialog={showPremisesDialog}
+            setShowPremisesDialog={setShowPremisesDialog}
+            premisesSchedule={premisesSchedule}
+            setPremisesSchedule={setPremisesSchedule}
+            propertyId={propertyId}
+          />
+          
+          <IncentivesDialog 
+            showIncentivesDialog={showIncentivesDialog}
+            setShowIncentivesDialog={setShowIncentivesDialog}
+            incentives={incentives}
+            setIncentives={setIncentives}
+            propertyId={propertyId}
+          />
+          
           <div className="mt-6">
-            <PremisesScheduleSection premisesSchedule={premisesSchedule} />
+            <PremisesScheduleSection 
+              premisesSchedule={premisesSchedule} 
+              setShowPremisesDialog={setShowPremisesDialog}
+            />
           </div>
           
           <div className="mt-6">
-            <IncentivesSection incentives={incentives} />
+            <IncentivesSection 
+              incentives={incentives} 
+              setShowIncentivesDialog={setShowIncentivesDialog}
+            />
           </div>
         </CardContent>
       </Card>

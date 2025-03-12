@@ -2,11 +2,13 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Gift, Building, Scissors, DollarSign } from 'lucide-react';
+import { Gift, Building, Scissors, DollarSign, Edit, PlusCircle } from 'lucide-react';
 import { Incentive } from '@/types/property';
+import { Button } from '@/components/ui/button';
 
 interface IncentivesSectionProps {
   incentives?: Incentive[];
+  setShowIncentivesDialog: (show: boolean) => void;
 }
 
 const IncentiveIcon = ({ type }: { type: Incentive['type'] }) => {
@@ -22,12 +24,22 @@ const IncentiveIcon = ({ type }: { type: Incentive['type'] }) => {
   }
 };
 
-const IncentivesSection = ({ incentives = [] }: IncentivesSectionProps) => {
+const IncentivesSection = ({ incentives = [], setShowIncentivesDialog }: IncentivesSectionProps) => {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Lease Incentives</CardTitle>
-        <CardDescription>Special terms and benefits included in the lease</CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div>
+          <CardTitle>Lease Incentives</CardTitle>
+          <CardDescription>Special terms and benefits included in the lease</CardDescription>
+        </div>
+        <Button 
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8"
+          onClick={() => setShowIncentivesDialog(true)}
+        >
+          {incentives && incentives.length > 0 ? <Edit className="h-4 w-4" /> : <PlusCircle className="h-4 w-4" />}
+        </Button>
       </CardHeader>
       <CardContent>
         {incentives && incentives.length > 0 ? (
@@ -61,7 +73,18 @@ const IncentivesSection = ({ incentives = [] }: IncentivesSectionProps) => {
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground italic">No incentives defined for this lease</p>
+          <div className="flex flex-col items-center justify-center p-6 text-center space-y-4 border border-dashed border-gray-200 rounded-md">
+            <p className="text-muted-foreground italic">No incentives defined for this lease</p>
+            <Button 
+              variant="outline"
+              size="sm"
+              className="mt-2"
+              onClick={() => setShowIncentivesDialog(true)}
+            >
+              <PlusCircle className="h-4 w-4 mr-2" />
+              Add Lease Incentives
+            </Button>
+          </div>
         )}
       </CardContent>
     </Card>
