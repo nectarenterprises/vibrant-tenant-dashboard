@@ -4,8 +4,14 @@ import { Property } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
 import { uploadPropertyImage, getPropertyImageUrl } from './PropertyImageService';
 
-// Define a more specific type for the property parameter
-interface PropertyInput extends Omit<Property, 'id' | 'createdAt' | 'updatedAt'> {
+// Define a new interface for property input that doesn't extend Property
+// This avoids the type conflict with the image field
+interface PropertyInput {
+  name: string;
+  address: string;
+  rentalFee: number;
+  nextPaymentDate: string;
+  leaseExpiry: string;
   image?: File | null;
 }
 

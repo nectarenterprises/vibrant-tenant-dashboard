@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,20 +49,13 @@ const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
     setIsSubmitting(true);
     
     try {
-      // Fix the type error by properly creating a property object without image field
-      // and then passing the actual File separately
-      const propertyData = {
+      const property = await addProperty({
         name,
         address,
         rentalFee: parseFloat(rentalFee),
         nextPaymentDate: format(nextPaymentDate, 'yyyy-MM-dd'),
         leaseExpiry: format(leaseExpiry, 'yyyy-MM-dd'),
-      };
-      
-      // Pass the propertyData and the image file separately
-      const property = await addProperty({
-        ...propertyData,
-        image: propertyImage // Pass the actual File object here
+        image: propertyImage
       });
       
       if (property) {
