@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Property, EventData, Incentive } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
@@ -79,10 +78,15 @@ const parseIncentives = (incentivesJson: any): Incentive[] => {
   if (!incentivesJson) return [];
   
   try {
-    if (Array.isArray(incentivesJson)) {
-      return incentivesJson as Incentive[];
+    // If it's already a string, parse it
+    if (typeof incentivesJson === 'string') {
+      return JSON.parse(incentivesJson);
     }
-    return JSON.parse(incentivesJson);
+    // If it's already an array, return it
+    if (Array.isArray(incentivesJson)) {
+      return incentivesJson;
+    }
+    return [];
   } catch (e) {
     console.error('Error parsing incentives:', e);
     return [];
