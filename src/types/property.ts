@@ -39,12 +39,14 @@ export interface EventData {
   propertyName?: string;
 }
 
+export type DocumentType = 'lease' | 'utility' | 'compliance' | 'service-charge' | 'other';
+
 export interface PropertyDocument {
   id: string;
   propertyId: string;
   name: string;
   description?: string;
   filePath: string;
-  documentType: 'lease' | 'utility' | 'compliance' | 'service-charge' | 'other';
+  documentType: DocumentType;
   uploadDate: string;
 }

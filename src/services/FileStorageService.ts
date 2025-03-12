@@ -1,11 +1,12 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { PropertyDocument } from '@/types/property';
+import { PropertyDocument, DocumentType } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
-export type FolderType = 'lease' | 'utility' | 'compliance' | 'service-charge' | 'other';
+export type FolderType = DocumentType;
 
-const DOCUMENT_TYPES = {
+const DOCUMENT_TYPES: Record<DocumentType, string> = {
   'lease': 'Lease Documents',
   'utility': 'Utilities Invoices',
   'compliance': 'Compliance Documents',
@@ -21,6 +22,18 @@ export const uploadPropertyDocument = async (
   description?: string
 ): Promise<PropertyDocument | null> => {
   try {
+    // Get the current user
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Authentication error",
+        description: "User not authenticated",
+      });
+      return null;
+    }
+
     // Create a path with folder structure: property_id/document_type/filename
     const filePath = `${propertyId}/${documentType}/${file.name}`;
     const fileName = name || file.name;
@@ -46,6 +59,7 @@ export const uploadPropertyDocument = async (
       .from('property_documents')
       .insert({
         property_id: propertyId,
+        user_id: user.id,
         name: fileName,
         description: description || '',
         file_path: filePath,
@@ -70,7 +84,7 @@ export const uploadPropertyDocument = async (
       name: docData.name,
       description: docData.description,
       filePath: docData.file_path,
-      documentType: docData.document_type,
+      documentType: docData.document_type as DocumentType,
       uploadDate: docData.upload_date
     };
 
@@ -122,7 +136,7 @@ export const getPropertyDocuments = async (
       name: doc.name,
       description: doc.description,
       filePath: doc.file_path,
-      documentType: doc.document_type,
+      documentType: doc.document_type as DocumentType,
       uploadDate: doc.upload_date
     }));
   } catch (error: any) {
