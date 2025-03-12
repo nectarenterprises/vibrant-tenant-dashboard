@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Property, EventData } from '@/types/property';
+import { Property, EventData, Incentive } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
 import { getPropertyImageUrl } from './PropertyImageService';
 
@@ -44,8 +44,8 @@ export const fetchUserProperties = async (): Promise<Property[]> => {
       rentalFee: Number(property.rental_fee),
       nextPaymentDate: property.next_payment_date,
       leaseExpiry: property.lease_expiry,
-      premisesSchedule: property.premises_schedule,
-      incentives: property.incentives,
+      premisesSchedule: property.premises_schedule || '',
+      incentives: parseIncentives(property.incentives),
       createdAt: property.created_at,
       updatedAt: property.updated_at,
       image: property.image_path ? getPropertyImageUrl(property.image_path) : undefined
@@ -68,6 +68,23 @@ export const fetchUserProperties = async (): Promise<Property[]> => {
       title: "Failed to fetch properties",
       description: error.message || "An error occurred while fetching properties",
     });
+    return [];
+  }
+};
+
+/**
+ * Parse the incentives from JSON to Incentive array
+ */
+const parseIncentives = (incentivesJson: any): Incentive[] => {
+  if (!incentivesJson) return [];
+  
+  try {
+    if (Array.isArray(incentivesJson)) {
+      return incentivesJson as Incentive[];
+    }
+    return JSON.parse(incentivesJson);
+  } catch (e) {
+    console.error('Error parsing incentives:', e);
     return [];
   }
 };

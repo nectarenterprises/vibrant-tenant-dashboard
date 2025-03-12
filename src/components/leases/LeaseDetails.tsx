@@ -1,122 +1,147 @@
 
-import React, { useState, useEffect } from 'react';
-import { Property } from '@/types/property';
+import React from 'react';
+import { Property, Incentive, DocumentType } from '@/types/property';
 import { Card, CardContent } from '@/components/ui/card';
-
-// Import our component sections
-import LeaseOverview from './sections/LeaseOverview';
-import TenantDetails from './sections/TenantDetails';
-import DocumentsSection from './sections/DocumentsSection';
-import PropertyDetailsSection from './sections/PropertyDetailsSection';
-import PremisesScheduleSection from './sections/PremisesScheduleSection';
-import IncentivesSection from './sections/IncentivesSection';
-
-// Import our dialog components
-import PropertyDialog from './dialogs/PropertyDialog';
-import TenantDialog from './dialogs/TenantDialog';
-import DocumentDialog from './dialogs/DocumentDialog';
-import PremisesScheduleDialog from './dialogs/PremisesScheduleDialog';
-import IncentivesDialog from './dialogs/IncentivesDialog';
+import LeaseContent from './LeaseContent';
+import LeaseDialogs from './LeaseDialogs';
 
 interface LeaseDetailsProps {
   property: Property;
+  propertyType: string;
+  floorArea: string;
+  yearBuilt: string;
+  parkingSpaces: string;
+  leaseType: string;
+  leaseStart: Date | undefined;
+  leaseDuration: string;
+  securityDeposit: string;
+  tenantName: string;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  premisesSchedule: string;
+  incentives: Incentive[];
+  showPropertyDialog: boolean;
+  showTenantDialog: boolean;
+  showDocumentDialog: boolean;
+  showPremisesDialog: boolean;
+  showIncentivesDialog: boolean;
+  selectedFile: File | null;
+  documentType: DocumentType;
+  documentName: string;
+  refreshDocuments: number;
+  setPropertyType: (type: string) => void;
+  setFloorArea: (area: string) => void;
+  setYearBuilt: (year: string) => void;
+  setParkingSpaces: (spaces: string) => void;
+  setLeaseType: (type: string) => void;
+  setLeaseStart: (date: Date | undefined) => void;
+  setLeaseDuration: (duration: string) => void;
+  setSecurityDeposit: (deposit: string) => void;
+  setTenantName: (name: string) => void;
+  setContactName: (name: string) => void;
+  setContactEmail: (email: string) => void;
+  setContactPhone: (phone: string) => void;
+  setPremisesSchedule: (schedule: string) => void;
+  setIncentives: (incentives: Incentive[]) => void;
+  setShowPropertyDialog: (show: boolean) => void;
+  setShowTenantDialog: (show: boolean) => void;
+  setShowDocumentDialog: (show: boolean) => void;
+  setShowPremisesDialog: (show: boolean) => void;
+  setShowIncentivesDialog: (show: boolean) => void;
+  setSelectedFile: (file: File | null) => void;
+  setDocumentType: (type: DocumentType) => void;
+  setDocumentName: (name: string) => void;
+  onDocumentUploaded: () => void;
 }
 
-const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
-  const [propertyType, setPropertyType] = useState<string>('');
-  const [floorArea, setFloorArea] = useState<string>('');
-  const [yearBuilt, setYearBuilt] = useState<string>('');
-  const [parkingSpaces, setParkingSpaces] = useState<string>('');
-  
-  const [leaseType, setLeaseType] = useState<string>('');
-  const [leaseStart, setLeaseStart] = useState<Date | undefined>(undefined);
-  const [leaseDuration, setLeaseDuration] = useState<string>('');
-  const [securityDeposit, setSecurityDeposit] = useState<string>('');
-  
-  const [tenantName, setTenantName] = useState<string>('');
-  const [contactName, setContactName] = useState<string>('');
-  const [contactEmail, setContactEmail] = useState<string>('');
-  const [contactPhone, setContactPhone] = useState<string>('');
-  
-  const [premisesSchedule, setPremisesSchedule] = useState<string>(property.premisesSchedule || '');
-  const [incentives, setIncentives] = useState(property.incentives || []);
-  
-  const [showPropertyDialog, setShowPropertyDialog] = useState(false);
-  const [showTenantDialog, setShowTenantDialog] = useState(false);
-  const [showDocumentDialog, setShowDocumentDialog] = useState(false);
-  const [showPremisesDialog, setShowPremisesDialog] = useState(false);
-  const [showIncentivesDialog, setShowIncentivesDialog] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [documentType, setDocumentType] = useState<'lease' | 'utility' | 'compliance' | 'service-charge' | 'other'>('lease');
-  const [documentName, setDocumentName] = useState('');
-  
-  // State for refreshing documents
-  const [refreshDocuments, setRefreshDocuments] = useState(0);
-  
-  const { 
-    id: propertyId,
-    name, 
-    address, 
-    rentalFee, 
-    nextPaymentDate, 
-    leaseExpiry,
-  } = property;
-  
-  // Handle document upload success
-  const handleDocumentUploaded = () => {
-    setRefreshDocuments(prev => prev + 1);
-  };
-  
+const LeaseDetails: React.FC<LeaseDetailsProps> = ({ 
+  property,
+  propertyType,
+  floorArea,
+  yearBuilt,
+  parkingSpaces,
+  leaseType,
+  leaseStart,
+  leaseDuration,
+  securityDeposit,
+  tenantName,
+  contactName,
+  contactEmail,
+  contactPhone,
+  premisesSchedule,
+  incentives,
+  showPropertyDialog,
+  showTenantDialog,
+  showDocumentDialog,
+  showPremisesDialog,
+  showIncentivesDialog,
+  selectedFile,
+  documentType,
+  documentName,
+  refreshDocuments,
+  setPropertyType,
+  setFloorArea,
+  setYearBuilt,
+  setParkingSpaces,
+  setLeaseType,
+  setLeaseStart,
+  setLeaseDuration,
+  setSecurityDeposit,
+  setTenantName,
+  setContactName,
+  setContactEmail,
+  setContactPhone,
+  setPremisesSchedule,
+  setIncentives,
+  setShowPropertyDialog,
+  setShowTenantDialog,
+  setShowDocumentDialog,
+  setShowPremisesDialog,
+  setShowIncentivesDialog,
+  setSelectedFile,
+  setDocumentType,
+  setDocumentName,
+  onDocumentUploaded
+}) => {
   return (
     <div className="space-y-6 animate-fade-in">
       <Card className="overflow-hidden">
         <div className="h-48 mellow-gradient relative">
           <div className="absolute inset-0 bg-[url('/placeholder.svg')] bg-cover bg-center mix-blend-overlay opacity-30"></div>
           <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black/60 to-transparent">
-            <h2 className="text-white font-bold text-2xl">{name}</h2>
-            <p className="text-white/90">{address}</p>
+            <h2 className="text-white font-bold text-2xl">{property.name}</h2>
+            <p className="text-white/90">{property.address}</p>
           </div>
         </div>
         
         <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <LeaseOverview 
-              rentalFee={rentalFee} 
-              nextPaymentDate={nextPaymentDate}
-              leaseExpiry={leaseExpiry}
-            />
-            
-            <TenantDetails 
-              tenantName={tenantName}
-              contactName={contactName}
-              contactEmail={contactEmail}
-              contactPhone={contactPhone}
-              setShowTenantDialog={setShowTenantDialog}
-            />
-            
-            <DocumentsSection 
-              setShowDocumentDialog={setShowDocumentDialog}
-              propertyId={propertyId}
-              key={`docs-${refreshDocuments}`}
-            />
-          </div>
+          <LeaseContent 
+            property={property}
+            tenantName={tenantName}
+            contactName={contactName}
+            contactEmail={contactEmail}
+            contactPhone={contactPhone}
+            premisesSchedule={premisesSchedule}
+            incentives={incentives}
+            propertyType={propertyType}
+            floorArea={floorArea}
+            yearBuilt={yearBuilt}
+            parkingSpaces={parkingSpaces}
+            leaseType={leaseType}
+            leaseStart={leaseStart}
+            leaseDuration={leaseDuration}
+            securityDeposit={securityDeposit}
+            refreshDocuments={refreshDocuments}
+            setShowTenantDialog={setShowTenantDialog}
+            setShowDocumentDialog={setShowDocumentDialog}
+            setShowPropertyDialog={setShowPropertyDialog}
+            setShowPremisesDialog={setShowPremisesDialog}
+            setShowIncentivesDialog={setShowIncentivesDialog}
+          />
           
-          <div className="mt-6">
-            <PropertyDetailsSection 
-              propertyType={propertyType}
-              floorArea={floorArea}
-              yearBuilt={yearBuilt}
-              parkingSpaces={parkingSpaces}
-              leaseType={leaseType}
-              leaseStart={leaseStart}
-              leaseDuration={leaseDuration}
-              securityDeposit={securityDeposit}
-              setShowPropertyDialog={setShowPropertyDialog}
-            />
-          </div>
-          
-          {/* Dialogs */}
-          <PropertyDialog 
+          <LeaseDialogs 
+            propertyId={property.id}
             showPropertyDialog={showPropertyDialog}
             setShowPropertyDialog={setShowPropertyDialog}
             propertyType={propertyType}
@@ -135,9 +160,6 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
             setLeaseDuration={setLeaseDuration}
             securityDeposit={securityDeposit}
             setSecurityDeposit={setSecurityDeposit}
-          />
-          
-          <TenantDialog 
             showTenantDialog={showTenantDialog}
             setShowTenantDialog={setShowTenantDialog}
             tenantName={tenantName}
@@ -148,9 +170,6 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
             setContactEmail={setContactEmail}
             contactPhone={contactPhone}
             setContactPhone={setContactPhone}
-          />
-          
-          <DocumentDialog 
             showDocumentDialog={showDocumentDialog}
             setShowDocumentDialog={setShowDocumentDialog}
             selectedFile={selectedFile}
@@ -159,39 +178,16 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
             setDocumentType={setDocumentType}
             documentName={documentName}
             setDocumentName={setDocumentName}
-            propertyId={propertyId}
-            onDocumentUploaded={handleDocumentUploaded}
-          />
-          
-          <PremisesScheduleDialog
+            onDocumentUploaded={onDocumentUploaded}
             showPremisesDialog={showPremisesDialog}
             setShowPremisesDialog={setShowPremisesDialog}
             premisesSchedule={premisesSchedule}
             setPremisesSchedule={setPremisesSchedule}
-            propertyId={propertyId}
-          />
-          
-          <IncentivesDialog 
             showIncentivesDialog={showIncentivesDialog}
             setShowIncentivesDialog={setShowIncentivesDialog}
             incentives={incentives}
             setIncentives={setIncentives}
-            propertyId={propertyId}
           />
-          
-          <div className="mt-6">
-            <PremisesScheduleSection 
-              premisesSchedule={premisesSchedule} 
-              setShowPremisesDialog={setShowPremisesDialog}
-            />
-          </div>
-          
-          <div className="mt-6">
-            <IncentivesSection 
-              incentives={incentives} 
-              setShowIncentivesDialog={setShowIncentivesDialog}
-            />
-          </div>
         </CardContent>
       </Card>
     </div>

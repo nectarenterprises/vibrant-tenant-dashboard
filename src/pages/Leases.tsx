@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Sidebar from '@/components/layout/Sidebar';
@@ -8,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { PlusCircle, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import LeaseDetails from '@/components/leases/LeaseDetails';
+import LeaseDetailsContainer from '@/components/leases/LeaseDetailsContainer';
 import AddPropertyDialog from '@/components/leases/AddPropertyDialog';
 import { fetchUserProperties } from '@/services/property';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,14 +19,12 @@ const Leases = () => {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const { user } = useAuth();
   
-  // Fetch properties from Supabase
   const { data: properties = [], isLoading } = useQuery({
     queryKey: ['properties'],
     queryFn: fetchUserProperties,
     enabled: !!user
   });
   
-  // Filter properties based on search query and remove duplicates
   const filteredProperties = properties
     .reduce((acc: Property[], current) => {
       const x = acc.find(item => 
@@ -45,7 +42,6 @@ const Leases = () => {
       property.address.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-  // If not logged in, show login prompt
   if (!user) {
     return (
       <div className="flex items-center justify-center h-screen flex-col gap-4">
@@ -80,7 +76,6 @@ const Leases = () => {
             )}
           </div>
           
-          {/* Search Bar (only show when no property is selected) */}
           {!selectedProperty && (
             <div className="relative mb-6">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -104,7 +99,7 @@ const Leases = () => {
               >
                 ← Back to all leases
               </button>
-              <LeaseDetails property={selectedProperty} />
+              <LeaseDetailsContainer property={selectedProperty} />
             </div>
           ) : (
             <>
@@ -151,7 +146,6 @@ const Leases = () => {
         </div>
       </main>
       
-      {/* Add Property Dialog */}
       <AddPropertyDialog 
         open={showAddDialog} 
         onOpenChange={setShowAddDialog} 
