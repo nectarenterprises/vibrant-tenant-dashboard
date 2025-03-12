@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Property, EventData } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
@@ -199,12 +198,7 @@ export const addProperty = async (
       return null;
     }
     
-    toast({
-      title: "Property added",
-      description: `${property.name} has been added successfully.`,
-    });
-    
-    // Transform to frontend model
+    // Remove duplicate toast as it's already handled in the component
     return {
       id: data.id,
       name: data.name,
@@ -219,8 +213,8 @@ export const addProperty = async (
   } catch (error: any) {
     toast({
       variant: "destructive",
-      title: "Failed to add property",
-      description: error.message || "An error occurred while adding the property",
+        title: "Failed to add property",
+        description: error.message || "An error occurred while adding the property",
     });
     return null;
   }

@@ -53,6 +53,7 @@ const AddPropertyDialog = ({ open, onOpenChange }: AddPropertyDialogProps) => {
     setIsSubmitting(true);
     
     try {
+      // Fixed: Pass the File object directly as image without casting issues
       const property = await addProperty({
         name,
         address,

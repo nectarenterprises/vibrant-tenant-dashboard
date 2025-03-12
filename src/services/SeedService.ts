@@ -38,7 +38,7 @@ export const seedInitialData = async (): Promise<void> => {
       return;
     }
     
-    // Sample properties to seed
+    // Sample properties to seed - using the same type definition as in addProperty
     const sampleProperties: Array<Omit<Property, 'id' | 'createdAt' | 'updatedAt'> & { image?: File | null }> = [
       {
         name: 'Victoria Office',
