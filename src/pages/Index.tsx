@@ -69,6 +69,19 @@ const Index = () => {
     enabled: !!user
   });
   
+  // Filter out duplicate properties based on name and address
+  const uniqueProperties = properties.reduce((acc: Property[], current) => {
+    const x = acc.find(item => 
+      item.name === current.name && 
+      item.address === current.address
+    );
+    if (!x) {
+      return acc.concat([current]);
+    } else {
+      return acc;
+    }
+  }, []);
+  
   // If not logged in, redirect to login page or show login prompt
   if (!user) {
     return (
@@ -99,14 +112,14 @@ const Index = () => {
                 <div className="flex items-center justify-center h-40">
                   <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
                 </div>
-              ) : properties.length === 0 ? (
+              ) : uniqueProperties.length === 0 ? (
                 <div className="text-center py-10 bg-muted rounded-lg">
                   <h3 className="text-lg font-medium mb-2">No properties found</h3>
                   <p className="text-muted-foreground">Add your first property to get started.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[440px]">
-                  {properties.map((property, index) => (
+                  {uniqueProperties.map((property, index) => (
                     <PropertyCard 
                       key={property.id} 
                       property={property} 
@@ -118,12 +131,12 @@ const Index = () => {
             </div>
             
             <div className="h-[480px]">
-              <CalendarWidget events={events} properties={properties} />
+              <CalendarWidget events={events} properties={uniqueProperties} />
             </div>
           </div>
           
           <div className="mt-8">
-            <UtilityChart data={mockUtilityData} properties={properties} />
+            <UtilityChart data={mockUtilityData} properties={uniqueProperties} />
           </div>
         </div>
       </main>

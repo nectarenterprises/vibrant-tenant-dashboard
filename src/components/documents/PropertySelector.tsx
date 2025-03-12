@@ -18,9 +18,12 @@ const PropertySelector = ({
   isLoading, 
   onSelectProperty 
 }: PropertySelectorProps) => {
-  // Filter out duplicate properties based on their ID
+  // Filter out duplicate properties based on their name and address instead of just ID
   const uniqueProperties = properties.reduce((acc: Property[], current) => {
-    const x = acc.find(item => item.id === current.id);
+    const x = acc.find(item => 
+      item.name === current.name && 
+      item.address === current.address
+    );
     if (!x) {
       return acc.concat([current]);
     } else {
