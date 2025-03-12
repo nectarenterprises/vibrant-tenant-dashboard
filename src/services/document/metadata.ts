@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { PropertyDocument, DocumentType } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
@@ -14,10 +15,23 @@ export const saveDocumentMetadata = async (
   description?: string
 ): Promise<PropertyDocument | null> => {
   try {
+    // Get the current user's ID
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Authentication error",
+        description: "You must be logged in to upload documents",
+      });
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('property_documents')
       .insert({
         property_id: propertyId,
+        user_id: user.id, // Add the user_id from the authenticated user
         name: fileName,
         description: description || '',
         file_path: filePath,
