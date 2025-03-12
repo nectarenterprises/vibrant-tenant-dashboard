@@ -1,9 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Property } from '@/types/property';
 import { Card, CardContent } from '@/components/ui/card';
 
-// Import our new component sections
+// Import our component sections
 import LeaseOverview from './sections/LeaseOverview';
 import TenantDetails from './sections/TenantDetails';
 import DocumentsSection from './sections/DocumentsSection';
@@ -43,7 +43,11 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
   const [documentType, setDocumentType] = useState<'lease' | 'utility' | 'compliance' | 'service-charge' | 'other'>('lease');
   const [documentName, setDocumentName] = useState('');
   
+  // State for refreshing documents
+  const [refreshDocuments, setRefreshDocuments] = useState(0);
+  
   const { 
+    id: propertyId,
     name, 
     address, 
     rentalFee, 
@@ -52,6 +56,11 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
     premisesSchedule, 
     incentives = [] 
   } = property;
+  
+  // Handle document upload success
+  const handleDocumentUploaded = () => {
+    setRefreshDocuments(prev => prev + 1);
+  };
   
   return (
     <div className="space-y-6 animate-fade-in">
@@ -82,6 +91,8 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
             
             <DocumentsSection 
               setShowDocumentDialog={setShowDocumentDialog}
+              propertyId={propertyId}
+              key={`docs-${refreshDocuments}`}
             />
           </div>
           
@@ -143,6 +154,8 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({ property }) => {
             setDocumentType={setDocumentType}
             documentName={documentName}
             setDocumentName={setDocumentName}
+            propertyId={propertyId}
+            onDocumentUploaded={handleDocumentUploaded}
           />
           
           <div className="mt-6">
