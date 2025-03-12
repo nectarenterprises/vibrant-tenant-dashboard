@@ -52,7 +52,6 @@ export const addProperty = async (
       return null;
     }
     
-    // Remove duplicate toast as it's already handled in the component
     return {
       id: data.id,
       name: data.name,
