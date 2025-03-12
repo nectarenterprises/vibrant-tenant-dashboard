@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { addProperty } from './PropertyService';
+import { addProperty } from './property/PropertyCreateService';
 import { Property } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
 

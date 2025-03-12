@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import LeaseDetails from '@/components/leases/LeaseDetails';
 import AddPropertyDialog from '@/components/leases/AddPropertyDialog';
-import { fetchUserProperties } from '@/services/PropertyService';
+import { fetchUserProperties } from '@/services/property';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Leases = () => {

@@ -8,7 +8,7 @@ import UtilityChart from '@/components/dashboard/UtilityChart';
 import Sidebar from '@/components/layout/Sidebar';
 import { Property, UtilityData } from '@/types/property';
 import { cn } from '@/lib/utils';
-import { fetchUserProperties, fetchPropertyEvents } from '@/services/PropertyService';
+import { fetchUserProperties, fetchPropertyEvents } from '@/services/property';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Mock utility data
