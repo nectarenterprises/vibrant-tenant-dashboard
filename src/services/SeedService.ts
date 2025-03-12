@@ -39,7 +39,7 @@ export const seedInitialData = async (): Promise<void> => {
     }
     
     // Sample properties to seed
-    const sampleProperties: Omit<Property, 'id' | 'createdAt' | 'updatedAt'>[] = [
+    const sampleProperties: Array<Omit<Property, 'id' | 'createdAt' | 'updatedAt'> & { image?: File | null }> = [
       {
         name: 'Victoria Office',
         address: '123 Buckingham Palace Road, Victoria, London SW1W 9SH',

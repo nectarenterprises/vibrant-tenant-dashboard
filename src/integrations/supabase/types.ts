@@ -38,6 +38,7 @@ export type Database = {
           address: string
           created_at: string
           id: string
+          image_path: string | null
           lease_expiry: string
           name: string
           next_payment_date: string
@@ -49,6 +50,7 @@ export type Database = {
           address: string
           created_at?: string
           id?: string
+          image_path?: string | null
           lease_expiry: string
           name: string
           next_payment_date: string
@@ -60,6 +62,7 @@ export type Database = {
           address?: string
           created_at?: string
           id?: string
+          image_path?: string | null
           lease_expiry?: string
           name?: string
           next_payment_date?: string
