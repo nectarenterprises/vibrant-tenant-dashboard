@@ -8,7 +8,7 @@ import { FolderType, DOCUMENT_TYPES } from './document/types';
 
 const STORAGE_BUCKET = 'property_documents';
 
-// Re-export types and functions
+// Re-export types and functions using the 'export type' syntax for types
 export type { FolderType };
 export { DOCUMENT_TYPES, getPropertyFolderStructure };
 
