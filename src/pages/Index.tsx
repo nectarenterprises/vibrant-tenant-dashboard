@@ -1,60 +1,17 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import WelcomeHeader from '@/components/dashboard/WelcomeHeader';
 import PropertyCard from '@/components/dashboard/PropertyCard';
 import CalendarWidget from '@/components/dashboard/CalendarWidget';
 import UtilityChart from '@/components/dashboard/UtilityChart';
 import Sidebar from '@/components/layout/Sidebar';
-import { Property, EventData, UtilityData } from '@/types/property';
+import { Property, UtilityData } from '@/types/property';
 import { cn } from '@/lib/utils';
+import { fetchUserProperties, fetchPropertyEvents } from '@/services/PropertyService';
+import { useAuth } from '@/contexts/AuthContext';
 
-// Mock data
-const mockProperties: Property[] = [
-  {
-    id: '1',
-    name: 'Victoria Office',
-    address: '123 Buckingham Palace Road, Victoria, London SW1W 9SH',
-    rentalFee: 3500,
-    nextPaymentDate: '2023-04-15',
-    leaseExpiry: '2024-03-31',
-  },
-  {
-    id: '2',
-    name: 'Covent Garden Retail',
-    address: '45 Long Acre, Covent Garden, London WC2E 9JT',
-    rentalFee: 4200,
-    nextPaymentDate: '2023-04-10',
-    leaseExpiry: '2023-12-31',
-  }
-];
-
-const mockEvents: EventData[] = [
-  {
-    id: '1',
-    title: 'Rent Due',
-    date: '2023-04-15',
-    type: 'rent',
-    propertyId: '1',
-    propertyName: 'Victoria Office'
-  },
-  {
-    id: '2',
-    title: 'Quarterly Inspection',
-    date: '2023-04-20',
-    type: 'inspection',
-    propertyId: '2',
-    propertyName: 'Covent Garden Retail'
-  },
-  {
-    id: '3',
-    title: 'HVAC Maintenance',
-    date: '2023-04-25',
-    type: 'maintenance',
-    propertyId: '1',
-    propertyName: 'Victoria Office'
-  }
-];
-
+// Mock utility data
 const mockUtilityData: UtilityData[] = [
   { 
     month: 'Jan', 
@@ -96,6 +53,31 @@ const mockUtilityData: UtilityData[] = [
 
 const Index = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { user } = useAuth();
+  
+  // Fetch properties from Supabase
+  const { data: properties = [], isLoading: propertiesLoading } = useQuery({
+    queryKey: ['properties'],
+    queryFn: fetchUserProperties,
+    enabled: !!user
+  });
+  
+  // Fetch events from Supabase
+  const { data: events = [], isLoading: eventsLoading } = useQuery({
+    queryKey: ['property-events'],
+    queryFn: fetchPropertyEvents,
+    enabled: !!user
+  });
+  
+  // If not logged in, redirect to login page or show login prompt
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-screen flex-col gap-4">
+        <h1 className="text-2xl font-bold">Please log in to view your dashboard</h1>
+        <p>You need to be logged in to access your properties and dashboard.</p>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen bg-background flex">
@@ -108,29 +90,40 @@ const Index = () => {
         )}
       >
         <div className="container mx-auto p-6">
-          <WelcomeHeader userName="Jack" />
+          <WelcomeHeader userName={user.email?.split('@')[0] || 'User'} />
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <div className="lg:col-span-2">
               <h2 className="text-xl font-semibold mb-4">Your Properties</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[440px]">
-                {mockProperties.map((property, index) => (
-                  <PropertyCard 
-                    key={property.id} 
-                    property={property} 
-                    delay={index}
-                  />
-                ))}
-              </div>
+              {propertiesLoading ? (
+                <div className="flex items-center justify-center h-40">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                </div>
+              ) : properties.length === 0 ? (
+                <div className="text-center py-10 bg-muted rounded-lg">
+                  <h3 className="text-lg font-medium mb-2">No properties found</h3>
+                  <p className="text-muted-foreground">Add your first property to get started.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[440px]">
+                  {properties.map((property, index) => (
+                    <PropertyCard 
+                      key={property.id} 
+                      property={property} 
+                      delay={index}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
             
             <div className="h-[480px]">
-              <CalendarWidget events={mockEvents} properties={mockProperties} />
+              <CalendarWidget events={events} properties={properties} />
             </div>
           </div>
           
           <div className="mt-8">
-            <UtilityChart data={mockUtilityData} properties={mockProperties} />
+            <UtilityChart data={mockUtilityData} properties={properties} />
           </div>
         </div>
       </main>

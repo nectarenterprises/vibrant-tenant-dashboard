@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { seedInitialData } from '@/services/SeedService';
 
 type AuthContextType = {
   session: Session | null;
@@ -24,6 +25,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const { data } = await supabase.auth.getSession();
         setSession(data.session);
         setUser(data.session?.user ?? null);
+        
+        // If user is logged in, attempt to seed initial data
+        if (data.session?.user) {
+          seedInitialData();
+        }
       } catch (error) {
         console.error('Error getting initial session:', error);
       } finally {
@@ -38,6 +44,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       (_event, newSession) => {
         setSession(newSession);
         setUser(newSession?.user ?? null);
+        
+        // If user just logged in, attempt to seed initial data
+        if (newSession?.user) {
+          seedInitialData();
+        }
+        
         setLoading(false);
       }
     );
