@@ -39,7 +39,7 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events, properties = []
   const getEventIcon = (type: string) => {
     switch (type) {
       case 'rent':
-        return <DollarSign className="h-5 w-5 text-tenant-green" />;
+        return <DollarSign className="h-5 w-5 text-tenant-gold" />;
       case 'maintenance':
         return <Wrench className="h-5 w-5 text-tenant-orange" />;
       case 'inspection':
@@ -53,7 +53,7 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events, properties = []
   const getEventColor = (type: string) => {
     switch (type) {
       case 'rent':
-        return 'bg-tenant-green/10 border-tenant-green/20';
+        return 'bg-tenant-gold/10 border-tenant-gold/20';
       case 'maintenance':
         return 'bg-tenant-orange/10 border-tenant-orange/20';
       case 'inspection':
@@ -64,34 +64,37 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events, properties = []
   };
 
   return (
-    <Card className="h-full bg-tenant-green shadow-md border-0">
-      <CardHeader className="bg-tenant-green text-white p-4 pb-3 flex flex-row items-center justify-between">
-        <div className="flex items-center gap-2">
-          <CalendarIcon className="h-5 w-5" />
-          <h3 className="font-semibold text-lg">Upcoming Events</h3>
+    <Card className="h-full rounded-xl overflow-hidden card-gradient shadow-md border border-gray-100 dark:border-gray-800 animate-fade-in">
+      <CardHeader className="p-4 mellow-gradient relative">
+        <div className="absolute inset-0 bg-[url('/placeholder.svg')] bg-cover bg-center mix-blend-overlay opacity-30"></div>
+        <div className="flex justify-between items-center relative z-10">
+          <h3 className="text-white font-bold text-xl flex items-center gap-2">
+            <CalendarIcon className="h-5 w-5" />
+            Upcoming Events
+          </h3>
+          
+          {properties.length > 0 && (
+            <Select 
+              value={selectedPropertyId} 
+              onValueChange={setSelectedPropertyId}
+            >
+              <SelectTrigger className="w-[180px] h-8 bg-white/90 text-sm border-0">
+                <SelectValue placeholder="All Properties" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Properties</SelectItem>
+                {properties.map(property => (
+                  <SelectItem key={property.id} value={property.id}>
+                    {property.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
-        
-        {properties.length > 0 && (
-          <Select 
-            value={selectedPropertyId} 
-            onValueChange={setSelectedPropertyId}
-          >
-            <SelectTrigger className="w-[180px] h-8 bg-white text-sm border-0">
-              <SelectValue placeholder="All Properties" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Properties</SelectItem>
-              {properties.map(property => (
-                <SelectItem key={property.id} value={property.id}>
-                  {property.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
       </CardHeader>
       
-      <CardContent className="p-4 bg-white space-y-3 max-h-[380px] overflow-y-auto">
+      <CardContent className="p-4 space-y-3 max-h-[380px] overflow-y-auto">
         {sortedEvents.length > 0 ? (
           sortedEvents.map((event, index) => (
             <div 
