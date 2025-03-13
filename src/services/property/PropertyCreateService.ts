@@ -16,6 +16,7 @@ interface PropertyInput {
   serviceChargeAmount?: number;
   utilityData?: any;
   complianceStatus?: any;
+  incentives: Array<any>; // Add incentives field to match Property type
 }
 
 /**
@@ -86,7 +87,7 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
     }
     
     // Extract metadata from the incentives field
-    let metadataObj = {};
+    let metadataObj: Record<string, any> = {};
     try {
       metadataObj = data.incentives ? (typeof data.incentives === 'string' ? JSON.parse(data.incentives) : data.incentives) : {};
     } catch (e) {
@@ -104,7 +105,7 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
       createdAt: data.created_at,
       updatedAt: data.updated_at,
       image: data.image_path ? getPropertyImageUrl(data.image_path) : undefined,
-      incentives: [],
+      incentives: property.incentives || [], // Use provided incentives or default to empty array
       serviceChargeAmount: metadataObj.service_charge_amount || 0,
       utilityData: metadataObj.utility_data || [],
       complianceStatus: metadataObj.compliance_status || {}

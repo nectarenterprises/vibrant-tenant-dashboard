@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -39,7 +40,8 @@ export const usePropertyDocuments = () => {
       nextPaymentDate: property.next_payment_date,
       leaseExpiry: property.lease_expiry,
       createdAt: property.created_at,
-      updatedAt: property.updated_at
+      updatedAt: property.updated_at,
+      incentives: [] // Adding empty incentives array as required by Property type
     }));
   };
 

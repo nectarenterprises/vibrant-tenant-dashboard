@@ -17,6 +17,7 @@ const mockProperties: Property[] = [
     rentalFee: 3500,
     nextPaymentDate: '2023-04-15',
     leaseExpiry: '2024-03-31',
+    incentives: [] // Add required incentives array
   },
   {
     id: '2',
@@ -25,6 +26,7 @@ const mockProperties: Property[] = [
     rentalFee: 4200,
     nextPaymentDate: '2023-04-10',
     leaseExpiry: '2023-12-31',
+    incentives: [] // Add required incentives array
   }
 ];
 
