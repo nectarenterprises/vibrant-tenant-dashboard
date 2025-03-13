@@ -99,9 +99,9 @@ const Index = () => {
         <div className="container mx-auto p-6">
           <WelcomeHeader userName={user.email?.split('@')[0] || 'User'} />
           
+          <h2 className="text-xl font-semibold mb-4">Your Properties</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <div className="lg:col-span-2">
-              <h2 className="text-xl font-semibold mb-4">Your Properties</h2>
               {propertiesLoading ? (
                 <div className="flex items-center justify-center h-40">
                   <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
@@ -124,7 +124,7 @@ const Index = () => {
               )}
             </div>
             
-            <div className="h-auto">
+            <div>
               <CalendarWidget events={events} properties={uniqueProperties} />
             </div>
           </div>

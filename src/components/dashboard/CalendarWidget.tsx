@@ -5,6 +5,11 @@ import { Calendar as CalendarIcon, DollarSign, Wrench, ClipboardCheck } from 'lu
 import { EventData, Property } from '@/types/property';
 import { cn } from '@/lib/utils';
 import { 
+  Card,
+  CardHeader,
+  CardContent
+} from "@/components/ui/card";
+import { 
   Select,
   SelectContent,
   SelectItem,
@@ -59,36 +64,34 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events, properties = []
   };
 
   return (
-    <div className="rounded-xl overflow-hidden card-gradient shadow-md border border-gray-100 dark:border-gray-800 animate-fade-in h-full">
-      <div className="mellow-gradient p-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-black font-bold text-lg flex items-center">
-            <CalendarIcon className="mr-2 h-5 w-5" />
-            Upcoming Events
-          </h3>
-          
-          {properties.length > 0 && (
-            <Select 
-              value={selectedPropertyId} 
-              onValueChange={setSelectedPropertyId}
-            >
-              <SelectTrigger className="w-[180px] h-8 bg-white/90 text-sm">
-                <SelectValue placeholder="All Properties" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Properties</SelectItem>
-                {properties.map(property => (
-                  <SelectItem key={property.id} value={property.id}>
-                    {property.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+    <Card className="h-full bg-tenant-green shadow-md border-0">
+      <CardHeader className="bg-tenant-green text-white p-4 pb-3 flex flex-row items-center justify-between">
+        <div className="flex items-center gap-2">
+          <CalendarIcon className="h-5 w-5" />
+          <h3 className="font-semibold text-lg">Upcoming Events</h3>
         </div>
-      </div>
+        
+        {properties.length > 0 && (
+          <Select 
+            value={selectedPropertyId} 
+            onValueChange={setSelectedPropertyId}
+          >
+            <SelectTrigger className="w-[180px] h-8 bg-white text-sm border-0">
+              <SelectValue placeholder="All Properties" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Properties</SelectItem>
+              {properties.map(property => (
+                <SelectItem key={property.id} value={property.id}>
+                  {property.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      </CardHeader>
       
-      <div className="p-4 space-y-4 max-h-[320px] overflow-y-auto">
+      <CardContent className="p-4 bg-white space-y-3 max-h-[380px] overflow-y-auto">
         {sortedEvents.length > 0 ? (
           sortedEvents.map((event, index) => (
             <div 
@@ -121,8 +124,8 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events, properties = []
             <p>No upcoming events</p>
           </div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
