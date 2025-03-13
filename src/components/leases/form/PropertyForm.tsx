@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +22,7 @@ const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [rentalFee, setRentalFee] = useState('');
+  const [serviceCharge, setServiceCharge] = useState('');
   const [nextPaymentDate, setNextPaymentDate] = useState<Date | undefined>(undefined);
   const [leaseExpiry, setLeaseExpiry] = useState<Date | undefined>(undefined);
   const [propertyImage, setPropertyImage] = useState<File | null>(null);
@@ -29,6 +31,7 @@ const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
     setName('');
     setAddress('');
     setRentalFee('');
+    setServiceCharge('');
     setNextPaymentDate(undefined);
     setLeaseExpiry(undefined);
     setPropertyImage(null);
@@ -53,6 +56,7 @@ const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
         name,
         address,
         rentalFee: parseFloat(rentalFee),
+        serviceChargeAmount: serviceCharge ? parseFloat(serviceCharge) : 0,
         nextPaymentDate: format(nextPaymentDate, 'yyyy-MM-dd'),
         leaseExpiry: format(leaseExpiry, 'yyyy-MM-dd'),
         image: propertyImage
@@ -64,7 +68,9 @@ const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
           description: `${name} has been added successfully.`,
         });
         
+        // Invalidate queries to refetch data
         queryClient.invalidateQueries({ queryKey: ['properties'] });
+        queryClient.invalidateQueries({ queryKey: ['property-events'] });
         
         resetForm();
         onSuccess();
@@ -104,18 +110,33 @@ const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
         />
       </div>
       
-      <div className="grid grid-cols-1 gap-3">
-        <Label htmlFor="rentalFee">Monthly Rental Fee (£)</Label>
-        <Input
-          id="rentalFee"
-          type="number"
-          value={rentalFee}
-          onChange={(e) => setRentalFee(e.target.value)}
-          placeholder="e.g. 1500"
-          required
-          min={0}
-          step={0.01}
-        />
+      <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-3">
+          <Label htmlFor="rentalFee">Monthly Rental Fee (£)</Label>
+          <Input
+            id="rentalFee"
+            type="number"
+            value={rentalFee}
+            onChange={(e) => setRentalFee(e.target.value)}
+            placeholder="e.g. 1500"
+            required
+            min={0}
+            step={0.01}
+          />
+        </div>
+        
+        <div className="grid grid-cols-1 gap-3">
+          <Label htmlFor="serviceCharge">Service Charge (£)</Label>
+          <Input
+            id="serviceCharge"
+            type="number"
+            value={serviceCharge}
+            onChange={(e) => setServiceCharge(e.target.value)}
+            placeholder="e.g. 250"
+            min={0}
+            step={0.01}
+          />
+        </div>
       </div>
       
       <div className="grid grid-cols-2 gap-6">

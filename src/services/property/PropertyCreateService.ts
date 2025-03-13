@@ -13,6 +13,9 @@ interface PropertyInput {
   nextPaymentDate: string;
   leaseExpiry: string;
   image?: File | null;
+  serviceChargeAmount?: number;
+  utilityData?: any;
+  complianceStatus?: any;
 }
 
 /**
@@ -38,6 +41,11 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
       imagePath = await uploadPropertyImage(property.image);
     }
 
+    // Set default values for new fields
+    const serviceChargeAmount = property.serviceChargeAmount || 0;
+    const utilityData = property.utilityData || createDefaultUtilityData();
+    const complianceStatus = property.complianceStatus || createDefaultComplianceStatus();
+
     const { data, error } = await supabase
       .from('properties')
       .insert({
@@ -47,7 +55,10 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
         next_payment_date: property.nextPaymentDate,
         lease_expiry: property.leaseExpiry,
         user_id: user.id,
-        image_path: imagePath
+        image_path: imagePath,
+        service_charge_amount: serviceChargeAmount,
+        utility_data: utilityData,
+        compliance_status: complianceStatus
       })
       .select()
       .single();
@@ -70,7 +81,10 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
       leaseExpiry: data.lease_expiry,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
-      image: data.image_path ? getPropertyImageUrl(data.image_path) : undefined
+      image: data.image_path ? getPropertyImageUrl(data.image_path) : undefined,
+      serviceChargeAmount: data.service_charge_amount,
+      utilityData: data.utility_data,
+      complianceStatus: data.compliance_status
     };
   } catch (error: any) {
     toast({
@@ -80,4 +94,66 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
     });
     return null;
   }
+};
+
+/**
+ * Creates default utility data for a new property
+ */
+const createDefaultUtilityData = () => {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  
+  return months.map(month => ({
+    month,
+    gasUsage: Math.floor(Math.random() * 300) + 100,
+    gasCost: Math.floor(Math.random() * 150) + 50,
+    waterUsage: Math.floor(Math.random() * 50) + 30,
+    waterCost: Math.floor(Math.random() * 40) + 30,
+    electricityUsage: Math.floor(Math.random() * 350) + 250,
+    electricityCost: Math.floor(Math.random() * 100) + 60
+  }));
+};
+
+/**
+ * Creates default compliance status for a new property
+ */
+const createDefaultComplianceStatus = () => {
+  const today = new Date();
+  const nextMonth = new Date(today);
+  nextMonth.setMonth(today.getMonth() + 1);
+  
+  const nextYear = new Date(today);
+  nextYear.setFullYear(today.getFullYear() + 1);
+  
+  return {
+    fireRiskAssessment: {
+      lastCompleted: today.toISOString().split('T')[0],
+      nextDue: nextYear.toISOString().split('T')[0],
+      status: 'completed'
+    },
+    electricalSafety: {
+      lastCompleted: today.toISOString().split('T')[0],
+      nextDue: nextYear.toISOString().split('T')[0],
+      status: 'completed'
+    },
+    gasInspection: {
+      lastCompleted: today.toISOString().split('T')[0],
+      nextDue: nextYear.toISOString().split('T')[0],
+      status: 'completed'
+    },
+    buildingInsurance: {
+      lastCompleted: today.toISOString().split('T')[0],
+      nextDue: nextYear.toISOString().split('T')[0],
+      status: 'completed'
+    },
+    asbestosReport: {
+      lastCompleted: '',
+      nextDue: nextMonth.toISOString().split('T')[0],
+      status: 'upcoming'
+    },
+    energyPerformance: {
+      lastCompleted: '',
+      nextDue: nextMonth.toISOString().split('T')[0],
+      status: 'upcoming'
+    }
+  };
 };

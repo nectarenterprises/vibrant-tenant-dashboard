@@ -1,22 +1,18 @@
+
 import { supabase } from '@/integrations/supabase/client';
-import { Property, EventData, Incentive } from '@/types/property';
-import { toast } from '@/components/ui/use-toast';
+import { Property, EventData, UtilityData, ComplianceStatus } from '@/types/property';
 import { getPropertyImageUrl } from './PropertyImageService';
+import { toast } from '@/components/ui/use-toast';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Fetches all properties for the current authenticated user
  */
 export const fetchUserProperties = async (): Promise<Property[]> => {
   try {
-    // Get the current user's ID
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
-      toast({
-        variant: "destructive",
-        title: "Authentication error",
-        description: "You must be logged in to view properties",
-      });
       return [];
     }
 
@@ -25,7 +21,7 @@ export const fetchUserProperties = async (): Promise<Property[]> => {
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
-    
+      
     if (error) {
       toast({
         variant: "destructive",
@@ -36,31 +32,22 @@ export const fetchUserProperties = async (): Promise<Property[]> => {
     }
     
     // Transform to frontend model
-    const transformedProperties = data.map(property => ({
+    return data.map(property => ({
       id: property.id,
       name: property.name,
       address: property.address,
       rentalFee: Number(property.rental_fee),
       nextPaymentDate: property.next_payment_date,
       leaseExpiry: property.lease_expiry,
-      premisesSchedule: property.premises_schedule || '',
-      incentives: parseIncentives(property.incentives),
       createdAt: property.created_at,
       updatedAt: property.updated_at,
-      image: property.image_path ? getPropertyImageUrl(property.image_path) : undefined
+      image: property.image_path ? getPropertyImageUrl(property.image_path) : undefined,
+      premisesSchedule: property.premises_schedule || '',
+      incentives: property.incentives || [],
+      serviceChargeAmount: property.service_charge_amount || 0,
+      utilityData: property.utility_data || [],
+      complianceStatus: property.compliance_status || {}
     }));
-    
-    // Remove any duplicates based on id
-    const uniqueProperties = transformedProperties.reduce((acc: Property[], current) => {
-      const x = acc.find(item => item.id === current.id);
-      if (!x) {
-        return acc.concat([current]);
-      } else {
-        return acc;
-      }
-    }, []);
-    
-    return uniqueProperties;
   } catch (error: any) {
     toast({
       variant: "destructive",
@@ -72,57 +59,85 @@ export const fetchUserProperties = async (): Promise<Property[]> => {
 };
 
 /**
- * Parse the incentives from JSON to Incentive array
+ * Fetches property events for the calendar
  */
-const parseIncentives = (incentivesJson: any): Incentive[] => {
-  if (!incentivesJson) return [];
-  
+export const fetchPropertyEvents = async (): Promise<EventData[]> => {
   try {
-    // If it's already a string, parse it
-    if (typeof incentivesJson === 'string') {
-      return JSON.parse(incentivesJson);
+    const properties = await fetchUserProperties();
+    
+    if (properties.length === 0) {
+      return [];
     }
-    // If it's already an array, return it
-    if (Array.isArray(incentivesJson)) {
-      return incentivesJson;
-    }
-    return [];
-  } catch (e) {
-    console.error('Error parsing incentives:', e);
+    
+    const events: EventData[] = [];
+    
+    // Add rent payment events
+    properties.forEach(property => {
+      // Rent payment events
+      events.push({
+        id: uuidv4(),
+        title: `Rent payment due: ${property.name}`,
+        date: property.nextPaymentDate,
+        type: 'rent',
+        propertyId: property.id,
+        propertyName: property.name
+      });
+      
+      // Lease expiry events
+      events.push({
+        id: uuidv4(),
+        title: `Lease expires: ${property.name}`,
+        date: property.leaseExpiry,
+        type: 'other',
+        propertyId: property.id,
+        propertyName: property.name
+      });
+      
+      // Compliance events
+      if (property.complianceStatus) {
+        Object.entries(property.complianceStatus).forEach(([key, item]) => {
+          if (item.nextDue) {
+            events.push({
+              id: uuidv4(),
+              title: `${formatComplianceKey(key)} due: ${property.name}`,
+              date: item.nextDue,
+              type: 'inspection',
+              propertyId: property.id,
+              propertyName: property.name
+            });
+          }
+        });
+      }
+      
+      // Add a maintenance inspection event
+      const maintenanceDate = new Date();
+      maintenanceDate.setMonth(maintenanceDate.getMonth() + Math.floor(Math.random() * 3) + 1);
+      
+      events.push({
+        id: uuidv4(),
+        title: `Maintenance inspection: ${property.name}`,
+        date: maintenanceDate.toISOString().split('T')[0],
+        type: 'maintenance',
+        propertyId: property.id,
+        propertyName: property.name
+      });
+    });
+    
+    // Sort events by date
+    return events.sort((a, b) => 
+      new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+  } catch (error: any) {
+    console.error('Error fetching property events:', error);
     return [];
   }
 };
 
 /**
- * Fetches property events (placeholder for now - would be expanded in a real implementation)
+ * Utility function to format compliance keys for display
  */
-export const fetchPropertyEvents = async (): Promise<EventData[]> => {
-  // This would normally fetch events from the database
-  // For now, we'll use mock data similar to what was in Index.tsx
-  return [
-    {
-      id: '1',
-      title: 'Rent Due',
-      date: '2023-04-15',
-      type: 'rent',
-      propertyId: '1',
-      propertyName: 'Victoria Office'
-    },
-    {
-      id: '2',
-      title: 'Quarterly Inspection',
-      date: '2023-04-20',
-      type: 'inspection',
-      propertyId: '2',
-      propertyName: 'Covent Garden Retail'
-    },
-    {
-      id: '3',
-      title: 'HVAC Maintenance',
-      date: '2023-04-25',
-      type: 'maintenance',
-      propertyId: '1',
-      propertyName: 'Victoria Office'
-    }
-  ];
+const formatComplianceKey = (key: string): string => {
+  return key
+    .replace(/([A-Z])/g, ' $1') // Add space before capital letters
+    .replace(/^./, str => str.toUpperCase()); // Capitalize first letter
 };

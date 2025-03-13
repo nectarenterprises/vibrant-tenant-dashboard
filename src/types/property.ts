@@ -11,6 +11,9 @@ export interface Property {
   incentives?: Incentive[];
   createdAt?: string;
   updatedAt?: string;
+  serviceChargeAmount?: number;
+  utilityData?: UtilityData[];
+  complianceStatus?: ComplianceStatus;
 }
 
 export interface Incentive {
@@ -49,4 +52,28 @@ export interface PropertyDocument {
   filePath: string;
   documentType: DocumentType;
   uploadDate: string;
+}
+
+export interface ComplianceStatus {
+  fireRiskAssessment: ComplianceItem;
+  electricalSafety: ComplianceItem;
+  gasInspection: ComplianceItem;
+  buildingInsurance: ComplianceItem;
+  asbestosReport: ComplianceItem;
+  energyPerformance: ComplianceItem;
+  [key: string]: ComplianceItem;
+}
+
+export interface ComplianceItem {
+  lastCompleted: string;
+  nextDue: string;
+  status: 'completed' | 'upcoming' | 'overdue';
+  certificates?: ComplianceCertificate[];
+}
+
+export interface ComplianceCertificate {
+  id: string;
+  name: string;
+  date: string;
+  fileUrl: string;
 }

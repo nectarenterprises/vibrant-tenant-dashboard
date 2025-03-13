@@ -12,7 +12,7 @@ interface PropertyCardProps {
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
-  const { name, address, rentalFee, nextPaymentDate, leaseExpiry } = property;
+  const { name, address, rentalFee, nextPaymentDate, leaseExpiry, serviceChargeAmount } = property;
   const location = useLocation();
   
   // Format dates
@@ -22,6 +22,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
   // Determine which page we're on
   const isServiceChargePage = location.pathname.includes('service-charge');
   const isCompliancePage = location.pathname.includes('compliance');
+  const isUtilitiesPage = location.pathname.includes('utilities');
   
   return (
     <div 
@@ -44,9 +45,13 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
           <>
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">
-                {isServiceChargePage ? 'Monthly Service Charge' : 'Monthly Rent'}
+                {isServiceChargePage ? 'Monthly Service Charge' : isUtilitiesPage ? 'Average Monthly Utility' : 'Monthly Rent'}
               </span>
-              <span className="font-semibold text-lg">£{rentalFee.toLocaleString()}</span>
+              <span className="font-semibold text-lg">
+                £{isServiceChargePage ? serviceChargeAmount?.toLocaleString() || '0' : 
+                   isUtilitiesPage ? calculateAverageUtility(property) :
+                   rentalFee.toLocaleString()}
+              </span>
             </div>
             
             <div className="space-y-2">
@@ -72,6 +77,30 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
       </div>
     </div>
   );
+};
+
+// Helper function to calculate average utility cost
+const calculateAverageUtility = (property: Property): string => {
+  if (!property.utilityData || property.utilityData.length === 0) {
+    return '0';
+  }
+  
+  let totalCost = 0;
+  let count = 0;
+  
+  property.utilityData.forEach(data => {
+    const costs = [
+      data.gasCost || 0,
+      data.waterCost || 0,
+      data.electricityCost || 0
+    ];
+    
+    totalCost += costs.reduce((acc, cost) => acc + cost, 0);
+    count += costs.filter(cost => cost > 0).length;
+  });
+  
+  const average = count > 0 ? totalCost / count : 0;
+  return average.toLocaleString(undefined, { maximumFractionDigits: 0 });
 };
 
 export default PropertyCard;
