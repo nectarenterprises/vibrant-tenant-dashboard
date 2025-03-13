@@ -89,4 +89,14 @@
   .forest-gradient {
     @apply bg-gradient-to-r from-green-700 to-green-500;
   }
+  
+  .mellow-gradient {
+    @apply bg-gradient-to-r from-emerald-900 to-emerald-700;
+  }
+  
+  .truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import WelcomeHeader from '@/components/dashboard/WelcomeHeader';
@@ -11,7 +10,6 @@ import { cn } from '@/lib/utils';
 import { fetchUserProperties, fetchPropertyEvents } from '@/services/property';
 import { useAuth } from '@/contexts/AuthContext';
 
-// Mock utility data
 const mockUtilityData: UtilityData[] = [
   { 
     month: 'Jan', 
@@ -55,21 +53,18 @@ const Index = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { user } = useAuth();
   
-  // Fetch properties from Supabase
   const { data: properties = [], isLoading: propertiesLoading } = useQuery({
     queryKey: ['properties'],
     queryFn: fetchUserProperties,
     enabled: !!user
   });
   
-  // Fetch events from Supabase
   const { data: events = [], isLoading: eventsLoading } = useQuery({
     queryKey: ['property-events'],
     queryFn: fetchPropertyEvents,
     enabled: !!user
   });
   
-  // Filter out duplicate properties based on name and address
   const uniqueProperties = properties.reduce((acc: Property[], current) => {
     const x = acc.find(item => 
       item.name === current.name && 
@@ -82,7 +77,6 @@ const Index = () => {
     }
   }, []);
   
-  // If not logged in, redirect to login page or show login prompt
   if (!user) {
     return (
       <div className="flex items-center justify-center h-screen flex-col gap-4">
@@ -118,7 +112,7 @@ const Index = () => {
                   <p className="text-muted-foreground">Add your first property to get started.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[440px]">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {uniqueProperties.map((property, index) => (
                     <PropertyCard 
                       key={property.id} 
@@ -130,7 +124,7 @@ const Index = () => {
               )}
             </div>
             
-            <div className="h-[480px]">
+            <div className="h-auto">
               <CalendarWidget events={events} properties={uniqueProperties} />
             </div>
           </div>

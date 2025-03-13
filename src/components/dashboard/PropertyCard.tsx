@@ -34,8 +34,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
       <div className="h-40 mellow-gradient relative">
         <div className="absolute inset-0 bg-[url('/placeholder.svg')] bg-cover bg-center mix-blend-overlay opacity-30"></div>
         <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/60 to-transparent">
-          <h3 className="text-white font-bold text-xl">{name}</h3>
-          <p className="text-white/90 text-sm">{address}</p>
+          <h3 className="text-white font-bold text-xl truncate">{name}</h3>
+          <p className="text-white/90 text-sm truncate">{address}</p>
         </div>
       </div>
       
