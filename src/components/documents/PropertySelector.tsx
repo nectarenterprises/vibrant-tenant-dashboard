@@ -52,11 +52,11 @@ const PropertySelector = ({
               <Button
                 key={property.id}
                 variant={selectedProperty?.id === property.id ? "default" : "outline"}
-                className="w-full justify-start"
+                className="w-full justify-start overflow-hidden"
                 onClick={() => onSelectProperty(property.id)}
               >
-                <Folder className="mr-2 h-4 w-4" />
-                {property.name}
+                <Folder className="mr-2 h-4 w-4 flex-shrink-0" />
+                <span className="truncate">{property.name}</span>
               </Button>
             ))}
           </div>
