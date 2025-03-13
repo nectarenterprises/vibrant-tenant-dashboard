@@ -53,6 +53,8 @@ interface LeaseDetailsProps {
   setDocumentType: (type: DocumentType) => void;
   setDocumentName: (name: string) => void;
   onDocumentUploaded: () => void;
+  onTenantSaved?: () => void;
+  isLoading?: boolean;
 }
 
 const LeaseDetails: React.FC<LeaseDetailsProps> = ({ 
@@ -102,7 +104,9 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({
   setSelectedFile,
   setDocumentType,
   setDocumentName,
-  onDocumentUploaded
+  onDocumentUploaded,
+  onTenantSaved,
+  isLoading
 }) => {
   return (
     <div className="space-y-6 animate-fade-in">
@@ -138,6 +142,7 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({
             setShowPropertyDialog={setShowPropertyDialog}
             setShowPremisesDialog={setShowPremisesDialog}
             setShowIncentivesDialog={setShowIncentivesDialog}
+            isLoading={isLoading}
           />
           
           <LeaseDialogs 
@@ -187,6 +192,7 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({
             setShowIncentivesDialog={setShowIncentivesDialog}
             incentives={incentives}
             setIncentives={setIncentives}
+            onTenantSaved={onTenantSaved}
           />
         </CardContent>
       </Card>

@@ -30,6 +30,7 @@ interface LeaseContentProps {
   setShowPropertyDialog: (show: boolean) => void;
   setShowPremisesDialog: (show: boolean) => void;
   setShowIncentivesDialog: (show: boolean) => void;
+  isLoading?: boolean;
 }
 
 const LeaseContent: React.FC<LeaseContentProps> = ({
@@ -53,7 +54,8 @@ const LeaseContent: React.FC<LeaseContentProps> = ({
   setShowDocumentDialog,
   setShowPropertyDialog,
   setShowPremisesDialog,
-  setShowIncentivesDialog
+  setShowIncentivesDialog,
+  isLoading
 }) => {
   return (
     <>
@@ -70,6 +72,7 @@ const LeaseContent: React.FC<LeaseContentProps> = ({
           contactEmail={contactEmail}
           contactPhone={contactPhone}
           setShowTenantDialog={setShowTenantDialog}
+          isLoading={isLoading}
         />
         
         <DocumentsSection 

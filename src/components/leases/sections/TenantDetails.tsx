@@ -10,6 +10,7 @@ interface TenantDetailsProps {
   contactEmail: string;
   contactPhone: string;
   setShowTenantDialog: (show: boolean) => void;
+  isLoading?: boolean;
 }
 
 const TenantDetails = ({ 
@@ -17,8 +18,29 @@ const TenantDetails = ({
   contactName, 
   contactEmail, 
   contactPhone, 
-  setShowTenantDialog 
+  setShowTenantDialog,
+  isLoading
 }: TenantDetailsProps) => {
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg">Tenant Details</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col items-center justify-center h-40 text-center">
+            <div className="animate-pulse flex flex-col items-center space-y-3 w-full">
+              <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+              <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div className="h-3 w-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div className="h-3 w-40 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader className="pb-2 flex flex-row items-center justify-between">

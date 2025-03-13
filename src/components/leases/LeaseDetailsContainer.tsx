@@ -1,7 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Property } from '@/types/property';
 import LeaseDetails from './LeaseDetails';
+import { fetchTenantDetails } from '@/services/tenant/TenantService';
+import { toast } from '@/components/ui/use-toast';
 
 interface LeaseDetailsContainerProps {
   property: Property;
@@ -37,10 +39,49 @@ const LeaseDetailsContainer: React.FC<LeaseDetailsContainerProps> = ({ property 
   
   // State for refreshing documents
   const [refreshDocuments, setRefreshDocuments] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Load tenant details on property change
+  useEffect(() => {
+    const loadTenantDetails = async () => {
+      setIsLoading(true);
+      try {
+        const tenantData = await fetchTenantDetails(property.id);
+        if (tenantData) {
+          setTenantName(tenantData.tenant_name);
+          setContactName(tenantData.contact_name || '');
+          setContactEmail(tenantData.contact_email || '');
+          setContactPhone(tenantData.contact_phone || '');
+        } else {
+          // Reset fields if no tenant data found
+          setTenantName('');
+          setContactName('');
+          setContactEmail('');
+          setContactPhone('');
+        }
+      } catch (error) {
+        console.error('Error fetching tenant details:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load tenant details. Please try again.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadTenantDetails();
+  }, [property.id]);
   
   // Handle document upload success
   const handleDocumentUploaded = () => {
     setRefreshDocuments(prev => prev + 1);
+  };
+  
+  // Handle tenant saved successfully
+  const handleTenantSaved = () => {
+    // Could potentially refresh the tenant data, but not needed since we set it directly
   };
 
   return (
@@ -92,6 +133,8 @@ const LeaseDetailsContainer: React.FC<LeaseDetailsContainerProps> = ({ property 
       setDocumentType={setDocumentType}
       setDocumentName={setDocumentName}
       onDocumentUploaded={handleDocumentUploaded}
+      onTenantSaved={handleTenantSaved}
+      isLoading={isLoading}
     />
   );
 };

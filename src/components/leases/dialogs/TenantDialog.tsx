@@ -1,12 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/use-toast';
+import { saveTenantDetails } from '@/services/tenant/TenantService';
 
 interface TenantDialogProps {
+  propertyId: string;
   showTenantDialog: boolean;
   setShowTenantDialog: (show: boolean) => void;
   tenantName: string;
@@ -17,9 +19,11 @@ interface TenantDialogProps {
   setContactEmail: (email: string) => void;
   contactPhone: string;
   setContactPhone: (phone: string) => void;
+  onTenantSaved?: () => void;
 }
 
 const TenantDialog: React.FC<TenantDialogProps> = ({
+  propertyId,
   showTenantDialog,
   setShowTenantDialog,
   tenantName,
@@ -29,14 +33,49 @@ const TenantDialog: React.FC<TenantDialogProps> = ({
   contactEmail,
   setContactEmail,
   contactPhone,
-  setContactPhone
+  setContactPhone,
+  onTenantSaved
 }) => {
-  const saveTenantDetails = () => {
-    toast({
-      title: "Tenant details saved",
-      description: "The tenant details have been updated successfully.",
-    });
-    setShowTenantDialog(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const saveTenantDetailsHandler = async () => {
+    // Validate required fields
+    if (!tenantName.trim()) {
+      setError("Tenant name is required");
+      return;
+    }
+    
+    setIsSaving(true);
+    setError(null);
+    
+    try {
+      const result = await saveTenantDetails({
+        property_id: propertyId,
+        tenant_name: tenantName,
+        contact_name: contactName,
+        contact_email: contactEmail,
+        contact_phone: contactPhone
+      });
+      
+      if (result) {
+        toast({
+          title: "Tenant details saved",
+          description: "The tenant details have been updated successfully.",
+        });
+        if (onTenantSaved) {
+          onTenantSaved();
+        }
+        setShowTenantDialog(false);
+      } else {
+        setError("Failed to save tenant details. Please try again.");
+      }
+    } catch (err) {
+      console.error('Error saving tenant details:', err);
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -50,8 +89,14 @@ const TenantDialog: React.FC<TenantDialogProps> = ({
         </DialogHeader>
         
         <div className="grid gap-4 py-4">
+          {error && (
+            <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+              {error}
+            </div>
+          )}
+          
           <div className="grid gap-2">
-            <Label htmlFor="tenantName">Tenant Name</Label>
+            <Label htmlFor="tenantName">Tenant Name <span className="text-red-500">*</span></Label>
             <Input
               id="tenantName"
               value={tenantName}
@@ -98,10 +143,16 @@ const TenantDialog: React.FC<TenantDialogProps> = ({
           <Button 
             variant="outline" 
             onClick={() => setShowTenantDialog(false)}
+            disabled={isSaving}
           >
             Cancel
           </Button>
-          <Button onClick={saveTenantDetails}>Save changes</Button>
+          <Button 
+            onClick={saveTenantDetailsHandler}
+            disabled={isSaving}
+          >
+            {isSaving ? "Saving..." : "Save changes"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -54,6 +54,7 @@ interface LeaseDialogsProps {
   setShowIncentivesDialog: (show: boolean) => void;
   incentives: Incentive[];
   setIncentives: (incentives: Incentive[]) => void;
+  onTenantSaved?: () => void;
 }
 
 const LeaseDialogs: React.FC<LeaseDialogsProps> = ({
@@ -102,7 +103,8 @@ const LeaseDialogs: React.FC<LeaseDialogsProps> = ({
   showIncentivesDialog,
   setShowIncentivesDialog,
   incentives,
-  setIncentives
+  setIncentives,
+  onTenantSaved
 }) => {
   return (
     <>
@@ -128,6 +130,7 @@ const LeaseDialogs: React.FC<LeaseDialogsProps> = ({
       />
       
       <TenantDialog 
+        propertyId={propertyId}
         showTenantDialog={showTenantDialog}
         setShowTenantDialog={setShowTenantDialog}
         tenantName={tenantName}
@@ -138,6 +141,7 @@ const LeaseDialogs: React.FC<LeaseDialogsProps> = ({
         setContactEmail={setContactEmail}
         contactPhone={contactPhone}
         setContactPhone={setContactPhone}
+        onTenantSaved={onTenantSaved}
       />
       
       <DocumentDialog 
