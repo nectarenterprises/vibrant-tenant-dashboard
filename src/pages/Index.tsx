@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import WelcomeHeader from '@/components/dashboard/WelcomeHeader';
@@ -125,7 +124,7 @@ const Index = () => {
               )}
             </div>
             
-            <div className="h-fit">
+            <div>
               <CalendarWidget events={events} properties={uniqueProperties} />
             </div>
           </div>

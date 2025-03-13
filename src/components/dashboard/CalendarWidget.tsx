@@ -65,7 +65,7 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events, properties = []
   };
 
   return (
-    <Card className="h-full flex flex-col rounded-xl overflow-hidden card-gradient shadow-md border border-gray-100 dark:border-gray-800 animate-fade-in">
+    <Card className="h-[380px] rounded-xl overflow-hidden card-gradient shadow-md border border-gray-100 dark:border-gray-800 animate-fade-in">
       <CardHeader className="p-4 mellow-gradient relative flex-shrink-0">
         <div className="absolute inset-0 bg-[url('/placeholder.svg')] bg-cover bg-center mix-blend-overlay opacity-30"></div>
         <div className="flex justify-between items-center relative z-10">
@@ -95,8 +95,8 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events, properties = []
         </div>
       </CardHeader>
       
-      <CardContent className="p-0 overflow-hidden flex-grow flex flex-col">
-        <ScrollArea className="flex-grow">
+      <CardContent className="p-0 overflow-hidden" style={{ height: "calc(380px - 76px)" }}>
+        <ScrollArea className="h-full">
           <div className="p-4 space-y-3">
             {sortedEvents.length > 0 ? (
               sortedEvents.map((event, index) => (
