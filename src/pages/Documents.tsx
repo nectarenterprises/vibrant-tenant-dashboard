@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { getPropertyFolderStructure } from '@/services/document/folders';
+import { getPropertyFolderStructure } from '@/services/document/types';
 
 // Import custom components
 import PropertySelector from '@/components/documents/PropertySelector';

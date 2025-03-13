@@ -3,12 +3,12 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Folder } from 'lucide-react';
-import { FolderType } from '@/services/document/types';
+import { DocumentFolder } from '@/services/document/types';
 
 interface FolderSelectorProps {
-  folders: Array<{ id: string; name: string; path: string; type: FolderType }>;
-  selectedFolder: { id: string; name: string; path: string; type: FolderType } | null;
-  onSelectFolder: (folder: { id: string; name: string; path: string; type: FolderType }) => void;
+  folders: DocumentFolder[];
+  selectedFolder: DocumentFolder | null;
+  onSelectFolder: (folder: DocumentFolder) => void;
 }
 
 const FolderSelector = ({ folders, selectedFolder, onSelectFolder }: FolderSelectorProps) => {

@@ -3,12 +3,12 @@ import { PropertyDocument } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
 import { uploadFile, downloadFile, deleteFile, getFilePublicUrl } from './document/storage';
 import { saveDocumentMetadata, fetchDocumentMetadata, deleteDocumentMetadata } from './document/metadata';
-import { getPropertyFolderStructure, createDocumentPath } from './document/folders';
-import { FolderType, DOCUMENT_TYPES } from './document/types';
+import { createDocumentPath } from './document/folders';
+import { FolderType, DOCUMENT_TYPES, getPropertyFolderStructure } from './document/types';
 
 const STORAGE_BUCKET = 'property_documents';
 
-// Re-export types and functions using the 'export type' syntax for types
+// Re-export types and functions
 export type { FolderType };
 export { DOCUMENT_TYPES, getPropertyFolderStructure };
 

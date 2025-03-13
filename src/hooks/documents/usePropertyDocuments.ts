@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,11 +9,11 @@ import {
   deleteDocument,
   getPropertyDocuments
 } from '@/services/FileStorageService';
-import { FolderType } from '@/services/document/types';
+import { FolderType, DocumentFolder } from '@/services/document/types';
 
 export const usePropertyDocuments = () => {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
-  const [selectedFolder, setSelectedFolder] = useState<{ id: string; name: string; path: string; type: FolderType } | null>(null);
+  const [selectedFolder, setSelectedFolder] = useState<DocumentFolder | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [fileUpload, setFileUpload] = useState<File | null>(null);
   const [documentName, setDocumentName] = useState('');
@@ -96,7 +95,7 @@ export const usePropertyDocuments = () => {
   };
 
   // Handle folder selection
-  const handleFolderSelect = (folder: { id: string; name: string; path: string; type: FolderType }) => {
+  const handleFolderSelect = (folder: DocumentFolder) => {
     setSelectedFolder(folder);
   };
 
