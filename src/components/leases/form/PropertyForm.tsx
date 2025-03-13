@@ -59,7 +59,8 @@ const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
         serviceChargeAmount: serviceCharge ? parseFloat(serviceCharge) : 0,
         nextPaymentDate: format(nextPaymentDate, 'yyyy-MM-dd'),
         leaseExpiry: format(leaseExpiry, 'yyyy-MM-dd'),
-        image: propertyImage
+        image: propertyImage,
+        incentives: [] // Add required empty incentives array
       });
       
       if (property) {
