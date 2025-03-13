@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Property, Incentive, DocumentType } from '@/types/property';
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,12 +7,14 @@ import LeaseDialogs, { LeaseDialogsProps } from './dialogs';
 
 interface LeaseDetailsProps extends LeaseDialogsProps {
   property: Property;
+  propertyId: string; // Adding the missing propertyId prop
   isLoading?: boolean;
   refreshDocuments: number;
 }
 
 const LeaseDetails: React.FC<LeaseDetailsProps> = ({ 
   property,
+  propertyId,
   propertyType,
   floorArea,
   yearBuilt,
@@ -99,7 +102,7 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({
           />
           
           <LeaseDialogs 
-            propertyId={property.id}
+            propertyId={propertyId} // Using the passed propertyId
             showPropertyDialog={showPropertyDialog}
             setShowPropertyDialog={setShowPropertyDialog}
             propertyType={propertyType}

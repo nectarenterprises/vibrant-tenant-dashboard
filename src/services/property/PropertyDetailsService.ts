@@ -19,7 +19,7 @@ export const fetchPropertyDetails = async (propertyId: string) => {
   try {
     const { data, error } = await supabase
       .from('properties')
-      .select('property_details, incentives')
+      .select('property_details')
       .eq('id', propertyId)
       .single();
     
@@ -27,7 +27,12 @@ export const fetchPropertyDetails = async (propertyId: string) => {
       throw error;
     }
     
-    return data?.property_details || null;
+    // Handle the case when property_details doesn't exist
+    if (!data || !data.property_details) {
+      return null;
+    }
+    
+    return data.property_details || null;
   } catch (error: any) {
     console.error('Error fetching property details:', error);
     return null;

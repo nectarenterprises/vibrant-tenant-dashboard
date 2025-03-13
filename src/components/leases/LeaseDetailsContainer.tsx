@@ -121,6 +121,7 @@ const LeaseDetailsContainer: React.FC<LeaseDetailsContainerProps> = ({ property 
   return (
     <LeaseDetails
       property={property}
+      propertyId={property.id} // Adding the missing propertyId prop
       propertyType={propertyType}
       floorArea={floorArea}
       yearBuilt={yearBuilt}
