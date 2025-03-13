@@ -95,8 +95,8 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events, properties = []
         </div>
       </CardHeader>
       
-      <CardContent className="p-0 flex-grow overflow-hidden">
-        <ScrollArea className="h-full max-h-[380px]">
+      <CardContent className="p-0 overflow-hidden flex-grow flex flex-col">
+        <ScrollArea className="flex-grow">
           <div className="p-4 space-y-3">
             {sortedEvents.length > 0 ? (
               sortedEvents.map((event, index) => (
