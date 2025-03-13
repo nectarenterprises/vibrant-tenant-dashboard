@@ -65,8 +65,8 @@ export const savePropertyDetails = async (
       }
     };
     
-    // Preserve the incentives array if it exists
-    if (!propertyDetails.incentives && metadata.incentives) {
+    // Make sure we preserve the incentives array if it exists
+    if (!propertyDetails.hasOwnProperty('incentives') && metadata.hasOwnProperty('incentives')) {
       propertyDetails.incentives = metadata.incentives;
     }
     

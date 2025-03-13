@@ -4,10 +4,19 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 
 interface EmptyStateProps {
-  onAddIncentive: () => void;
+  onAddIncentive?: () => void;
+  onAddClick?: () => void;
 }
 
-const EmptyState: React.FC<EmptyStateProps> = ({ onAddIncentive }) => {
+const EmptyState: React.FC<EmptyStateProps> = ({ onAddIncentive, onAddClick }) => {
+  const handleClick = () => {
+    if (onAddIncentive) {
+      onAddIncentive();
+    } else if (onAddClick) {
+      onAddClick();
+    }
+  };
+
   return (
     <div className="text-center py-4">
       <p className="text-muted-foreground mb-4">No incentives added yet</p>
@@ -15,7 +24,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({ onAddIncentive }) => {
         variant="outline"
         size="sm"
         className="mt-2"
-        onClick={onAddIncentive}
+        onClick={handleClick}
       >
         <PlusCircle className="h-4 w-4 mr-2" />
         Add Lease Incentives

@@ -1,5 +1,4 @@
 
-// This is a new file that updates the IncentivesDialog to save details to the database
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -184,7 +183,7 @@ const IncentivesDialog: React.FC<IncentivesDialogProps> = ({
               </Button>
             </div>
           ) : (
-            <EmptyState onAddClick={handleAddIncentive} />
+            <EmptyState onAddIncentive={handleAddIncentive} />
           )}
         </div>
         

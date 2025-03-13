@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 interface IncentivesSectionProps {
   incentives?: Incentive[];
   setShowIncentivesDialog: (show: boolean) => void;
+  isLoading?: boolean;
 }
 
 const IncentiveIcon = ({ type }: { type: Incentive['type'] }) => {
@@ -24,7 +25,7 @@ const IncentiveIcon = ({ type }: { type: Incentive['type'] }) => {
   }
 };
 
-const IncentivesSection = ({ incentives = [], setShowIncentivesDialog }: IncentivesSectionProps) => {
+const IncentivesSection = ({ incentives = [], setShowIncentivesDialog, isLoading }: IncentivesSectionProps) => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -37,12 +38,17 @@ const IncentivesSection = ({ incentives = [], setShowIncentivesDialog }: Incenti
           size="sm"
           className="h-8 w-8"
           onClick={() => setShowIncentivesDialog(true)}
+          disabled={isLoading}
         >
           {incentives && incentives.length > 0 ? <Edit className="h-4 w-4" /> : <PlusCircle className="h-4 w-4" />}
         </Button>
       </CardHeader>
       <CardContent>
-        {incentives && incentives.length > 0 ? (
+        {isLoading ? (
+          <div className="p-4 text-center">
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        ) : incentives && incentives.length > 0 ? (
           <div className="space-y-4">
             {incentives.map((incentive, index) => (
               <div key={index} className="flex items-start gap-4 p-4 bg-muted/50 rounded-md">

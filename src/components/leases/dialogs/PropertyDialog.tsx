@@ -1,4 +1,3 @@
-
 // This is a new file that updates the PropertyDialog to save details to the database
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -188,8 +187,8 @@ const PropertyDialog: React.FC<PropertyDialogProps> = ({
             <div className="space-y-2">
               <Label htmlFor="leaseStart">Lease Start Date</Label>
               <DatePickerField
-                date={localLeaseStart}
-                setDate={setLocalLeaseStart}
+                selected={localLeaseStart}
+                onSelect={setLocalLeaseStart}
               />
             </div>
           </div>
