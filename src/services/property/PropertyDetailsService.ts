@@ -19,7 +19,7 @@ export const fetchPropertyDetails = async (propertyId: string) => {
   try {
     const { data, error } = await supabase
       .from('properties')
-      .select('property_details')
+      .select('*')
       .eq('id', propertyId)
       .single();
     
@@ -27,12 +27,22 @@ export const fetchPropertyDetails = async (propertyId: string) => {
       throw error;
     }
     
-    // Handle the case when property_details doesn't exist
-    if (!data || !data.property_details) {
+    // If no data is found, return null
+    if (!data) {
       return null;
     }
     
-    return data.property_details || null;
+    // Return structured property details from various columns
+    return {
+      property_type: data.property_type || '',
+      floor_area: data.floor_area || '',
+      year_built: data.year_built || '',
+      parking_spaces: data.parking_spaces || '',
+      lease_type: data.lease_type || '',
+      lease_start: data.lease_start || undefined,
+      lease_duration: data.lease_duration || '',
+      security_deposit: data.security_deposit || ''
+    };
   } catch (error: any) {
     console.error('Error fetching property details:', error);
     return null;
@@ -44,36 +54,18 @@ export const savePropertyDetails = async (input: PropertyDetailsInput): Promise<
   try {
     const { property_id, ...detailsToUpdate } = input;
     
-    // First, fetch existing property details
-    const { data: existingData, error: fetchError } = await supabase
-      .from('properties')
-      .select('property_details')
-      .eq('id', property_id)
-      .single();
-    
-    if (fetchError) {
-      throw fetchError;
-    }
-    
-    // Prepare property details object
-    const currentDetails = existingData?.property_details || {};
-    const updatedDetails = {
-      ...currentDetails,
-      property_type: detailsToUpdate.property_type,
-      floor_area: detailsToUpdate.floor_area,
-      year_built: detailsToUpdate.year_built,
-      parking_spaces: detailsToUpdate.parking_spaces,
-      lease_type: detailsToUpdate.lease_type,
-      lease_start: detailsToUpdate.lease_start,
-      lease_duration: detailsToUpdate.lease_duration,
-      security_deposit: detailsToUpdate.security_deposit
-    };
-    
-    // Update the property details in the database
+    // Update the property details directly in the properties table
     const { error } = await supabase
       .from('properties')
       .update({ 
-        property_details: updatedDetails,
+        property_type: detailsToUpdate.property_type,
+        floor_area: detailsToUpdate.floor_area,
+        year_built: detailsToUpdate.year_built,
+        parking_spaces: detailsToUpdate.parking_spaces,
+        lease_type: detailsToUpdate.lease_type,
+        lease_start: detailsToUpdate.lease_start,
+        lease_duration: detailsToUpdate.lease_duration,
+        security_deposit: detailsToUpdate.security_deposit,
         updated_at: new Date().toISOString()
       })
       .eq('id', property_id);
