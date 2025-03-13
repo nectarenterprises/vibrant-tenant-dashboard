@@ -37,44 +37,68 @@ export type Database = {
         Row: {
           address: string
           created_at: string
+          floor_area: string | null
           id: string
           image_path: string | null
           incentives: Json | null
+          lease_duration: string | null
           lease_expiry: string
+          lease_start: string | null
+          lease_type: string | null
           name: string
           next_payment_date: string
+          parking_spaces: string | null
           premises_schedule: string | null
+          property_type: string | null
           rental_fee: number
+          security_deposit: string | null
           updated_at: string
           user_id: string
+          year_built: string | null
         }
         Insert: {
           address: string
           created_at?: string
+          floor_area?: string | null
           id?: string
           image_path?: string | null
           incentives?: Json | null
+          lease_duration?: string | null
           lease_expiry: string
+          lease_start?: string | null
+          lease_type?: string | null
           name: string
           next_payment_date: string
+          parking_spaces?: string | null
           premises_schedule?: string | null
+          property_type?: string | null
           rental_fee: number
+          security_deposit?: string | null
           updated_at?: string
           user_id: string
+          year_built?: string | null
         }
         Update: {
           address?: string
           created_at?: string
+          floor_area?: string | null
           id?: string
           image_path?: string | null
           incentives?: Json | null
+          lease_duration?: string | null
           lease_expiry?: string
+          lease_start?: string | null
+          lease_type?: string | null
           name?: string
           next_payment_date?: string
+          parking_spaces?: string | null
           premises_schedule?: string | null
+          property_type?: string | null
           rental_fee?: number
+          security_deposit?: string | null
           updated_at?: string
           user_id?: string
+          year_built?: string | null
         }
         Relationships: []
       }
