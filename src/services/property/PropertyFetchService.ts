@@ -1,6 +1,5 @@
-
 import { supabase } from '@/integrations/supabase/client';
-import { Property, EventData, UtilityData, ComplianceStatus } from '@/types/property';
+import { Property, EventData, UtilityData, ComplianceStatus, Incentive } from '@/types/property';
 import { getPropertyImageUrl } from './PropertyImageService';
 import { toast } from '@/components/ui/use-toast';
 import { v4 as uuidv4 } from 'uuid';
@@ -32,22 +31,57 @@ export const fetchUserProperties = async (): Promise<Property[]> => {
     }
     
     // Transform to frontend model
-    return data.map(property => ({
-      id: property.id,
-      name: property.name,
-      address: property.address,
-      rentalFee: Number(property.rental_fee),
-      nextPaymentDate: property.next_payment_date,
-      leaseExpiry: property.lease_expiry,
-      createdAt: property.created_at,
-      updatedAt: property.updated_at,
-      image: property.image_path ? getPropertyImageUrl(property.image_path) : undefined,
-      premisesSchedule: property.premises_schedule || '',
-      incentives: property.incentives || [],
-      serviceChargeAmount: property.service_charge_amount || 0,
-      utilityData: property.utility_data || [],
-      complianceStatus: property.compliance_status || {}
-    }));
+    return data.map(property => {
+      // Parse incentives field to get metadata
+      let incentives: Incentive[] = [];
+      let serviceChargeAmount = 0;
+      let utilityData: UtilityData[] = [];
+      let complianceStatus: ComplianceStatus = {} as ComplianceStatus;
+      
+      try {
+        const incentivesData = property.incentives;
+        if (incentivesData) {
+          // Check if the incentives field is a string or an object
+          const parsedData = typeof incentivesData === 'string' 
+            ? JSON.parse(incentivesData) 
+            : incentivesData;
+          
+          // If it's an array, treat it as incentives
+          if (Array.isArray(parsedData)) {
+            incentives = parsedData as Incentive[];
+          } 
+          // Otherwise, it might be our metadata object
+          else if (typeof parsedData === 'object') {
+            serviceChargeAmount = parsedData.service_charge_amount || 0;
+            utilityData = parsedData.utility_data || [];
+            complianceStatus = parsedData.compliance_status || {};
+            // There might still be incentives in there
+            if (parsedData.incentives && Array.isArray(parsedData.incentives)) {
+              incentives = parsedData.incentives;
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Error parsing incentives data:", e);
+      }
+      
+      return {
+        id: property.id,
+        name: property.name,
+        address: property.address,
+        rentalFee: Number(property.rental_fee),
+        nextPaymentDate: property.next_payment_date,
+        leaseExpiry: property.lease_expiry,
+        createdAt: property.created_at,
+        updatedAt: property.updated_at,
+        image: property.image_path ? getPropertyImageUrl(property.image_path) : undefined,
+        premisesSchedule: property.premises_schedule || '',
+        incentives,
+        serviceChargeAmount,
+        utilityData,
+        complianceStatus
+      };
+    });
   } catch (error: any) {
     toast({
       variant: "destructive",

@@ -46,20 +46,33 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
     const utilityData = property.utilityData || createDefaultUtilityData();
     const complianceStatus = property.complianceStatus || createDefaultComplianceStatus();
 
+    // We'll add the new fields to our insert data object separately
+    const insertData = {
+      name: property.name,
+      address: property.address,
+      rental_fee: property.rentalFee,
+      next_payment_date: property.nextPaymentDate,
+      lease_expiry: property.leaseExpiry,
+      user_id: user.id,
+      image_path: imagePath,
+    };
+
+    // Now store the additional data in a metadata field
+    const metadata = {
+      service_charge_amount: serviceChargeAmount,
+      utility_data: utilityData,
+      compliance_status: complianceStatus
+    };
+
+    // Merging the additional data with the base data
+    const dataToInsert = {
+      ...insertData,
+      incentives: JSON.stringify(metadata)
+    };
+
     const { data, error } = await supabase
       .from('properties')
-      .insert({
-        name: property.name,
-        address: property.address,
-        rental_fee: property.rentalFee,
-        next_payment_date: property.nextPaymentDate,
-        lease_expiry: property.leaseExpiry,
-        user_id: user.id,
-        image_path: imagePath,
-        service_charge_amount: serviceChargeAmount,
-        utility_data: utilityData,
-        compliance_status: complianceStatus
-      })
+      .insert(dataToInsert)
       .select()
       .single();
     
@@ -72,6 +85,15 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
       return null;
     }
     
+    // Extract metadata from the incentives field
+    let metadataObj = {};
+    try {
+      metadataObj = data.incentives ? (typeof data.incentives === 'string' ? JSON.parse(data.incentives) : data.incentives) : {};
+    } catch (e) {
+      console.error("Failed to parse incentives JSON:", e);
+      metadataObj = {};
+    }
+    
     return {
       id: data.id,
       name: data.name,
@@ -82,9 +104,10 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
       createdAt: data.created_at,
       updatedAt: data.updated_at,
       image: data.image_path ? getPropertyImageUrl(data.image_path) : undefined,
-      serviceChargeAmount: data.service_charge_amount,
-      utilityData: data.utility_data,
-      complianceStatus: data.compliance_status
+      incentives: [],
+      serviceChargeAmount: metadataObj.service_charge_amount || 0,
+      utilityData: metadataObj.utility_data || [],
+      complianceStatus: metadataObj.compliance_status || {}
     };
   } catch (error: any) {
     toast({

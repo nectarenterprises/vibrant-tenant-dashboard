@@ -8,7 +8,7 @@ export interface Property {
   leaseExpiry: string;
   image?: string;
   premisesSchedule?: string;
-  incentives?: Incentive[];
+  incentives: Incentive[];
   createdAt?: string;
   updatedAt?: string;
   serviceChargeAmount?: number;
