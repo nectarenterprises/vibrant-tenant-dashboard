@@ -1,9 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Building, FileText, Edit, Plus } from 'lucide-react';
 import { format } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/use-toast';
 
 interface PropertyDetailsSectionProps {
   propertyType: string;
@@ -15,6 +17,8 @@ interface PropertyDetailsSectionProps {
   leaseDuration: string;
   securityDeposit: string;
   setShowPropertyDialog: (show: boolean) => void;
+  isLoading?: boolean;
+  propertyId: string;
 }
 
 const PropertyDetailsSection = ({
@@ -26,8 +30,47 @@ const PropertyDetailsSection = ({
   leaseStart,
   leaseDuration,
   securityDeposit,
-  setShowPropertyDialog
+  setShowPropertyDialog,
+  isLoading,
+  propertyId
 }: PropertyDetailsSectionProps) => {
+  const [isSaving, setIsSaving] = useState(false);
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Property Details</CardTitle>
+            <CardDescription>Additional information about the property</CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="animate-pulse space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -39,6 +82,7 @@ const PropertyDetailsSection = ({
           variant="ghost" 
           size="icon"
           onClick={() => setShowPropertyDialog(true)}
+          disabled={isSaving}
         >
           {propertyType ? <Edit className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
         </Button>

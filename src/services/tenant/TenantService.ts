@@ -1,5 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from '@/components/ui/use-toast';
 
 export interface TenantInput {
   property_id: string;
@@ -23,11 +24,21 @@ export interface TenantDetails {
 export const saveTenantDetails = async (tenantData: TenantInput): Promise<TenantDetails | null> => {
   try {
     // Check if tenant details already exist for this property
-    const { data: existingTenants } = await supabase
+    const { data: existingTenants, error: fetchError } = await supabase
       .from('tenant_details')
       .select('*')
       .eq('property_id', tenantData.property_id)
       .maybeSingle();
+    
+    if (fetchError) {
+      console.error('Error checking existing tenant details:', fetchError);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to check existing tenant details.",
+      });
+      return null;
+    }
     
     let result;
     
@@ -62,12 +73,27 @@ export const saveTenantDetails = async (tenantData: TenantInput): Promise<Tenant
     
     if (result.error) {
       console.error('Error saving tenant details:', result.error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save tenant details.",
+      });
       return null;
     }
+    
+    toast({
+      title: "Success",
+      description: "Tenant details saved successfully.",
+    });
     
     return result.data as TenantDetails;
   } catch (error) {
     console.error('Error in saveTenantDetails:', error);
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description: "An unexpected error occurred while saving tenant details.",
+    });
     return null;
   }
 };

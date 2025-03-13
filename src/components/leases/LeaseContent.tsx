@@ -93,6 +93,8 @@ const LeaseContent: React.FC<LeaseContentProps> = ({
           leaseDuration={leaseDuration}
           securityDeposit={securityDeposit}
           setShowPropertyDialog={setShowPropertyDialog}
+          isLoading={isLoading}
+          propertyId={property.id}
         />
       </div>
       
@@ -100,6 +102,7 @@ const LeaseContent: React.FC<LeaseContentProps> = ({
         <PremisesScheduleSection 
           premisesSchedule={premisesSchedule} 
           setShowPremisesDialog={setShowPremisesDialog}
+          isLoading={isLoading}
         />
       </div>
       
@@ -107,6 +110,7 @@ const LeaseContent: React.FC<LeaseContentProps> = ({
         <IncentivesSection 
           incentives={incentives} 
           setShowIncentivesDialog={setShowIncentivesDialog}
+          isLoading={isLoading}
         />
       </div>
     </>

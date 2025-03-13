@@ -1,13 +1,13 @@
 
+// This is a new file that updates the IncentivesDialog to save details to the database
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Incentive } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Incentive } from '@/types/property';
-import { PlusCircle } from 'lucide-react';
-import IncentiveForm from './incentives/IncentiveForm';
 import EmptyState from './incentives/EmptyState';
+import IncentiveForm from './incentives/IncentiveForm';
 
 interface IncentivesDialogProps {
   showIncentivesDialog: boolean;
@@ -24,59 +24,90 @@ const IncentivesDialog: React.FC<IncentivesDialogProps> = ({
   setIncentives,
   propertyId
 }) => {
-  const [localIncentives, setLocalIncentives] = useState<Incentive[]>(incentives || []);
+  const [localIncentives, setLocalIncentives] = useState<Incentive[]>(incentives);
   const [isSaving, setIsSaving] = useState(false);
-  
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [showForm, setShowForm] = useState(false);
+
   const handleAddIncentive = () => {
-    const newIncentive: Incentive = {
-      type: 'rent-free',
-      description: '',
-    };
-    setLocalIncentives([...localIncentives, newIncentive]);
+    setEditingIndex(null);
+    setShowForm(true);
   };
-  
-  const handleIncentiveChange = (index: number, field: keyof Incentive, value: any) => {
-    const updatedIncentives = [...localIncentives];
-    updatedIncentives[index] = {
-      ...updatedIncentives[index],
-      [field]: value
-    };
-    setLocalIncentives(updatedIncentives);
+
+  const handleEditIncentive = (index: number) => {
+    setEditingIndex(index);
+    setShowForm(true);
   };
-  
+
   const handleRemoveIncentive = (index: number) => {
-    const updatedIncentives = localIncentives.filter((_, i) => i !== index);
-    setLocalIncentives(updatedIncentives);
+    setLocalIncentives(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSaving(true);
+  const handleSaveIncentive = (incentive: Incentive) => {
+    if (editingIndex !== null) {
+      // Edit existing incentive
+      setLocalIncentives(prev => prev.map((item, i) => i === editingIndex ? incentive : item));
+    } else {
+      // Add new incentive
+      setLocalIncentives(prev => [...prev, incentive]);
+    }
+    setShowForm(false);
+  };
 
+  const saveIncentivesToDatabase = async () => {
+    setIsSaving(true);
+    
     try {
-      const validIncentives = localIncentives.filter(inc => inc.description.trim() !== '');
+      const { data: currentProperty, error: fetchError } = await supabase
+        .from('properties')
+        .select('incentives')
+        .eq('id', propertyId)
+        .maybeSingle();
+      
+      if (fetchError) {
+        throw fetchError;
+      }
+      
+      // Parse existing metadata or create new object
+      let metadata: Record<string, any> = {};
+      try {
+        const incentivesData = currentProperty?.incentives;
+        if (incentivesData) {
+          metadata = typeof incentivesData === 'string' 
+            ? JSON.parse(incentivesData) 
+            : incentivesData;
+        }
+      } catch (e) {
+        console.error("Error parsing incentives data:", e);
+        metadata = {};
+      }
+      
+      // Update incentives while preserving other data
+      metadata.incentives = localIncentives;
       
       const { error } = await supabase
         .from('properties')
         .update({ 
-          incentives: JSON.stringify(validIncentives)
+          incentives: metadata,
+          updated_at: new Date().toISOString()
         })
         .eq('id', propertyId);
-
+      
       if (error) throw error;
-
-      setIncentives(validIncentives);
+      
+      // Update parent state
+      setIncentives(localIncentives);
       toast({
         title: "Success",
-        description: "Lease incentives updated successfully.",
+        description: "Lease incentives saved successfully.",
       });
       setShowIncentivesDialog(false);
     } catch (error: any) {
-      console.error('Error updating incentives:', error);
+      console.error('Error saving incentives:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: `Failed to update incentives: ${error.message}`,
+        description: `Failed to save incentives: ${error.message}`,
       });
     } finally {
       setIsSaving(false);
@@ -84,58 +115,90 @@ const IncentivesDialog: React.FC<IncentivesDialogProps> = ({
   };
 
   const handleCancel = () => {
-    setLocalIncentives(incentives || []);
+    setLocalIncentives(incentives);
     setShowIncentivesDialog(false);
   };
 
   return (
     <Dialog open={showIncentivesDialog} onOpenChange={setShowIncentivesDialog}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>{incentives?.length ? 'Edit' : 'Add'} Lease Incentives</DialogTitle>
-            <DialogDescription>
-              Define special terms and benefits included in the lease.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            {localIncentives.length === 0 ? (
-              <EmptyState onAddIncentive={handleAddIncentive} />
-            ) : (
-              <>
-                {localIncentives.map((incentive, index) => (
-                  <IncentiveForm
-                    key={index}
-                    incentive={incentive}
-                    index={index}
-                    onChange={handleIncentiveChange}
-                    onRemove={handleRemoveIncentive}
-                  />
-                ))}
-                
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleAddIncentive}
-                >
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Add Incentive
-                </Button>
-              </>
-            )}
-          </div>
-          
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleCancel} disabled={isSaving}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSaving}>
-              {isSaving ? 'Saving...' : 'Save Changes'}
-            </Button>
-          </DialogFooter>
-        </form>
+      <DialogContent className="sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle>Manage Lease Incentives</DialogTitle>
+          <DialogDescription>
+            Add or edit special terms and incentives included in the lease.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="py-4">
+          {showForm ? (
+            <IncentiveForm 
+              initialIncentive={editingIndex !== null ? localIncentives[editingIndex] : undefined}
+              onSave={handleSaveIncentive}
+              onCancel={() => setShowForm(false)}
+            />
+          ) : localIncentives.length > 0 ? (
+            <div className="space-y-4">
+              {localIncentives.map((incentive, index) => (
+                <div key={index} className="flex items-start gap-4 p-4 bg-muted/50 rounded-md">
+                  <div className="flex-1">
+                    <h4 className="font-medium">
+                      {incentive.type === 'rent-free' ? 'Rent Free Period' :
+                       incentive.type === 'fitout' ? 'Fitout Contribution' :
+                       incentive.type === 'break-option' ? 'Break Option' : 
+                       'Other Incentive'}
+                    </h4>
+                    <p className="text-sm">{incentive.description}</p>
+                    {incentive.value && (
+                      <p className="text-sm mt-1 font-medium">£{incentive.value.toLocaleString()}</p>
+                    )}
+                    {incentive.period && (
+                      <p className="text-sm text-muted-foreground">{incentive.period}</p>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleEditIncentive(index)}
+                    >
+                      Edit
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      onClick={() => handleRemoveIncentive(index)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="mt-2"
+                onClick={handleAddIncentive}
+              >
+                Add Another Incentive
+              </Button>
+            </div>
+          ) : (
+            <EmptyState onAddClick={handleAddIncentive} />
+          )}
+        </div>
+        
+        <DialogFooter>
+          <Button variant="outline" onClick={handleCancel} disabled={isSaving || showForm}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={saveIncentivesToDatabase} 
+            disabled={isSaving || showForm || localIncentives.length === 0}
+          >
+            {isSaving ? 'Saving...' : 'Save Incentives'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

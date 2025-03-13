@@ -1,4 +1,5 @@
 
+// Updated LeaseDialogs.tsx to pass all required props
 import React from 'react';
 import { Property, Incentive, DocumentType } from '@/types/property';
 import PropertyDialog from './dialogs/PropertyDialog';
@@ -9,6 +10,7 @@ import IncentivesDialog from './dialogs/IncentivesDialog';
 
 interface LeaseDialogsProps {
   propertyId: string;
+  // Property dialog props
   showPropertyDialog: boolean;
   setShowPropertyDialog: (show: boolean) => void;
   propertyType: string;
@@ -27,6 +29,8 @@ interface LeaseDialogsProps {
   setLeaseDuration: (duration: string) => void;
   securityDeposit: string;
   setSecurityDeposit: (deposit: string) => void;
+  
+  // Tenant dialog props
   showTenantDialog: boolean;
   setShowTenantDialog: (show: boolean) => void;
   tenantName: string;
@@ -37,6 +41,8 @@ interface LeaseDialogsProps {
   setContactEmail: (email: string) => void;
   contactPhone: string;
   setContactPhone: (phone: string) => void;
+  
+  // Document dialog props
   showDocumentDialog: boolean;
   setShowDocumentDialog: (show: boolean) => void;
   selectedFile: File | null;
@@ -45,20 +51,27 @@ interface LeaseDialogsProps {
   setDocumentType: (type: DocumentType) => void;
   documentName: string;
   setDocumentName: (name: string) => void;
-  onDocumentUploaded: () => void;
+  
+  // Premises dialog props
   showPremisesDialog: boolean;
   setShowPremisesDialog: (show: boolean) => void;
   premisesSchedule: string;
   setPremisesSchedule: (schedule: string) => void;
+  
+  // Incentives dialog props
   showIncentivesDialog: boolean;
   setShowIncentivesDialog: (show: boolean) => void;
   incentives: Incentive[];
   setIncentives: (incentives: Incentive[]) => void;
+  
+  // Event handlers
+  onDocumentUploaded?: () => void;
   onTenantSaved?: () => void;
 }
 
 const LeaseDialogs: React.FC<LeaseDialogsProps> = ({
   propertyId,
+  // Property props
   showPropertyDialog,
   setShowPropertyDialog,
   propertyType,
@@ -77,6 +90,8 @@ const LeaseDialogs: React.FC<LeaseDialogsProps> = ({
   setLeaseDuration,
   securityDeposit,
   setSecurityDeposit,
+  
+  // Tenant props
   showTenantDialog,
   setShowTenantDialog,
   tenantName,
@@ -87,6 +102,8 @@ const LeaseDialogs: React.FC<LeaseDialogsProps> = ({
   setContactEmail,
   contactPhone,
   setContactPhone,
+  
+  // Document props
   showDocumentDialog,
   setShowDocumentDialog,
   selectedFile,
@@ -95,15 +112,21 @@ const LeaseDialogs: React.FC<LeaseDialogsProps> = ({
   setDocumentType,
   documentName,
   setDocumentName,
-  onDocumentUploaded,
+  
+  // Premises props
   showPremisesDialog,
   setShowPremisesDialog,
   premisesSchedule,
   setPremisesSchedule,
+  
+  // Incentives props
   showIncentivesDialog,
   setShowIncentivesDialog,
   incentives,
   setIncentives,
+  
+  // Event handlers
+  onDocumentUploaded,
   onTenantSaved
 }) => {
   return (
@@ -111,6 +134,7 @@ const LeaseDialogs: React.FC<LeaseDialogsProps> = ({
       <PropertyDialog 
         showPropertyDialog={showPropertyDialog}
         setShowPropertyDialog={setShowPropertyDialog}
+        propertyId={propertyId}
         propertyType={propertyType}
         setPropertyType={setPropertyType}
         floorArea={floorArea}
@@ -130,9 +154,9 @@ const LeaseDialogs: React.FC<LeaseDialogsProps> = ({
       />
       
       <TenantDialog 
-        propertyId={propertyId}
         showTenantDialog={showTenantDialog}
         setShowTenantDialog={setShowTenantDialog}
+        propertyId={propertyId}
         tenantName={tenantName}
         setTenantName={setTenantName}
         contactName={contactName}
@@ -157,7 +181,7 @@ const LeaseDialogs: React.FC<LeaseDialogsProps> = ({
         onDocumentUploaded={onDocumentUploaded}
       />
       
-      <PremisesScheduleDialog
+      <PremisesScheduleDialog 
         showPremisesDialog={showPremisesDialog}
         setShowPremisesDialog={setShowPremisesDialog}
         premisesSchedule={premisesSchedule}

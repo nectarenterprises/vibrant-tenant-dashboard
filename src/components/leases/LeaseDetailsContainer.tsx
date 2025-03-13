@@ -3,7 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Property } from '@/types/property';
 import LeaseDetails from './LeaseDetails';
 import { fetchTenantDetails } from '@/services/tenant/TenantService';
+import { fetchPropertyDetails } from '@/services/property/PropertyDetailsService';
 import { toast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LeaseDetailsContainerProps {
   property: Property;
@@ -41,11 +43,13 @@ const LeaseDetailsContainer: React.FC<LeaseDetailsContainerProps> = ({ property 
   const [refreshDocuments, setRefreshDocuments] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Load tenant details on property change
+  // Load all data on property change
   useEffect(() => {
-    const loadTenantDetails = async () => {
+    const loadAllData = async () => {
       setIsLoading(true);
+      
       try {
+        // Load tenant details
         const tenantData = await fetchTenantDetails(property.id);
         if (tenantData) {
           setTenantName(tenantData.tenant_name);
@@ -59,11 +63,41 @@ const LeaseDetailsContainer: React.FC<LeaseDetailsContainerProps> = ({ property 
           setContactEmail('');
           setContactPhone('');
         }
+        
+        // Load property details
+        const propertyDetails = await fetchPropertyDetails(property.id);
+        if (propertyDetails) {
+          setPropertyType(propertyDetails.property_type || '');
+          setFloorArea(propertyDetails.floor_area || '');
+          setYearBuilt(propertyDetails.year_built || '');
+          setParkingSpaces(propertyDetails.parking_spaces || '');
+          setLeaseType(propertyDetails.lease_type || '');
+          setLeaseStart(propertyDetails.lease_start ? new Date(propertyDetails.lease_start) : undefined);
+          setLeaseDuration(propertyDetails.lease_duration || '');
+          setSecurityDeposit(propertyDetails.security_deposit || '');
+        } else {
+          // Reset fields if no property details found
+          setPropertyType('');
+          setFloorArea('');
+          setYearBuilt('');
+          setParkingSpaces('');
+          setLeaseType('');
+          setLeaseStart(undefined);
+          setLeaseDuration('');
+          setSecurityDeposit('');
+        }
+        
+        // Load premises schedule (already in property object)
+        setPremisesSchedule(property.premisesSchedule || '');
+        
+        // Load incentives (already in property object)
+        setIncentives(property.incentives || []);
+        
       } catch (error) {
-        console.error('Error fetching tenant details:', error);
+        console.error('Error loading data:', error);
         toast({
           title: "Error",
-          description: "Failed to load tenant details. Please try again.",
+          description: "Failed to load property data. Please try again.",
           variant: "destructive"
         });
       } finally {
@@ -71,8 +105,8 @@ const LeaseDetailsContainer: React.FC<LeaseDetailsContainerProps> = ({ property 
       }
     };
     
-    loadTenantDetails();
-  }, [property.id]);
+    loadAllData();
+  }, [property.id, property.premisesSchedule, property.incentives]);
   
   // Handle document upload success
   const handleDocumentUploaded = () => {

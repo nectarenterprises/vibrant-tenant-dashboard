@@ -1,22 +1,18 @@
 
-import React from 'react';
+// This is a new file that updates the PropertyDialog to save details to the database
+import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import DatePickerField from '../form-fields/DatePickerField';
 import { toast } from '@/components/ui/use-toast';
+import DatePickerField from '../form-fields/DatePickerField';
+import { savePropertyDetails, PropertyDetailsInput } from '@/services/property/PropertyDetailsService';
 
 interface PropertyDialogProps {
   showPropertyDialog: boolean;
   setShowPropertyDialog: (show: boolean) => void;
+  propertyId: string;
   propertyType: string;
   setPropertyType: (type: string) => void;
   floorArea: string;
@@ -38,6 +34,7 @@ interface PropertyDialogProps {
 const PropertyDialog: React.FC<PropertyDialogProps> = ({
   showPropertyDialog,
   setShowPropertyDialog,
+  propertyId,
   propertyType,
   setPropertyType,
   floorArea,
@@ -55,11 +52,70 @@ const PropertyDialog: React.FC<PropertyDialogProps> = ({
   securityDeposit,
   setSecurityDeposit
 }) => {
-  const savePropertyDetails = () => {
-    toast({
-      title: "Property details saved",
-      description: "The property details have been updated successfully.",
-    });
+  const [localPropertyType, setLocalPropertyType] = useState(propertyType);
+  const [localFloorArea, setLocalFloorArea] = useState(floorArea);
+  const [localYearBuilt, setLocalYearBuilt] = useState(yearBuilt);
+  const [localParkingSpaces, setLocalParkingSpaces] = useState(parkingSpaces);
+  const [localLeaseType, setLocalLeaseType] = useState(leaseType);
+  const [localLeaseStart, setLocalLeaseStart] = useState<Date | undefined>(leaseStart);
+  const [localLeaseDuration, setLocalLeaseDuration] = useState(leaseDuration);
+  const [localSecurityDeposit, setLocalSecurityDeposit] = useState(securityDeposit);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    
+    try {
+      const propertyDetailsInput: PropertyDetailsInput = {
+        property_id: propertyId,
+        property_type: localPropertyType,
+        floor_area: localFloorArea,
+        year_built: localYearBuilt,
+        parking_spaces: localParkingSpaces,
+        lease_type: localLeaseType,
+        lease_start: localLeaseStart ? localLeaseStart.toISOString() : undefined,
+        lease_duration: localLeaseDuration,
+        security_deposit: localSecurityDeposit
+      };
+      
+      const success = await savePropertyDetails(propertyDetailsInput);
+      
+      if (success) {
+        // Update the parent component state
+        setPropertyType(localPropertyType);
+        setFloorArea(localFloorArea);
+        setYearBuilt(localYearBuilt);
+        setParkingSpaces(localParkingSpaces);
+        setLeaseType(localLeaseType);
+        setLeaseStart(localLeaseStart);
+        setLeaseDuration(localLeaseDuration);
+        setSecurityDeposit(localSecurityDeposit);
+        
+        setShowPropertyDialog(false);
+      }
+    } catch (error) {
+      console.error('Error saving property details:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save property details. Please try again.",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    // Reset local state
+    setLocalPropertyType(propertyType);
+    setLocalFloorArea(floorArea);
+    setLocalYearBuilt(yearBuilt);
+    setLocalParkingSpaces(parkingSpaces);
+    setLocalLeaseType(leaseType);
+    setLocalLeaseStart(leaseStart);
+    setLocalLeaseDuration(leaseDuration);
+    setLocalSecurityDeposit(securityDeposit);
+    
     setShowPropertyDialog(false);
   };
 
@@ -67,134 +123,107 @@ const PropertyDialog: React.FC<PropertyDialogProps> = ({
     <Dialog open={showPropertyDialog} onOpenChange={setShowPropertyDialog}>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>Property Details</DialogTitle>
+          <DialogTitle>{propertyType ? 'Edit' : 'Add'} Property Details</DialogTitle>
           <DialogDescription>
-            Add or update property specifications and lease terms.
+            Enter additional details about the property.
           </DialogDescription>
         </DialogHeader>
         
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
+            <div className="space-y-2">
               <Label htmlFor="propertyType">Property Type</Label>
-              <Select
-                value={propertyType}
-                onValueChange={setPropertyType}
-              >
-                <SelectTrigger id="propertyType">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Office">Office</SelectItem>
-                  <SelectItem value="Retail">Retail</SelectItem>
-                  <SelectItem value="Industrial">Industrial</SelectItem>
-                  <SelectItem value="Residential">Residential</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="floorArea">Floor Area (sq m)</Label>
               <Input
-                id="floorArea"
-                value={floorArea}
-                onChange={(e) => setFloorArea(e.target.value)}
-                placeholder="e.g. 150"
+                id="propertyType"
+                value={localPropertyType}
+                onChange={(e) => setLocalPropertyType(e.target.value)}
+                placeholder="e.g. Office, Retail, Warehouse"
               />
             </div>
             
-            <div className="grid gap-2">
+            <div className="space-y-2">
+              <Label htmlFor="floorArea">Floor Area</Label>
+              <Input
+                id="floorArea"
+                value={localFloorArea}
+                onChange={(e) => setLocalFloorArea(e.target.value)}
+                placeholder="e.g. 1,500 sq ft"
+              />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
               <Label htmlFor="yearBuilt">Year Built</Label>
               <Input
                 id="yearBuilt"
-                value={yearBuilt}
-                onChange={(e) => setYearBuilt(e.target.value)}
+                value={localYearBuilt}
+                onChange={(e) => setLocalYearBuilt(e.target.value)}
                 placeholder="e.g. 2010"
               />
             </div>
             
-            <div className="grid gap-2">
+            <div className="space-y-2">
               <Label htmlFor="parkingSpaces">Parking Spaces</Label>
               <Input
                 id="parkingSpaces"
-                value={parkingSpaces}
-                onChange={(e) => setParkingSpaces(e.target.value)}
-                placeholder="e.g. 2 Reserved"
+                value={localParkingSpaces}
+                onChange={(e) => setLocalParkingSpaces(e.target.value)}
+                placeholder="e.g. 10"
               />
             </div>
-          </div>
-          
-          <div className="grid gap-2 mt-4">
-            <h3 className="text-sm font-medium">Lease Terms</h3>
           </div>
           
           <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
+            <div className="space-y-2">
               <Label htmlFor="leaseType">Lease Type</Label>
-              <Select
-                value={leaseType}
-                onValueChange={setLeaseType}
-              >
-                <SelectTrigger id="leaseType">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Full Service">Full Service</SelectItem>
-                  <SelectItem value="Triple Net">Triple Net</SelectItem>
-                  <SelectItem value="Modified Gross">Modified Gross</SelectItem>
-                  <SelectItem value="Gross">Gross</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="grid gap-2">
-              <Label>Lease Start Date</Label>
-              <DatePickerField
-                label=""
-                selected={leaseStart}
-                onSelect={setLeaseStart}
+              <Input
+                id="leaseType"
+                value={localLeaseType}
+                onChange={(e) => setLocalLeaseType(e.target.value)}
+                placeholder="e.g. FRI, IRI"
               />
             </div>
             
-            <div className="grid gap-2">
+            <div className="space-y-2">
+              <Label htmlFor="leaseStart">Lease Start Date</Label>
+              <DatePickerField
+                date={localLeaseStart}
+                setDate={setLocalLeaseStart}
+              />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
               <Label htmlFor="leaseDuration">Lease Duration</Label>
-              <Select
-                value={leaseDuration}
-                onValueChange={setLeaseDuration}
-              >
-                <SelectTrigger id="leaseDuration">
-                  <SelectValue placeholder="Select duration" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="6 months">6 months</SelectItem>
-                  <SelectItem value="12 months">12 months</SelectItem>
-                  <SelectItem value="24 months">24 months</SelectItem>
-                  <SelectItem value="36 months">36 months</SelectItem>
-                  <SelectItem value="60 months">60 months</SelectItem>
-                </SelectContent>
-              </Select>
+              <Input
+                id="leaseDuration"
+                value={localLeaseDuration}
+                onChange={(e) => setLocalLeaseDuration(e.target.value)}
+                placeholder="e.g. 5 years"
+              />
             </div>
             
-            <div className="grid gap-2">
-              <Label htmlFor="securityDeposit">Security Deposit (£)</Label>
+            <div className="space-y-2">
+              <Label htmlFor="securityDeposit">Security Deposit</Label>
               <Input
                 id="securityDeposit"
-                value={securityDeposit}
-                onChange={(e) => setSecurityDeposit(e.target.value)}
-                placeholder="e.g. 5000"
+                value={localSecurityDeposit}
+                onChange={(e) => setLocalSecurityDeposit(e.target.value)}
+                placeholder="e.g. £10,000"
               />
             </div>
           </div>
         </div>
         
         <DialogFooter>
-          <Button 
-            variant="outline" 
-            onClick={() => setShowPropertyDialog(false)}
-          >
+          <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
             Cancel
           </Button>
-          <Button onClick={savePropertyDetails}>Save changes</Button>
+          <Button onClick={handleSave} disabled={isSaving}>
+            {isSaving ? 'Saving...' : 'Save Details'}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
