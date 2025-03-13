@@ -12,7 +12,7 @@ import {
   Zap, 
   CheckSquare,
   ChevronLeft,
-  DollarSign,
+  Pound,
   LogOut
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
     { name: 'Documents', path: '/documents', icon: FileText },
     { name: 'Leases', path: '/leases', icon: Key },
-    { name: 'Service Charge', path: '/service-charge', icon: DollarSign },
+    { name: 'Service Charge', path: '/service-charge', icon: Pound },
     { name: 'Calendar', path: '/calendar', icon: Calendar },
     { name: 'Utilities', path: '/utilities', icon: Zap },
     { name: 'Compliance', path: '/compliance', icon: CheckSquare },
