@@ -4,6 +4,7 @@ import { format, parseISO } from 'date-fns';
 import { Calendar as CalendarIcon, DollarSign, Wrench, ClipboardCheck } from 'lucide-react';
 import { EventData, Property } from '@/types/property';
 import { cn } from '@/lib/utils';
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   Card,
   CardHeader,
@@ -64,8 +65,8 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events, properties = []
   };
 
   return (
-    <Card className="h-full rounded-xl overflow-hidden card-gradient shadow-md border border-gray-100 dark:border-gray-800 animate-fade-in">
-      <CardHeader className="p-4 mellow-gradient relative">
+    <Card className="h-full flex flex-col rounded-xl overflow-hidden card-gradient shadow-md border border-gray-100 dark:border-gray-800 animate-fade-in">
+      <CardHeader className="p-4 mellow-gradient relative flex-shrink-0">
         <div className="absolute inset-0 bg-[url('/placeholder.svg')] bg-cover bg-center mix-blend-overlay opacity-30"></div>
         <div className="flex justify-between items-center relative z-10">
           <h3 className="text-white font-bold text-xl flex items-center gap-2">
@@ -94,39 +95,43 @@ const CalendarWidget: React.FC<CalendarWidgetProps> = ({ events, properties = []
         </div>
       </CardHeader>
       
-      <CardContent className="p-4 space-y-3 max-h-[380px] overflow-y-auto">
-        {sortedEvents.length > 0 ? (
-          sortedEvents.map((event, index) => (
-            <div 
-              key={event.id}
-              className={cn(
-                "p-3 rounded-lg border flex items-start gap-3",
-                getEventColor(event.type),
-                index === 0 ? "animate-pulse-gentle" : ""
-              )}
-            >
-              <div className="mt-0.5">
-                {getEventIcon(event.type)}
+      <CardContent className="p-0 flex-grow overflow-hidden">
+        <ScrollArea className="h-full max-h-[calc(100%-1rem)]">
+          <div className="p-4 space-y-3">
+            {sortedEvents.length > 0 ? (
+              sortedEvents.map((event, index) => (
+                <div 
+                  key={event.id}
+                  className={cn(
+                    "p-3 rounded-lg border flex items-start gap-3",
+                    getEventColor(event.type),
+                    index === 0 ? "animate-pulse-gentle" : ""
+                  )}
+                >
+                  <div className="mt-0.5">
+                    {getEventIcon(event.type)}
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-sm">{event.title}</h4>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {format(parseISO(event.date), 'EEEE, MMMM d, yyyy')}
+                    </p>
+                    {event.propertyName && (
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {event.propertyName}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <CalendarIcon className="h-10 w-10 mx-auto mb-2 opacity-40" />
+                <p>No upcoming events</p>
               </div>
-              <div>
-                <h4 className="font-medium text-sm">{event.title}</h4>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {format(parseISO(event.date), 'EEEE, MMMM d, yyyy')}
-                </p>
-                {event.propertyName && (
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {event.propertyName}
-                  </p>
-                )}
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="text-center py-8 text-muted-foreground">
-            <CalendarIcon className="h-10 w-10 mx-auto mb-2 opacity-40" />
-            <p>No upcoming events</p>
+            )}
           </div>
-        )}
+        </ScrollArea>
       </CardContent>
     </Card>
   );
