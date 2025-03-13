@@ -1,13 +1,10 @@
 
-import { DocumentType } from '@/types/property';
+export type FolderType = 'lease' | 'utility' | 'compliance' | 'service-charge' | 'other';
 
-// Making sure FolderType is equivalent to DocumentType
-export type FolderType = DocumentType;
-
-export const DOCUMENT_TYPES: Record<DocumentType, string> = {
-  'lease': 'Lease Documents',
-  'utility': 'Utilities Invoices',
-  'compliance': 'Compliance Documents',
-  'service-charge': 'Service Charge Info',
-  'other': 'Other Documents'
+export const DOCUMENT_TYPES: Record<FolderType, string> = {
+  'lease': 'Lease Agreement',
+  'utility': 'Utility Bill',
+  'compliance': 'Compliance Document',
+  'service-charge': 'Service Charge Statement',
+  'other': 'Other Document'
 };
