@@ -1,5 +1,5 @@
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
 
 export interface PropertyDetailsInput {
@@ -14,141 +14,82 @@ export interface PropertyDetailsInput {
   security_deposit?: string;
 }
 
-export const savePropertyDetails = async (
-  propertyData: PropertyDetailsInput
-): Promise<boolean> => {
+// Fetch property details from the database
+export const fetchPropertyDetails = async (propertyId: string) => {
   try {
-    // Store property details in the incentives JSON field
-    // First fetch the current incentives data
-    const { data: currentProperty, error: fetchError } = await supabase
+    const { data, error } = await supabase
       .from('properties')
-      .select('incentives')
-      .eq('id', propertyData.property_id)
-      .maybeSingle();
+      .select('property_details, incentives')
+      .eq('id', propertyId)
+      .single();
+    
+    if (error) {
+      throw error;
+    }
+    
+    return data?.property_details || null;
+  } catch (error: any) {
+    console.error('Error fetching property details:', error);
+    return null;
+  }
+};
+
+// Save property details to the database
+export const savePropertyDetails = async (input: PropertyDetailsInput): Promise<boolean> => {
+  try {
+    const { property_id, ...detailsToUpdate } = input;
+    
+    // First, fetch existing property details
+    const { data: existingData, error: fetchError } = await supabase
+      .from('properties')
+      .select('property_details')
+      .eq('id', property_id)
+      .single();
     
     if (fetchError) {
-      console.error('Error fetching property:', fetchError);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to fetch property details.",
-      });
-      return false;
+      throw fetchError;
     }
     
-    // Parse existing incentives/metadata or create new object
-    let metadata: Record<string, any> = {};
-    try {
-      const incentivesData = currentProperty?.incentives;
-      if (incentivesData) {
-        metadata = typeof incentivesData === 'string' 
-          ? JSON.parse(incentivesData) 
-          : incentivesData;
-      }
-    } catch (e) {
-      console.error("Error parsing incentives data:", e);
-      metadata = {};
-    }
-    
-    // Ensure we preserve existing data
-    const propertyDetails = {
-      ...metadata,
-      property_details: {
-        property_type: propertyData.property_type || '',
-        floor_area: propertyData.floor_area || '',
-        year_built: propertyData.year_built || '',
-        parking_spaces: propertyData.parking_spaces || '',
-        lease_type: propertyData.lease_type || '',
-        lease_start: propertyData.lease_start || '',
-        lease_duration: propertyData.lease_duration || '',
-        security_deposit: propertyData.security_deposit || ''
-      }
+    // Prepare property details object
+    const currentDetails = existingData?.property_details || {};
+    const updatedDetails = {
+      ...currentDetails,
+      property_type: detailsToUpdate.property_type,
+      floor_area: detailsToUpdate.floor_area,
+      year_built: detailsToUpdate.year_built,
+      parking_spaces: detailsToUpdate.parking_spaces,
+      lease_type: detailsToUpdate.lease_type,
+      lease_start: detailsToUpdate.lease_start,
+      lease_duration: detailsToUpdate.lease_duration,
+      security_deposit: detailsToUpdate.security_deposit
     };
     
-    // Make sure we preserve the incentives array if it exists
-    if (!propertyDetails.hasOwnProperty('incentives') && metadata.hasOwnProperty('incentives')) {
-      propertyDetails.incentives = metadata.incentives;
-    }
-    
-    // Update the property with the new metadata
+    // Update the property details in the database
     const { error } = await supabase
       .from('properties')
       .update({ 
-        incentives: propertyDetails,
+        property_details: updatedDetails,
         updated_at: new Date().toISOString()
       })
-      .eq('id', propertyData.property_id);
+      .eq('id', property_id);
     
     if (error) {
-      console.error('Error saving property details:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to save property details.",
-      });
-      return false;
+      throw error;
     }
     
     toast({
       title: "Success",
-      description: "Property details saved successfully.",
+      description: "Property details updated successfully.",
     });
     
     return true;
-  } catch (error) {
-    console.error('Error in savePropertyDetails:', error);
+  } catch (error: any) {
+    console.error('Error saving property details:', error);
     toast({
       variant: "destructive",
       title: "Error",
-      description: "An unexpected error occurred while saving property details.",
+      description: `Failed to save property details: ${error.message}`,
     });
     return false;
-  }
-};
-
-export const fetchPropertyDetails = async (
-  propertyId: string
-): Promise<{
-  property_type: string;
-  floor_area: string;
-  year_built: string;
-  parking_spaces: string;
-  lease_type: string;
-  lease_start: string;
-  lease_duration: string;
-  security_deposit: string;
-} | null> => {
-  try {
-    const { data, error } = await supabase
-      .from('properties')
-      .select('incentives')
-      .eq('id', propertyId)
-      .maybeSingle();
-    
-    if (error) {
-      console.error('Error fetching property details:', error);
-      return null;
-    }
-    
-    if (!data?.incentives) return null;
-    
-    // Parse the incentives/metadata
-    try {
-      const metadata = typeof data.incentives === 'string' 
-        ? JSON.parse(data.incentives) 
-        : data.incentives;
-      
-      if (metadata.property_details) {
-        return metadata.property_details;
-      }
-      
-      return null;
-    } catch (e) {
-      console.error("Error parsing incentives data:", e);
-      return null;
-    }
-  } catch (error) {
-    console.error('Error in fetchPropertyDetails:', error);
-    return null;
   }
 };

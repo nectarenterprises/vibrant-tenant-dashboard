@@ -189,6 +189,7 @@ const PropertyDialog: React.FC<PropertyDialogProps> = ({
               <DatePickerField
                 selected={localLeaseStart}
                 onSelect={setLocalLeaseStart}
+                label="Lease Start Date"
               />
             </div>
           </div>

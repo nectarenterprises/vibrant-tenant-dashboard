@@ -1,60 +1,13 @@
-
 import React from 'react';
 import { Property, Incentive, DocumentType } from '@/types/property';
 import { Card, CardContent } from '@/components/ui/card';
 import LeaseContent from './LeaseContent';
-import LeaseDialogs from './LeaseDialogs';
+import LeaseDialogs, { LeaseDialogsProps } from './dialogs';
 
-interface LeaseDetailsProps {
+interface LeaseDetailsProps extends LeaseDialogsProps {
   property: Property;
-  propertyType: string;
-  floorArea: string;
-  yearBuilt: string;
-  parkingSpaces: string;
-  leaseType: string;
-  leaseStart: Date | undefined;
-  leaseDuration: string;
-  securityDeposit: string;
-  tenantName: string;
-  contactName: string;
-  contactEmail: string;
-  contactPhone: string;
-  premisesSchedule: string;
-  incentives: Incentive[];
-  showPropertyDialog: boolean;
-  showTenantDialog: boolean;
-  showDocumentDialog: boolean;
-  showPremisesDialog: boolean;
-  showIncentivesDialog: boolean;
-  selectedFile: File | null;
-  documentType: DocumentType;
-  documentName: string;
-  refreshDocuments: number;
-  setPropertyType: (type: string) => void;
-  setFloorArea: (area: string) => void;
-  setYearBuilt: (year: string) => void;
-  setParkingSpaces: (spaces: string) => void;
-  setLeaseType: (type: string) => void;
-  setLeaseStart: (date: Date | undefined) => void;
-  setLeaseDuration: (duration: string) => void;
-  setSecurityDeposit: (deposit: string) => void;
-  setTenantName: (name: string) => void;
-  setContactName: (name: string) => void;
-  setContactEmail: (email: string) => void;
-  setContactPhone: (phone: string) => void;
-  setPremisesSchedule: (schedule: string) => void;
-  setIncentives: (incentives: Incentive[]) => void;
-  setShowPropertyDialog: (show: boolean) => void;
-  setShowTenantDialog: (show: boolean) => void;
-  setShowDocumentDialog: (show: boolean) => void;
-  setShowPremisesDialog: (show: boolean) => void;
-  setShowIncentivesDialog: (show: boolean) => void;
-  setSelectedFile: (file: File | null) => void;
-  setDocumentType: (type: DocumentType) => void;
-  setDocumentName: (name: string) => void;
-  onDocumentUploaded: () => void;
-  onTenantSaved?: () => void;
   isLoading?: boolean;
+  refreshDocuments: number;
 }
 
 const LeaseDetails: React.FC<LeaseDetailsProps> = ({ 

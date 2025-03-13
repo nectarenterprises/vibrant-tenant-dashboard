@@ -1,14 +1,23 @@
 
-// Updated LeaseDialogs.tsx to pass all required props
 import React from 'react';
 import { Property, Incentive, DocumentType } from '@/types/property';
-import PropertyDialog from './dialogs/PropertyDialog';
-import TenantDialog from './dialogs/TenantDialog';
-import DocumentDialog from './dialogs/DocumentDialog';
-import PremisesScheduleDialog from './dialogs/PremisesScheduleDialog';
-import IncentivesDialog from './dialogs/IncentivesDialog';
+import PropertyDialog from './PropertyDialog';
+import TenantDialog from './TenantDialog';
+import DocumentDialog from './DocumentDialog';
+import PremisesScheduleDialog from './PremisesScheduleDialog';
+import IncentivesDialog from './IncentivesDialog';
 
-interface LeaseDialogsProps {
+// Export all dialogs for easy importing elsewhere
+export {
+  PropertyDialog,
+  TenantDialog,
+  DocumentDialog,
+  PremisesScheduleDialog,
+  IncentivesDialog
+};
+
+// Dialog props types
+export interface LeaseDialogsProps {
   propertyId: string;
   // Property dialog props
   showPropertyDialog: boolean;
@@ -69,66 +78,69 @@ interface LeaseDialogsProps {
   onTenantSaved?: () => void;
 }
 
-const LeaseDialogs: React.FC<LeaseDialogsProps> = ({
-  propertyId,
-  // Property props
-  showPropertyDialog,
-  setShowPropertyDialog,
-  propertyType,
-  setPropertyType,
-  floorArea,
-  setFloorArea,
-  yearBuilt,
-  setYearBuilt,
-  parkingSpaces,
-  setParkingSpaces,
-  leaseType,
-  setLeaseType,
-  leaseStart,
-  setLeaseStart,
-  leaseDuration,
-  setLeaseDuration,
-  securityDeposit,
-  setSecurityDeposit,
-  
-  // Tenant props
-  showTenantDialog,
-  setShowTenantDialog,
-  tenantName,
-  setTenantName,
-  contactName,
-  setContactName,
-  contactEmail,
-  setContactEmail,
-  contactPhone,
-  setContactPhone,
-  
-  // Document props
-  showDocumentDialog,
-  setShowDocumentDialog,
-  selectedFile,
-  setSelectedFile,
-  documentType,
-  setDocumentType,
-  documentName,
-  setDocumentName,
-  
-  // Premises props
-  showPremisesDialog,
-  setShowPremisesDialog,
-  premisesSchedule,
-  setPremisesSchedule,
-  
-  // Incentives props
-  showIncentivesDialog,
-  setShowIncentivesDialog,
-  incentives,
-  setIncentives,
-  
-  // Event handlers
-  onDocumentUploaded,
-  onTenantSaved
-}) => {
+// Main LeaseDialogs component that renders all dialog components
+const LeaseDialogs: React.FC<LeaseDialogsProps> = (props) => {
+  const {
+    propertyId,
+    // Property dialog props
+    showPropertyDialog,
+    setShowPropertyDialog,
+    propertyType,
+    setPropertyType,
+    floorArea,
+    setFloorArea,
+    yearBuilt,
+    setYearBuilt,
+    parkingSpaces,
+    setParkingSpaces,
+    leaseType,
+    setLeaseType,
+    leaseStart,
+    setLeaseStart,
+    leaseDuration,
+    setLeaseDuration,
+    securityDeposit,
+    setSecurityDeposit,
+    
+    // Tenant dialog props
+    showTenantDialog,
+    setShowTenantDialog,
+    tenantName,
+    setTenantName,
+    contactName,
+    setContactName,
+    contactEmail,
+    setContactEmail,
+    contactPhone,
+    setContactPhone,
+    
+    // Document dialog props
+    showDocumentDialog,
+    setShowDocumentDialog,
+    selectedFile,
+    setSelectedFile,
+    documentType,
+    setDocumentType,
+    documentName,
+    setDocumentName,
+    
+    // Premises dialog props
+    showPremisesDialog,
+    setShowPremisesDialog,
+    premisesSchedule,
+    setPremisesSchedule,
+    
+    // Incentives dialog props
+    showIncentivesDialog,
+    setShowIncentivesDialog,
+    incentives,
+    setIncentives,
+    
+    // Event handlers
+    onDocumentUploaded,
+    onTenantSaved
+  } = props;
+
   return (
     <>
       <PropertyDialog 
