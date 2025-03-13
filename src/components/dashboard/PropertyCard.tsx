@@ -4,7 +4,7 @@ import { Calendar as CalendarIcon, ArrowRight } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Property } from '@/types/property';
 import { cn } from '@/lib/utils';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface PropertyCardProps {
   property: Property;
@@ -14,6 +14,7 @@ interface PropertyCardProps {
 const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
   const { name, address, rentalFee, nextPaymentDate, leaseExpiry, serviceChargeAmount } = property;
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Format dates
   const formattedNextPayment = format(parseISO(nextPaymentDate), 'dd MMM yyyy');
@@ -23,6 +24,11 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
   const isServiceChargePage = location.pathname.includes('service-charge');
   const isCompliancePage = location.pathname.includes('compliance');
   const isUtilitiesPage = location.pathname.includes('utilities');
+  
+  const handleViewDetails = () => {
+    // Navigate to leases page with the property ID in the URL
+    navigate(`/leases?propertyId=${property.id}`);
+  };
   
   return (
     <div 
@@ -70,7 +76,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
           </>
         )}
         
-        <button className="w-full mt-auto flex items-center justify-center gap-2 py-2 rounded-lg bg-tenant-yellow text-black hover:bg-tenant-gold transition-colors">
+        <button 
+          className="w-full mt-auto flex items-center justify-center gap-2 py-2 rounded-lg bg-tenant-yellow text-black hover:bg-tenant-gold transition-colors"
+          onClick={handleViewDetails}
+        >
           <span>View Details</span>
           <ArrowRight className="h-4 w-4" />
         </button>

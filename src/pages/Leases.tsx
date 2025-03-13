@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
 import PropertyCard from '@/components/dashboard/PropertyCard';
 import { Property } from '@/types/property';
@@ -17,6 +19,7 @@ const Leases = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   
   const { data: properties = [], isLoading } = useQuery({
@@ -24,6 +27,19 @@ const Leases = () => {
     queryFn: fetchUserProperties,
     enabled: !!user
   });
+  
+  // Check for propertyId in URL parameters when properties are loaded
+  useEffect(() => {
+    if (!isLoading && properties.length > 0) {
+      const propertyId = searchParams.get('propertyId');
+      if (propertyId) {
+        const property = properties.find(p => p.id === propertyId);
+        if (property) {
+          setSelectedProperty(property);
+        }
+      }
+    }
+  }, [properties, isLoading, searchParams]);
   
   const filteredProperties = properties
     .reduce((acc: Property[], current) => {
