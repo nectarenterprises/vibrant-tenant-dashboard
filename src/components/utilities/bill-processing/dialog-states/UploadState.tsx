@@ -21,7 +21,7 @@ import { Calendar as CalendarIcon, Upload } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { DialogFooter } from '@/components/ui/dialog';
-import { FileUpload } from '../FileUpload';
+import FileUpload from '../FileUpload';
 import { UtilityBillUpload, UtilityType } from '@/types/utility';
 
 interface UploadStateProps {
