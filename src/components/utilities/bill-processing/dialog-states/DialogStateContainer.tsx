@@ -77,6 +77,7 @@ const DialogStateContainer: React.FC<DialogStateContainerProps> = ({
             onSave={handleSaveVerifiedData}
             onCancel={handleClose}
             isFallbackData={isFallbackData}
+            documentType={extractionResult.documentId ? 'utility' : 'utility'}
           />
         )
       );

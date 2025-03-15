@@ -38,7 +38,7 @@ export const useUtilityBillProcessing = (propertyId: string, documentType: Docum
       
       // Process document with AI
       setProcessingStatus('processing');
-      const processingResult = await processDocument(documentId, propertyId, documentType);
+      const processingResult = await processDocument(documentId, propertyId);
       
       setProcessingStatus('verifying');
       setExtractionResult(processingResult);

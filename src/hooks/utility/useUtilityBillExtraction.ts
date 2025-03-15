@@ -30,8 +30,7 @@ export const useUtilityBillExtraction = () => {
         extractedData: processingData.extractedData,
         confidenceScores: processingData.confidenceScores,
         documentId,
-        fallback: processingData.fallback || false,
-        documentType: documentType
+        fallback: processingData.fallback || false
       };
       
       return result;
