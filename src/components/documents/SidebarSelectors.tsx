@@ -26,6 +26,8 @@ const SidebarSelectors = ({
 }: SidebarSelectorsProps) => {
   return (
     <div className="space-y-6 p-4">
+      <h2 className="text-xl font-bold mb-2">Documents</h2>
+      
       {/* Property Selector */}
       <PropertySelector
         properties={properties}

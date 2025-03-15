@@ -14,6 +14,7 @@ import SidebarSelectors from '@/components/documents/SidebarSelectors';
 import { getPropertyFolderStructure } from '@/services/document/types';
 import { toast } from '@/components/ui/use-toast';
 import { downloadDocument } from '@/services/document';
+import { Sidebar } from '@/components/layout/Sidebar';
 
 const Documents = () => {
   const { user } = useAuth();
@@ -119,21 +120,22 @@ const Documents = () => {
   }
   
   return (
-    <div className="min-h-screen bg-background flex">
-      <div className="fixed top-0 left-0 bottom-0 w-64 border-r border-border bg-background z-10 overflow-auto">
-        <SidebarSelectors
-          properties={properties}
-          selectedProperty={selectedProperty}
-          folderStructure={folderStructure}
-          selectedFolder={selectedFolder}
-          propertiesLoading={propertiesLoading}
-          handlePropertySelect={(propertyId) => handlePropertySelect(propertyId, properties)}
-          handleFolderSelect={handleFolderSelect}
-        />
-      </div>
-      
-      <div className="flex-1 ml-64">
-        <div className="container mx-auto p-6">
+    <div className="flex h-screen bg-background">
+      <Sidebar />
+      <div className="flex-1 flex">
+        <div className="w-64 border-r border-border bg-background overflow-auto">
+          <SidebarSelectors
+            properties={properties}
+            selectedProperty={selectedProperty}
+            folderStructure={folderStructure}
+            selectedFolder={selectedFolder}
+            propertiesLoading={propertiesLoading}
+            handlePropertySelect={(propertyId) => handlePropertySelect(propertyId, properties)}
+            handleFolderSelect={handleFolderSelect}
+          />
+        </div>
+        
+        <div className="flex-1 p-6 overflow-auto">
           <DocumentsContainer
             selectedProperty={selectedProperty}
             selectedFolder={selectedFolder}

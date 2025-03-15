@@ -41,7 +41,10 @@ export const usePropertyDocuments = () => {
     expiringDocuments,
     expiringDocumentsLoading,
     getDocumentsByType
-  } = useDocumentQueries(selectedProperty, selectedFolder);
+  } = useDocumentQueries(
+    selectedProperty?.id, 
+    selectedFolder?.type
+  );
 
   // Use the document upload hook
   const {
@@ -67,8 +70,7 @@ export const usePropertyDocuments = () => {
     uploadMutation,
     deleteMutation
   } = useDocumentMutations(
-    selectedProperty?.id, 
-    selectedFolder?.type,
+    selectedProperty?.id,
     resetUploadForm
   );
 
