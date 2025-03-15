@@ -95,20 +95,22 @@ export const useDocumentQueries = (
     queryFn: () => getRecentDocuments(5),
     enabled: true,
     retry: 1,
-    onSuccess: (data) => {
-      console.log('Recent documents fetched successfully:', data);
-    },
-    onError: (error: Error) => {
-      console.error('Error fetching recent documents:', error);
-      const errorMessage = error.message.includes('JSON') 
-        ? 'Invalid response format from server. Please try again.' 
-        : error.message;
-      
-      toast({
-        variant: "destructive",
-        title: "Failed to fetch recent documents",
-        description: errorMessage,
-      });
+    meta: {
+      onSuccess: (data: PropertyDocument[]) => {
+        console.log('Recent documents fetched successfully:', data);
+      },
+      onError: (error: Error) => {
+        console.error('Error fetching recent documents:', error);
+        const errorMessage = error.message.includes('JSON') 
+          ? 'Invalid response format from server. Please try again.' 
+          : error.message;
+        
+        toast({
+          variant: "destructive",
+          title: "Failed to fetch recent documents",
+          description: errorMessage,
+        });
+      }
     }
   });
 
@@ -122,20 +124,22 @@ export const useDocumentQueries = (
     queryFn: () => getExpiringDocuments(30), // Documents expiring in next 30 days
     enabled: true,
     retry: 1,
-    onSuccess: (data) => {
-      console.log('Expiring documents fetched successfully:', data);
-    },
-    onError: (error: Error) => {
-      console.error('Error fetching expiring documents:', error);
-      const errorMessage = error.message.includes('JSON') 
-        ? 'Invalid response format from server. Please try again.' 
-        : error.message;
-      
-      toast({
-        variant: "destructive",
-        title: "Failed to fetch expiring documents",
-        description: errorMessage,
-      });
+    meta: {
+      onSuccess: (data: PropertyDocument[]) => {
+        console.log('Expiring documents fetched successfully:', data);
+      },
+      onError: (error: Error) => {
+        console.error('Error fetching expiring documents:', error);
+        const errorMessage = error.message.includes('JSON') 
+          ? 'Invalid response format from server. Please try again.' 
+          : error.message;
+        
+        toast({
+          variant: "destructive",
+          title: "Failed to fetch expiring documents",
+          description: errorMessage,
+        });
+      }
     }
   });
 
