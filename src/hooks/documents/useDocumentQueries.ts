@@ -95,6 +95,9 @@ export const useDocumentQueries = (
     queryFn: () => getRecentDocuments(5),
     enabled: true,
     retry: 1,
+    onSuccess: (data) => {
+      console.log('Recent documents fetched successfully:', data);
+    },
     onError: (error: Error) => {
       console.error('Error fetching recent documents:', error);
       const errorMessage = error.message.includes('JSON') 
@@ -119,6 +122,9 @@ export const useDocumentQueries = (
     queryFn: () => getExpiringDocuments(30), // Documents expiring in next 30 days
     enabled: true,
     retry: 1,
+    onSuccess: (data) => {
+      console.log('Expiring documents fetched successfully:', data);
+    },
     onError: (error: Error) => {
       console.error('Error fetching expiring documents:', error);
       const errorMessage = error.message.includes('JSON') 
