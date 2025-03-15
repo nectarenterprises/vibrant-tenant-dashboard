@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import {
   Dialog,
@@ -44,10 +45,13 @@ const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({ open, setOpen, pr
     setDescriptions(acceptedFiles.map(() => '')); // Initialize descriptions
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: {
-    'image/*': ['.jpeg', '.jpg', '.png'],
-    'application/pdf': ['.pdf']
-  } })
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
+    onDrop, 
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png'],
+      'application/pdf': ['.pdf']
+    }
+  });
 
   const handleFilenameChange = (index: number, value: string) => {
     const newFilenames = [...filenames];
@@ -61,7 +65,6 @@ const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({ open, setOpen, pr
     setDescriptions(newDescriptions);
   };
 
-  // Update the uploadDocument call to match the correct signature
   const handleUpload = async () => {
     if (!selected || !property) return;
     
@@ -140,19 +143,22 @@ const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({ open, setOpen, pr
               </SelectContent>
             </Select>
           </div>
-          <div {...getRootProps()} className="dropzone">
+          <div {...getRootProps()} className="border-2 border-dashed rounded-md p-6 cursor-pointer hover:border-primary/50 transition-colors">
             <input {...getInputProps()} />
             {
               isDragActive ?
-                <p>Drop the files here ...</p> :
-                <p>Drag 'n' drop some files here, or click to select files</p>
+                <p className="text-center text-muted-foreground">Drop the files here ...</p> :
+                <p className="text-center text-muted-foreground">Drag 'n' drop some files here, or click to select files</p>
             }
           </div>
           {selected.length > 0 && (
-            <div className="file-list">
+            <div className="space-y-4">
               {selected.map((file, index) => (
-                <div key={index} className="file-item">
-                  <File className="inline-block h-4 w-4 mr-2" />
+                <div key={index} className="space-y-2 p-2 border rounded">
+                  <div className="flex items-center gap-2">
+                    <File className="h-4 w-4" />
+                    <span className="text-sm font-medium">{file.name}</span>
+                  </div>
                   <Input
                     type="text"
                     placeholder="File Name"
@@ -161,7 +167,7 @@ const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({ open, setOpen, pr
                   />
                   <Input
                     type="text"
-                    placeholder="Description"
+                    placeholder="Description (optional)"
                     value={descriptions[index] || ''}
                     onChange={(e) => handleDescriptionChange(index, e.target.value)}
                   />
@@ -170,7 +176,7 @@ const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({ open, setOpen, pr
             </div>
           )}
           {uploading && (
-            <Progress value={progress} />
+            <Progress value={progress} className="h-2" />
           )}
         </div>
         <DialogFooter>
