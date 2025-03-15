@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { UseFormRegister } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -27,7 +27,7 @@ import { UtilityBillUpload, UtilityType } from '@/types/utility';
 interface UploadStateProps {
   fileUpload: File | null;
   handleFileChange: (file: File | null) => void;
-  formRegister: ReturnType<typeof useForm>['register'];
+  formRegister: UseFormRegister<UtilityBillUpload>;
   utilityType: string;
   billDate: string;
   setValue: (name: string, value: any) => void;
