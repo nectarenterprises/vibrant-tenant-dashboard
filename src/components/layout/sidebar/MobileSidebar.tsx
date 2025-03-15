@@ -24,7 +24,7 @@ export const MobileSidebar = ({ location }: MobileSidebarProps) => {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="md:hidden fixed top-4 left-4 z-50 bg-background animate-[rotate_30s_linear_infinite]">
-          <Hexagon className="h-5 w-5 text-primary fill-primary" />
+          <Hexagon className="h-6 w-6 text-primary fill-primary" />
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-64 p-0">

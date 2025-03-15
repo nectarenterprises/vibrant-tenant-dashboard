@@ -31,7 +31,7 @@ export const DesktopSidebar = ({ collapsed, setCollapsed, location }: DesktopSid
             "transition-all duration-3000 animate-[rotate_30s_linear_infinite]"
           )}
         >
-          <Hexagon className="h-5 w-5 text-primary fill-primary" />
+          <Hexagon className="h-6 w-6 text-primary fill-primary" />
         </Button>
       </div>
       
