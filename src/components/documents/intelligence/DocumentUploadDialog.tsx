@@ -1,25 +1,17 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { format } from 'date-fns';
-import { CalendarIcon, Upload, X, Plus } from 'lucide-react';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DocumentTag } from '@/types/property';
-import { Badge } from '@/components/ui/badge';
-import { FolderType, DOCUMENT_TYPES } from '@/services/document/types';
-import { cn } from '@/lib/utils';
+import { FolderType } from '@/services/document/types';
+
+// Import smaller component pieces
+import FileUploadField from './dialog/FileUploadField';
+import VersionNotesField from './dialog/VersionNotesField';
+import DocumentTypeField from './dialog/DocumentTypeField';
+import DocumentMetadataFields from './dialog/DocumentMetadataFields';
+import TagSelector from './dialog/TagSelector';
+import DateFields from './dialog/DateFields';
+import DialogActions from './dialog/DialogActions';
 
 interface DocumentUploadDialogProps {
   isOpen: boolean;
@@ -129,267 +121,59 @@ const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
         </DialogHeader>
         
         <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="documentFile">File</Label>
-            <div className="border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center">
-              {file ? (
-                <div className="text-center">
-                  <p className="text-sm font-medium mb-1">{file.name}</p>
-                  <p className="text-xs text-muted-foreground mb-4">{(file.size / 1024).toFixed(1)} KB</p>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setFile(null)}
-                  >
-                    Change file
-                  </Button>
-                </div>
-              ) : (
-                <>
-                  <Upload className="h-10 w-10 text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground mb-2">Drag & drop or click to upload</p>
-                  <Input
-                    id="documentFile"
-                    type="file"
-                    className="hidden"
-                    onChange={handleFileChange}
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => document.getElementById('documentFile')?.click()}
-                  >
-                    Select File
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
+          <FileUploadField 
+            file={file}
+            setFile={setFile}
+            onFileChange={handleFileChange}
+          />
           
           {existingDocument ? (
-            <div className="grid gap-2">
-              <Label htmlFor="versionNotes">Version Notes (Optional)</Label>
-              <Textarea
-                id="versionNotes"
-                value={versionNotes}
-                onChange={(e) => setVersionNotes(e.target.value)}
-                placeholder="Describe what's changed in this version"
-                rows={2}
-              />
-            </div>
+            <VersionNotesField 
+              versionNotes={versionNotes}
+              setVersionNotes={setVersionNotes}
+            />
           ) : (
             <>
-              <div className="grid gap-2">
-                <Label htmlFor="documentType">Document Type</Label>
-                <Select
-                  value={documentType}
-                  onValueChange={(value) => setDocumentType(value as FolderType)}
-                >
-                  <SelectTrigger id="documentType">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(DOCUMENT_TYPES).map(([type, label]) => (
-                      <SelectItem key={type} value={type}>
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <DocumentTypeField 
+                documentType={documentType}
+                setDocumentType={setDocumentType}
+              />
               
-              <div className="grid gap-2">
-                <Label htmlFor="documentName">Document Name</Label>
-                <Input
-                  id="documentName"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Lease Agreement 2023"
-                />
-              </div>
+              <DocumentMetadataFields 
+                name={name}
+                setName={setName}
+                description={description}
+                setDescription={setDescription}
+              />
               
-              <div className="grid gap-2">
-                <Label htmlFor="documentDescription">Description (Optional)</Label>
-                <Textarea
-                  id="documentDescription"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Add a brief description of this document"
-                  rows={2}
-                />
-              </div>
+              <TagSelector 
+                selectedTags={selectedTags}
+                availableTags={availableTags}
+                toggleTag={toggleTag}
+              />
               
-              <div className="grid gap-2">
-                <Label>Tags (Optional)</Label>
-                <div className="flex flex-wrap gap-2">
-                  {selectedTags.map(tag => (
-                    <Badge
-                      key={tag.id}
-                      className="flex items-center gap-1"
-                      style={{ 
-                        backgroundColor: tag.color,
-                        color: 'white'
-                      }}
-                    >
-                      {tag.name}
-                      <X 
-                        className="h-3 w-3 cursor-pointer" 
-                        onClick={() => toggleTag(tag)}
-                      />
-                    </Badge>
-                  ))}
-                  
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" size="sm" className="h-7">
-                        <Plus className="h-3 w-3 mr-1" />
-                        Add Tag
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-2" align="start">
-                      <div className="space-y-2">
-                        {availableTags
-                          .filter(tag => !selectedTags.some(t => t.id === tag.id))
-                          .map(tag => (
-                            <Badge
-                              key={tag.id}
-                              className="cursor-pointer mr-1 mb-1"
-                              style={{ 
-                                backgroundColor: tag.color,
-                                color: 'white'
-                              }}
-                              onClick={() => toggleTag(tag)}
-                            >
-                              {tag.name}
-                            </Badge>
-                          ))}
-                        
-                        {availableTags.length === selectedTags.length && (
-                          <p className="text-sm text-muted-foreground">No more tags available</p>
-                        )}
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="expiryDate">Document Expiry Date (Optional)</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        id="expiryDate"
-                        variant={"outline"}
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !expiryDate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {expiryDate ? format(expiryDate, "PPP") : <span>Set expiry date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={expiryDate}
-                        onSelect={setExpiryDate}
-                        initialFocus
-                        className={cn("p-3 pointer-events-auto")}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="notificationPeriod">Notification Period (days)</Label>
-                  <Input
-                    id="notificationPeriod"
-                    type="number"
-                    min={1}
-                    value={notificationPeriod}
-                    onChange={(e) => setNotificationPeriod(parseInt(e.target.value) || 90)}
-                  />
-                </div>
-              </div>
-              
-              <div className="grid gap-2 mt-2">
-                <Label className="text-base font-medium">Lease Key Dates (Optional)</Label>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="commencementDate">Commencement Date</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          id="commencementDate"
-                          variant={"outline"}
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !commencementDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {commencementDate ? format(commencementDate, "PPP") : <span>Set date</span>}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={commencementDate}
-                          onSelect={setCommencementDate}
-                          initialFocus
-                          className={cn("p-3 pointer-events-auto")}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  
-                  <div className="grid gap-2">
-                    <Label htmlFor="leaseExpiryDate">Lease Expiry Date</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          id="leaseExpiryDate"
-                          variant={"outline"}
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !leaseExpiryDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {leaseExpiryDate ? format(leaseExpiryDate, "PPP") : <span>Set date</span>}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={leaseExpiryDate}
-                          onSelect={setLeaseExpiryDate}
-                          initialFocus
-                          className={cn("p-3 pointer-events-auto")}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </div>
-              </div>
+              <DateFields 
+                expiryDate={expiryDate}
+                setExpiryDate={setExpiryDate}
+                notificationPeriod={notificationPeriod}
+                setNotificationPeriod={setNotificationPeriod}
+                commencementDate={commencementDate}
+                setCommencementDate={setCommencementDate}
+                leaseExpiryDate={leaseExpiryDate}
+                setLeaseExpiryDate={setLeaseExpiryDate}
+              />
             </>
           )}
         </div>
         
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={isUploading}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleUpload}
-            disabled={isUploading || !file || (!existingDocument && !name)}
-          >
-            {isUploading ? 'Uploading...' : existingDocument ? 'Upload New Version' : 'Upload Document'}
-          </Button>
-        </DialogFooter>
+        <DialogActions 
+          isUploading={isUploading}
+          file={file}
+          name={name}
+          existingDocument={existingDocument}
+          onClose={onClose}
+          onUpload={handleUpload}
+        />
       </DialogContent>
     </Dialog>
   );

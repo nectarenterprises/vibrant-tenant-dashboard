@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import PropertyCard from '@/components/dashboard/PropertyCard';
@@ -14,8 +13,8 @@ import GasChart from '@/components/utilities/GasChart';
 import { getPropertyDocuments, downloadDocument, deleteDocument } from '@/services/document';
 import { toast } from '@/components/ui/use-toast';
 import UploadDialog from '@/components/documents/UploadDialog';
+import { FolderType } from '@/services/document/types';
 
-// Mock data - using updated London properties
 const mockProperties: Property[] = [
   {
     id: '1',
@@ -47,14 +46,13 @@ const Utilities = () => {
   const [fileUpload, setFileUpload] = useState<File | null>(null);
   const [documentName, setDocumentName] = useState('');
   const [documentDescription, setDocumentDescription] = useState('');
+  const [documentType, setDocumentType] = useState<FolderType>('utility');
   
-  // Filter properties based on search query
   const filteredProperties = mockProperties.filter(property => 
     property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     property.address.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Fetch utility documents when a property is selected
   useEffect(() => {
     if (selectedProperty) {
       fetchUtilityDocuments(selectedProperty.id);
@@ -64,7 +62,7 @@ const Utilities = () => {
   const fetchUtilityDocuments = async (propertyId: string) => {
     setDocumentsLoading(true);
     try {
-      const documents = await getPropertyDocuments(propertyId, 'utility');
+      const documents = await getPropertyDocuments(propertyId, documentType);
       setUtilityDocuments(documents);
     } catch (error) {
       console.error('Error fetching utility documents:', error);
@@ -134,15 +132,12 @@ const Utilities = () => {
       return;
     }
 
-    // Call upload service - this would normally be implemented
-    // For now, just close the dialog and show a notification
     setUploadDialogOpen(false);
     toast({
       title: "Upload functionality",
       description: "Full upload functionality would be implemented here.",
     });
     
-    // Reset upload form
     setFileUpload(null);
     setDocumentName('');
     setDocumentDescription('');
@@ -164,7 +159,6 @@ const Utilities = () => {
             <p className="text-muted-foreground">Monitor your property's utility usage and costs</p>
           </div>
           
-          {/* Search Bar */}
           <div className="relative mb-6">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <Search className="h-5 w-5 text-muted-foreground" />
@@ -211,7 +205,6 @@ const Utilities = () => {
                   </div>
                 </div>
                 
-                {/* Utility Documents Section */}
                 <div>
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -306,17 +299,18 @@ const Utilities = () => {
         </div>
       </main>
       
-      {/* Upload Dialog */}
       <UploadDialog
         isOpen={uploadDialogOpen}
         setIsOpen={setUploadDialogOpen}
         fileUpload={fileUpload}
         documentName={documentName}
         documentDescription={documentDescription}
+        documentType={documentType}
         isUploading={false}
         onFileSelect={handleFileSelect}
         onNameChange={setDocumentName}
         onDescriptionChange={setDocumentDescription}
+        onTypeChange={setDocumentType}
         onUpload={handleUpload}
       />
     </div>
