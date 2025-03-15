@@ -58,7 +58,7 @@ const LeaseContent: React.FC<LeaseContentProps> = ({
   isLoading
 }) => {
   return (
-    <>
+    <div className="max-w-4xl mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <LeaseOverview 
           rentalFee={property.rentalFee} 
@@ -113,7 +113,7 @@ const LeaseContent: React.FC<LeaseContentProps> = ({
           isLoading={isLoading}
         />
       </div>
-    </>
+    </div>
   );
 };
 

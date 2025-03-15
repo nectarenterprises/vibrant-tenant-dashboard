@@ -24,17 +24,18 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
   const isServiceChargePage = location.pathname.includes('service-charge');
   const isCompliancePage = location.pathname.includes('compliance');
   const isUtilitiesPage = location.pathname.includes('utilities');
+  const isDocumentsPage = location.pathname.includes('documents');
   
   const handleViewDetails = () => {
     // Handle navigation based on current page
     if (isCompliancePage) {
-      // Stay on compliance page but show property details
-      // This will be handled by the Compliance.tsx page's state
       navigate(`/compliance?propertyId=${property.id}`);
     } else if (isServiceChargePage) {
       navigate(`/service-charge?propertyId=${property.id}`);
     } else if (isUtilitiesPage) {
       navigate(`/utilities?propertyId=${property.id}`);
+    } else if (isDocumentsPage) {
+      navigate(`/documents?propertyId=${property.id}`);
     } else {
       // Default to leases page for other cases
       navigate(`/leases?propertyId=${property.id}`);

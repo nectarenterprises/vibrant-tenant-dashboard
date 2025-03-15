@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster"
 
-import { supabase } from './integrations/supabase/client';
 import { useAuth } from './contexts/AuthContext';
 
 import Index from './pages/Index';
@@ -20,7 +19,7 @@ import Reports from './pages/Reports';
 import Sidebar from './components/layout/Sidebar';
 
 function App() {
-  const { session, user, loading: authLoading, signOut } = useAuth();
+  const { session, user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const navigate = useNavigate();

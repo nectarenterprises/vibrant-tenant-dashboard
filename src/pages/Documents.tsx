@@ -1,6 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useLocation } from 'react-router-dom';
 import { Property } from '@/types/property';
 import { fetchUserProperties } from '@/services/property';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,6 +13,7 @@ const Documents = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const { user } = useAuth();
+  const location = useLocation();
   
   // Fetch properties
   const { 
@@ -28,6 +30,19 @@ const Documents = () => {
     property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     property.address.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Handle propertyId from URL query parameter
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const propertyId = params.get('propertyId');
+    
+    if (propertyId && properties.length > 0) {
+      const property = properties.find(p => p.id === propertyId);
+      if (property) {
+        setSelectedProperty(property);
+      }
+    }
+  }, [location.search, properties]);
 
   // If not logged in, show login message
   if (!user) {
