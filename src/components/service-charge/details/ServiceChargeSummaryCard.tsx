@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Banknote, ArrowUpDown, CalendarIcon, PieChart } from 'lucide-react';
+import { Banknote, ArrowUpDown, CalendarIcon, PieChart, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface ServiceChargeSummaryCardProps {
@@ -16,6 +16,7 @@ const ServiceChargeSummaryCard: React.FC<ServiceChargeSummaryCardProps> = ({
   serviceChargesLength,
 }) => {
   const nextBillingDate = format(new Date(new Date().setDate(1)), 'MMMM d, yyyy');
+  const billingFrequency = "Monthly"; // This would come from API in a real app
 
   return (
     <Card>
@@ -29,6 +30,14 @@ const ServiceChargeSummaryCard: React.FC<ServiceChargeSummaryCardProps> = ({
             <span className="text-muted-foreground">Total Monthly</span>
           </div>
           <span className="font-medium">${totalServiceCharge.toFixed(2)}</span>
+        </div>
+        
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-tenant-green" />
+            <span className="text-muted-foreground">Billing Frequency</span>
+          </div>
+          <span className="font-medium">{billingFrequency}</span>
         </div>
         
         <div className="flex justify-between items-center">

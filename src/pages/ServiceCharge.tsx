@@ -2,14 +2,10 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Property } from '@/types/property';
-import { BarChart3, PieChart, AlertTriangle, MessageSquare, Calculator } from 'lucide-react';
+import { BarChart3, PieChart } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ServiceChargeDetails from '@/components/service-charge/ServiceChargeDetails';
 import ServiceChargeComparisonDashboard from '@/components/service-charge/ServiceChargeComparisonDashboard';
-import ServiceChargeAnomalies from '@/components/service-charge/ServiceChargeAnomalies';
-import ServiceChargeQueries from '@/components/service-charge/ServiceChargeQueries';
-import ServiceChargeCategoryBreakdown from '@/components/service-charge/ServiceChargeCategoryBreakdown';
-import BudgetDashboard from '@/components/service-charge/budget/BudgetDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 import { fetchUserProperties } from '@/services/property';
 import PropertySearch from '@/components/utilities/PropertySearch';
@@ -37,30 +33,14 @@ const ServiceCharge = () => {
 
     return (
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-6 mb-6">
+        <TabsList className="grid grid-cols-2 mb-6">
           <TabsTrigger value="details" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
-            <span className="hidden sm:inline">Details</span>
+            <span className="hidden sm:inline">Budget Details</span>
           </TabsTrigger>
           <TabsTrigger value="comparison" className="flex items-center gap-2">
             <PieChart className="h-4 w-4" />
             <span className="hidden sm:inline">Comparison</span>
-          </TabsTrigger>
-          <TabsTrigger value="budget" className="flex items-center gap-2">
-            <Calculator className="h-4 w-4" />
-            <span className="hidden sm:inline">Budget</span>
-          </TabsTrigger>
-          <TabsTrigger value="categories" className="flex items-center gap-2">
-            <PieChart className="h-4 w-4" />
-            <span className="hidden sm:inline">Categories</span>
-          </TabsTrigger>
-          <TabsTrigger value="anomalies" className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4" />
-            <span className="hidden sm:inline">Anomalies</span>
-          </TabsTrigger>
-          <TabsTrigger value="queries" className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4" />
-            <span className="hidden sm:inline">Queries</span>
           </TabsTrigger>
         </TabsList>
 
@@ -70,22 +50,6 @@ const ServiceCharge = () => {
         
         <TabsContent value="comparison">
           <ServiceChargeComparisonDashboard property={selectedProperty} />
-        </TabsContent>
-        
-        <TabsContent value="budget">
-          <BudgetDashboard property={selectedProperty} />
-        </TabsContent>
-        
-        <TabsContent value="categories">
-          <ServiceChargeCategoryBreakdown property={selectedProperty} />
-        </TabsContent>
-        
-        <TabsContent value="anomalies">
-          <ServiceChargeAnomalies property={selectedProperty} />
-        </TabsContent>
-        
-        <TabsContent value="queries">
-          <ServiceChargeQueries property={selectedProperty} />
         </TabsContent>
       </Tabs>
     );

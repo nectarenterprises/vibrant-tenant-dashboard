@@ -83,25 +83,4 @@ const ServiceChargeComparisonDashboard: React.FC<ServiceChargeComparisonDashboar
   );
 };
 
-// Utility functions that will be moved to utils.ts
-const getChangeColor = (percentChange: number): string => {
-  if (percentChange < 0) return 'text-emerald-600';
-  if (percentChange <= 5) return 'text-amber-600';
-  return 'text-red-600';
-};
-
-const getChangeBadgeColor = (percentChange: number): string => {
-  if (percentChange < 0) return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-  if (percentChange <= 5) return 'bg-amber-100 text-amber-800 border-amber-200';
-  return 'bg-red-100 text-red-800 border-red-200';
-};
-
-const getChangeIcon = (percentChange: number): React.ReactElement => {
-  const ArrowDown = require('lucide-react').ArrowDown;
-  const ArrowUp = require('lucide-react').ArrowUp;
-  
-  if (percentChange < 0) return <ArrowDown className="h-3 w-3" />;
-  return <ArrowUp className="h-3 w-3" />;
-};
-
 export default ServiceChargeComparisonDashboard;

@@ -1,8 +1,7 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Property } from '@/types/property';
 import { Card, CardContent } from '@/components/ui/card';
-import ServiceChargeComparison from './ServiceChargeComparison';
 import PropertyHeader from './details/PropertyHeader';
 import ServiceChargeContent from './details/ServiceChargeContent';
 
@@ -12,9 +11,8 @@ interface ServiceChargeDetailsProps {
 
 const ServiceChargeDetails: React.FC<ServiceChargeDetailsProps> = ({ property }) => {
   const { rentalFee } = property;
-  const [showComparison, setShowComparison] = useState(false);
   
-  // Mock service charge data
+  // Mock service charge data - only tenant's costs, not the whole building
   const serviceCharges = [
     { category: 'Maintenance', amount: rentalFee * 0.15, percentage: 15 },
     { category: 'Security', amount: rentalFee * 0.1, percentage: 10 },
@@ -31,24 +29,16 @@ const ServiceChargeDetails: React.FC<ServiceChargeDetailsProps> = ({ property })
       <Card className="overflow-hidden">
         <PropertyHeader 
           property={property}
-          showComparison={showComparison}
-          onToggleComparison={() => setShowComparison(!showComparison)}
+          showComparison={false}
+          onToggleComparison={() => {}}
         />
         
         <CardContent className="pt-6">
-          {showComparison ? (
-            <ServiceChargeComparison 
-              property={property} 
-              currentYearCharges={serviceCharges} 
-              onClose={() => setShowComparison(false)} 
-            />
-          ) : (
-            <ServiceChargeContent
-              property={property}
-              serviceCharges={serviceCharges}
-              totalServiceCharge={totalServiceCharge}
-            />
-          )}
+          <ServiceChargeContent
+            property={property}
+            serviceCharges={serviceCharges}
+            totalServiceCharge={totalServiceCharge}
+          />
         </CardContent>
       </Card>
     </div>
