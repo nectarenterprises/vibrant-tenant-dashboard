@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
 import { uploadPropertyDocument } from '@/services/document/fileUpload';
 import { deleteDocument } from '@/services/document';
+import { DocumentType } from '@/types/property';
 
 /**
  * Hook for document upload and delete mutations
@@ -26,7 +27,7 @@ export const useDocumentMutations = (
       file: File;
       name: string;
       description: string;
-      documentType: string;
+      documentType: DocumentType;
       metadata?: any;
       additionalMetadata?: Record<string, any>;
     }) => {

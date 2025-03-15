@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
-import { FolderType } from '@/services/document/types';
+import { DocumentType, FolderType } from '@/types/property';
 
 /**
  * Hook for managing document upload state and functionality
@@ -10,7 +10,7 @@ export const useDocumentUpload = () => {
   const [fileUpload, setFileUpload] = useState<File | null>(null);
   const [documentName, setDocumentName] = useState('');
   const [documentDescription, setDocumentDescription] = useState('');
-  const [documentType, setDocumentType] = useState<FolderType>('lease');
+  const [documentType, setDocumentType] = useState<DocumentType>('lease');
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [additionalMetadata, setAdditionalMetadata] = useState<Record<string, any>>({});
