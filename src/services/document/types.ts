@@ -1,151 +1,150 @@
 
-import { DocumentTag, DocumentType } from '@/types/property';
+import { PropertyDocument, DocumentType, DocumentTag } from '@/types/property';
 
 export type FolderType = DocumentType;
 
-export const DOCUMENT_TYPES: Record<FolderType, string> = {
-  lease: 'Lease Documents',
-  utility: 'Utility Documents',
-  compliance: 'Compliance Documents',
-  'service-charge': 'Service Charge Documents',
-  photo: 'Property Photos',
-  other: 'Other Documents'
-};
+export interface DocumentVersion {
+  id: string;
+  version: number;
+  uploadDate: string;
+  filePath: string;
+  versionNotes?: string;
+  uploadedBy?: string;
+}
 
-// Define a folder structure type for Documents page
+export interface DocumentSearchOptions {
+  searchQuery?: string;
+  tags?: string[];
+  startDate?: Date;
+  endDate?: Date;
+  isFavorite?: boolean;
+  sortBy?: 'date' | 'name' | 'type';
+  sortOrder?: 'asc' | 'desc';
+}
+
 export interface DocumentFolder {
   id: string;
   name: string;
-  path?: string;
   type: FolderType;
-  propertyId: string;
-}
-
-// Document metadata interface
-export interface DocumentMetadata {
-  id: string;
-  name: string;
+  icon: string;
   description?: string;
-  documentType: FolderType;
-  tags?: DocumentTag[];
-  uploadDate: string;
-  uploadedBy: string;
-  isFavorite?: boolean;
-  version?: number;
-  versionNotes?: string;
-  expiryDate?: string;
-  notificationPeriod?: number; // in days
-  keyDates?: {
-    commencement?: string;
-    expiry?: string;
-    breakOption?: string[];
-    rentReview?: string[];
-  };
 }
 
-// Define a type for the property_documents table response
-export type PropertyDocumentResponse = {
-  id: string;
-  property_id: string;
-  user_id: string;
-  name: string;
-  description: string | null;
-  file_path: string;
-  document_type: string;
-  upload_date: string;
-  tags: string | null;
-  is_favorite: boolean | null;
-  version: number;
-  expiry_date: string | null;
-  key_dates: string | null;
-  notification_period: number | null;
-  previous_versions: string | null;
-  version_notes: string | null;
-  last_accessed: string | null;
+export const DOCUMENT_TYPES: Record<FolderType, string> = {
+  'lease': 'Lease Documents',
+  'utility': 'Utility Bills',
+  'compliance': 'Compliance Documents',
+  'insurance': 'Insurance Documents',
+  'tax': 'Tax Documents',
+  'service-charge': 'Service Charge Documents',
+  'correspondence': 'Correspondence',
+  'other': 'Other Documents'
 };
 
-// Function to get folder structure for a property
-export const getPropertyFolderStructure = (propertyId: string): DocumentFolder[] => {
+/**
+ * Safely transforms a database record to PropertyDocument
+ */
+export const transformToPropertyDocument = (record: any): PropertyDocument => {
+  try {
+    return {
+      id: record.id || '',
+      name: record.name || 'Unnamed Document',
+      description: record.description || '',
+      filePath: record.file_path || '',
+      documentType: record.document_type || 'other',
+      uploadDate: record.upload_date || new Date().toISOString(),
+      property_id: record.property_id || '',
+      tags: Array.isArray(record.tags) ? record.tags : [],
+      isFavorite: record.is_favorite || false,
+      version: record.version || 1,
+      expiryDate: record.expiry_date || undefined,
+      keyDates: record.key_dates || {},
+      lastAccessed: record.last_accessed || undefined,
+      notificationPeriod: record.notification_period || 0,
+      versionNotes: record.version_notes || ''
+    };
+  } catch (error) {
+    console.error('Error transforming document record:', error);
+    // Return a minimal valid document in case of errors
+    return {
+      id: record.id || 'error-id',
+      name: 'Error Loading Document',
+      description: 'There was an error loading this document.',
+      filePath: '',
+      documentType: 'other',
+      uploadDate: new Date().toISOString(),
+      property_id: record.property_id || '',
+      tags: [],
+      isFavorite: false,
+      version: 1
+    };
+  }
+};
+
+/**
+ * Gets all document folders
+ */
+export const getDocumentFolders = (): DocumentFolder[] => {
   return [
     {
       id: 'lease',
-      name: DOCUMENT_TYPES['lease'],
-      path: `${propertyId}/lease`,
+      name: 'Lease Documents',
       type: 'lease',
-      propertyId
+      icon: 'file-text',
+      description: 'Lease agreements and related documents'
     },
     {
       id: 'utility',
-      name: DOCUMENT_TYPES['utility'],
-      path: `${propertyId}/utility`,
+      name: 'Utility Bills',
       type: 'utility',
-      propertyId
+      icon: 'zap',
+      description: 'Electricity, gas, water and other utility bills'
     },
     {
       id: 'compliance',
-      name: DOCUMENT_TYPES['compliance'],
-      path: `${propertyId}/compliance`,
+      name: 'Compliance Documents',
       type: 'compliance',
-      propertyId
+      icon: 'shield',
+      description: 'Safety certificates and regulatory documents'
     },
     {
       id: 'service-charge',
-      name: DOCUMENT_TYPES['service-charge'],
-      path: `${propertyId}/service-charge`,
+      name: 'Service Charge',
       type: 'service-charge',
-      propertyId
+      icon: 'receipt',
+      description: 'Service charge budgets and statements'
     },
     {
-      id: 'photo',
-      name: DOCUMENT_TYPES['photo'],
-      path: `${propertyId}/photo`,
-      type: 'photo',
-      propertyId
+      id: 'insurance',
+      name: 'Insurance',
+      type: 'insurance',
+      icon: 'umbrella',
+      description: 'Insurance policies and certificates'
+    },
+    {
+      id: 'tax',
+      name: 'Tax Documents',
+      type: 'tax',
+      icon: 'landmark',
+      description: 'Tax forms and payment records'
+    },
+    {
+      id: 'correspondence',
+      name: 'Correspondence',
+      type: 'correspondence',
+      icon: 'mail',
+      description: 'Letters and emails related to the property'
     },
     {
       id: 'other',
-      name: DOCUMENT_TYPES['other'],
-      path: `${propertyId}/other`,
+      name: 'Other Documents',
       type: 'other',
-      propertyId
+      icon: 'folder',
+      description: 'Miscellaneous documents'
     }
   ];
 };
 
-// Define interface for document search and filter options
-export interface DocumentSearchOptions {
-  searchQuery?: string;
-  documentType?: FolderType;
-  tags?: string[];
-  startDate?: Date;
-  endDate?: Date;
-  sortBy?: 'date' | 'name' | 'type';
-  sortOrder?: 'asc' | 'desc';
-  isFavorite?: boolean;
-}
-
-// Define interface for document version
-export interface DocumentVersion {
-  version: number;
-  uploadDate: string;
-  uploadedBy: string;
-  filePath: string;
-  notes?: string;
-}
-
-// Transform database response to frontend PropertyDocument model
-export const transformToPropertyDocument = (doc: PropertyDocumentResponse) => ({
-  id: doc.id,
-  propertyId: doc.property_id,
-  name: doc.name,
-  description: doc.description,
-  filePath: doc.file_path,
-  documentType: doc.document_type as DocumentType,
-  uploadDate: doc.upload_date,
-  tags: doc.tags ? JSON.parse(doc.tags as string) : undefined,
-  isFavorite: doc.is_favorite || false,
-  version: doc.version || 1,
-  expiryDate: doc.expiry_date,
-  keyDates: doc.key_dates ? JSON.parse(doc.key_dates as string) : undefined,
-  notificationPeriod: doc.notification_period
-});
+export const getFolderTypeMap = (): Record<string, string> => {
+  return DOCUMENT_TYPES;
+};

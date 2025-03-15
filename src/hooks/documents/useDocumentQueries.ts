@@ -34,18 +34,10 @@ export const useDocumentQueries = (
         setDocuments(docs);
       } catch (error) {
         console.error('Error fetching documents:', error);
-        
-        // Improved error handling for JSON parse errors
-        const errorMessage = error instanceof Error 
-          ? (error.message.includes('JSON') 
-              ? 'Invalid response format from server. Please try again.' 
-              : error.message)
-          : 'There was an error loading your documents.';
-        
         toast({
           variant: "destructive",
           title: "Failed to fetch documents",
-          description: errorMessage,
+          description: "There was an error loading your documents. Please try again.",
         });
       } finally {
         setDocumentsLoading(false);
@@ -67,18 +59,10 @@ export const useDocumentQueries = (
       setDocuments(docs);
     } catch (error) {
       console.error('Error refreshing documents:', error);
-      
-      // Improved error handling for JSON parse errors
-      const errorMessage = error instanceof Error 
-        ? (error.message.includes('JSON') 
-            ? 'Invalid response format from server. Please try again.' 
-            : error.message)
-        : 'There was an error reloading your documents.';
-      
       toast({
         variant: "destructive",
         title: "Failed to refresh documents",
-        description: errorMessage,
+        description: "There was an error reloading your documents. Please try again.",
       });
     } finally {
       setDocumentsLoading(false);
@@ -91,27 +75,15 @@ export const useDocumentQueries = (
     queryFn: () => getRecentDocuments(5),
     enabled: true,
     retry: 1,
-  });
-
-  // Log success or errors for recent documents
-  useEffect(() => {
-    if (recentDocumentsQuery.data) {
-      console.log('Recent documents fetched successfully:', recentDocumentsQuery.data);
-    }
-    if (recentDocumentsQuery.error) {
-      const error = recentDocumentsQuery.error as Error;
+    onError: (error) => {
       console.error('Error fetching recent documents:', error);
-      const errorMessage = error.message.includes('JSON') 
-        ? 'Invalid response format from server. Please try again.' 
-        : error.message;
-      
       toast({
         variant: "destructive",
         title: "Failed to fetch recent documents",
-        description: errorMessage,
+        description: "There was an error loading your recent documents.",
       });
     }
-  }, [recentDocumentsQuery.data, recentDocumentsQuery.error]);
+  });
 
   // Expiring documents query
   const expiringDocumentsQuery = useQuery({
@@ -119,27 +91,15 @@ export const useDocumentQueries = (
     queryFn: () => getExpiringDocuments(30), // Documents expiring in next 30 days
     enabled: true,
     retry: 1,
-  });
-
-  // Log success or errors for expiring documents
-  useEffect(() => {
-    if (expiringDocumentsQuery.data) {
-      console.log('Expiring documents fetched successfully:', expiringDocumentsQuery.data);
-    }
-    if (expiringDocumentsQuery.error) {
-      const error = expiringDocumentsQuery.error as Error;
+    onError: (error) => {
       console.error('Error fetching expiring documents:', error);
-      const errorMessage = error.message.includes('JSON') 
-        ? 'Invalid response format from server. Please try again.' 
-        : error.message;
-      
       toast({
         variant: "destructive",
         title: "Failed to fetch expiring documents",
-        description: errorMessage,
+        description: "There was an error loading your expiring documents.",
       });
     }
-  }, [expiringDocumentsQuery.data, expiringDocumentsQuery.error]);
+  });
 
   // Get documents by type for a specific property
   const getDocumentsByType = async (propertyId: string, docType: FolderType): Promise<PropertyDocument[]> => {
@@ -149,16 +109,10 @@ export const useDocumentQueries = (
       return await getPropertyDocuments(propertyId, docType as DocumentType);
     } catch (error) {
       console.error('Error fetching documents by type:', error);
-      
-      // Improved error handling for JSON parse errors
-      const errorMessage = error instanceof Error && error.message.includes('JSON')
-        ? 'Invalid response format from server. Please try again.'
-        : 'Error fetching documents';
-      
       toast({
         variant: "destructive",
         title: "Failed to fetch documents",
-        description: errorMessage,
+        description: "Error fetching documents. Please try again.",
       });
       
       return [];
