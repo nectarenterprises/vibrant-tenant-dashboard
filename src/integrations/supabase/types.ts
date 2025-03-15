@@ -253,6 +253,53 @@ export type Database = {
           },
         ]
       }
+      service_charge_budgets: {
+        Row: {
+          breakdown: Json
+          created_at: string
+          id: string
+          is_actual: boolean
+          period_type: string
+          property_id: string
+          total_amount: number
+          updated_at: string
+          user_id: string
+          year: number
+        }
+        Insert: {
+          breakdown: Json
+          created_at?: string
+          id?: string
+          is_actual?: boolean
+          period_type: string
+          property_id: string
+          total_amount: number
+          updated_at?: string
+          user_id: string
+          year: number
+        }
+        Update: {
+          breakdown?: Json
+          created_at?: string
+          id?: string
+          is_actual?: boolean
+          period_type?: string
+          property_id?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_charge_budgets_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_charge_data: {
         Row: {
           amount: number
