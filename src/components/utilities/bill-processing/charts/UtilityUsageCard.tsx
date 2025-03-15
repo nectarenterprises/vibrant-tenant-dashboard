@@ -8,8 +8,8 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Upload } from 'lucide-react';
-import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line } from 'recharts';
 import { LucideIcon } from 'lucide-react';
+import { StyledLineChart } from '@/components/ui/styled-chart';
 
 interface UtilityUsageCardProps {
   title: string;
@@ -32,6 +32,19 @@ const UtilityUsageCard: React.FC<UtilityUsageCardProps> = ({
   usageUnit,
   onUploadClick
 }) => {
+  // Format currency values for the tooltip
+  const formatCurrency = (value: number) => `£${value}`;
+  
+  // Format usage values with units
+  const formatUsage = (value: number) => `${value} ${usageUnit}`;
+
+  // Custom formatter for tooltip based on data type
+  const customFormatter = (value: number, name: string) => {
+    if (name === 'Usage') return formatUsage(value);
+    if (name === 'Cost') return formatCurrency(value);
+    return value;
+  };
+
   return (
     <Card className="col-span-1">
       <CardHeader className="pb-3">
@@ -59,36 +72,16 @@ const UtilityUsageCard: React.FC<UtilityUsageCardProps> = ({
           </div>
         ) : (
           <div className="h-[200px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={data}
-                margin={{
-                  top: 5,
-                  right: 10,
-                  left: 0,
-                  bottom: 0,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="period" />
-                <YAxis />
-                <Tooltip />
-                <Line 
-                  type="monotone" 
-                  dataKey="usage" 
-                  stroke={primaryColor} 
-                  name={`Usage (${usageUnit})`} 
-                  strokeWidth={2}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="cost" 
-                  stroke={secondaryColor} 
-                  name="Cost (£)" 
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <StyledLineChart
+              data={data}
+              lines={[
+                { dataKey: 'usage', stroke: primaryColor, name: 'Usage' },
+                { dataKey: 'cost', stroke: secondaryColor, name: 'Cost' }
+              ]}
+              xAxisDataKey="period"
+              height={200}
+              tooltipFormatter={customFormatter}
+            />
           </div>
         )}
       </CardContent>

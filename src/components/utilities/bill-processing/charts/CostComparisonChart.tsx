@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Upload } from 'lucide-react';
-import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from 'recharts';
+import { StyledBarChart, TENANT_COLORS } from '@/components/ui/styled-chart';
 
 interface CostComparisonChartProps {
   data: any[];
@@ -11,6 +11,9 @@ interface CostComparisonChartProps {
 }
 
 const CostComparisonChart: React.FC<CostComparisonChartProps> = ({ data, onUploadClick }) => {
+  // Format currency values for the tooltip
+  const formatCurrency = (value: number) => `£${value}`;
+
   return (
     <Card className="col-span-3">
       <CardHeader className="pb-3">
@@ -34,27 +37,19 @@ const CostComparisonChart: React.FC<CostComparisonChartProps> = ({ data, onUploa
           </div>
         ) : (
           <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={data}
-                margin={{
-                  top: 20,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="electricity" name="Electricity" fill="#8B5CF6" />
-                <Bar dataKey="gas" name="Gas" fill="#F97316" />
-                <Bar dataKey="water" name="Water" fill="#0EA5E9" />
-                <Bar dataKey="other" name="Other" fill="#6B7280" />
-              </BarChart>
-            </ResponsiveContainer>
+            <StyledBarChart
+              data={data}
+              bars={[
+                { dataKey: 'electricity', fill: TENANT_COLORS.purple, name: 'Electricity' },
+                { dataKey: 'gas', fill: TENANT_COLORS.orange, name: 'Gas' },
+                { dataKey: 'water', fill: TENANT_COLORS.teal, name: 'Water' },
+                { dataKey: 'other', fill: '#6B7280', name: 'Other' }
+              ]}
+              xAxisDataKey="month"
+              height={300}
+              tooltipFormatter={formatCurrency}
+              yAxisTickFormatter={formatCurrency}
+            />
           </div>
         )}
       </CardContent>

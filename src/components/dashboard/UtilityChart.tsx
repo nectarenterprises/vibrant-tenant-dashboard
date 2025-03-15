@@ -1,19 +1,9 @@
 
 import React, { useState } from 'react';
-import { 
-  LineChart, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  Legend
-} from 'recharts';
 import { UtilityData, Property } from '@/types/property';
 import UtilityToggleButtons from './charts/UtilityToggleButtons';
-import UtilityChartTooltip from './charts/UtilityChartTooltip';
-import UtilityChartLines from './charts/UtilityChartLines';
 import PropertySelector from './charts/PropertySelector';
+import { StyledAreaChart, TENANT_COLORS } from '@/components/ui/styled-chart';
 
 interface UtilityChartProps {
   data: UtilityData[];
@@ -38,6 +28,32 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
     }));
   };
 
+  // Format tooltip values as currency
+  const formatCurrency = (value: number) => `£${value}`;
+
+  // Determine which lines to show based on active utilities
+  const getAdditionalLines = () => {
+    const lines = [];
+    
+    if (activeUtilities.gas) {
+      lines.push({
+        dataKey: 'gasCost',
+        stroke: TENANT_COLORS.orange,
+        gradientId: 'orangeGradient'
+      });
+    }
+    
+    if (activeUtilities.water) {
+      lines.push({
+        dataKey: 'waterCost',
+        stroke: TENANT_COLORS.teal,
+        gradientId: 'tealGradient'
+      });
+    }
+    
+    return lines;
+  };
+
   return (
     <div className="utility-chart-container animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
@@ -55,29 +71,19 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
         />
       </div>
       
-      <div className="h-64 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={data}
-            margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis 
-              dataKey="month" 
-              tick={{ fontSize: 12 }}
-              tickMargin={10}
-            />
-            <YAxis 
-              tick={{ fontSize: 12 }}
-              tickMargin={10}
-              label={{ value: 'Cost (£)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
-            />
-            <Tooltip content={<UtilityChartTooltip />} />
-            <Legend />
-            <UtilityChartLines activeUtilities={activeUtilities} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <StyledAreaChart
+        data={data}
+        dataKey="electricityCost"
+        xAxisDataKey="month"
+        stroke={TENANT_COLORS.purple}
+        gradientId="purpleGradient"
+        height={260}
+        tooltipFormatter={formatCurrency}
+        yAxisTickFormatter={formatCurrency}
+        additionalLines={getAdditionalLines()}
+        showGrid={true}
+        className={!activeUtilities.electricity ? "hidden" : ""}
+      />
     </div>
   );
 };

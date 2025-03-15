@@ -1,14 +1,7 @@
 
 import React from 'react';
-import { 
-  PieChart, 
-  Pie, 
-  Cell, 
-  ResponsiveContainer, 
-  Tooltip, 
-  Legend 
-} from 'recharts';
 import { CategoryData } from '../types';
+import { StyledPieChart } from '@/components/ui/styled-chart';
 
 interface PieChartViewProps {
   data: CategoryData[];
@@ -20,42 +13,30 @@ interface PieChartViewProps {
 const PieChartView: React.FC<PieChartViewProps> = ({ 
   data, 
   formatCurrency, 
-  CustomTooltip, 
   onCategoryClick 
 }) => {
-  // Calculate the total amount for all categories once
+  // Calculate the total amount for all categories
   const totalAmount = data.reduce((sum, item) => sum + item.value, 0);
   
-  // Create a new array with properly calculated percentages
-  const dataWithCorrectPercentages = data.map(item => ({
-    ...item,
-    // Calculate percentage as value divided by total (no need to multiply by 100 here since Recharts does that)
-    percentage: item.value / totalAmount
+  // Create chart data with properly calculated percentages
+  const chartData = data.map(item => ({
+    name: item.category,
+    value: item.value,
+    percentage: item.value / totalAmount,
+    color: item.color
   }));
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <PieChart>
-        <Pie
-          data={dataWithCorrectPercentages}
-          cx="50%"
-          cy="50%"
-          labelLine={false}
-          outerRadius={130}
-          fill="#8884d8"
-          dataKey="value"
-          nameKey="category"
-          label={false}
-          onClick={(data) => onCategoryClick(data.category)}
-        >
-          {dataWithCorrectPercentages.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={entry.color} />
-          ))}
-        </Pie>
-        <Tooltip content={<CustomTooltip />} />
-        <Legend />
-      </PieChart>
-    </ResponsiveContainer>
+    <StyledPieChart
+      data={chartData}
+      dataKey="value"
+      nameKey="name"
+      colorKey="color"
+      height={400}
+      tooltipFormatter={formatCurrency}
+      innerRadius={40}
+      outerRadius={160}
+    />
   );
 };
 

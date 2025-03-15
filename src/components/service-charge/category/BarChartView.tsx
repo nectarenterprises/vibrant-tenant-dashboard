@@ -1,16 +1,7 @@
 
 import React from 'react';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Cell, 
-  ResponsiveContainer 
-} from 'recharts';
 import { CategoryData } from '../types';
+import { StyledBarChart } from '@/components/ui/styled-chart';
 
 interface BarChartViewProps {
   data: CategoryData[];
@@ -18,25 +9,37 @@ interface BarChartViewProps {
   onCategoryClick: (category: string) => void;
 }
 
-const BarChartView: React.FC<BarChartViewProps> = ({ data, onCategoryClick }) => {
+const BarChartView: React.FC<BarChartViewProps> = ({ data, formatCurrency, onCategoryClick }) => {
+  // Transform data to include name property for chart
+  const chartData = data.map(item => ({
+    ...item,
+    name: item.category
+  }));
+
+  // Create bars from each category with its own color
+  const bars = chartData.map(item => ({
+    dataKey: 'value',
+    fill: item.color,
+    name: item.category
+  }));
+
+  // Handle bar click to select category
+  const handleClick = (data: any) => {
+    if (data && data.activePayload && data.activePayload.length > 0) {
+      onCategoryClick(data.activePayload[0].payload.category);
+    }
+  };
+
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <BarChart
-        data={data}
-        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        onClick={(data) => data && data.activePayload && onCategoryClick(data.activePayload[0].payload.category)}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="category" />
-        <YAxis tickFormatter={(value) => `£${value}`} />
-        <Tooltip formatter={(value) => [`£${value}`, '']} />
-        <Bar dataKey="value">
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={entry.color} />
-          ))}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
+    <StyledBarChart
+      data={chartData}
+      bars={[{ dataKey: 'value', fill: '#2D6A4F' }]} // Default bar config
+      xAxisDataKey="category"
+      height={400}
+      tooltipFormatter={formatCurrency}
+      yAxisTickFormatter={formatCurrency}
+      barSize={40}
+    />
   );
 };
 

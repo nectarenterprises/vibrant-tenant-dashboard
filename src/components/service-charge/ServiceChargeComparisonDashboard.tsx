@@ -22,6 +22,7 @@ import ViewModeSelector from './comparison/ViewModeSelector';
 import ComparisonChart from './comparison/ComparisonChart';
 import ComparisonTable from './comparison/ComparisonTable';
 import ComparisonSummary from './comparison/ComparisonSummary';
+import { StyledBarChart, TENANT_COLORS } from '@/components/ui/styled-chart';
 
 interface ServiceChargeComparisonDashboardProps {
   property: Property;
@@ -66,9 +67,11 @@ const ServiceChargeComparisonDashboard: React.FC<ServiceChargeComparisonDashboar
         </CardHeader>
         
         <CardContent>
-          {viewMode === 'chart' ? (
+          {viewMode === 'chart' && (
             <ComparisonChart data={currentYearData} formatCurrency={formatCurrency} />
-          ) : (
+          )}
+          
+          {viewMode === 'table' && (
             <ComparisonTable 
               data={currentYearData} 
               formatCurrency={formatCurrency}
