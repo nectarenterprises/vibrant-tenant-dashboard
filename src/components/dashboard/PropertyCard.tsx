@@ -15,7 +15,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay }) => {
   const navigate = useNavigate();
   
   const handleClick = () => {
-    navigate(`/properties/${property.id}`);
+    // Change to navigate to the utilities page directly with the property ID
+    navigate(`/utilities?propertyId=${property.id}`);
   };
   
   return (

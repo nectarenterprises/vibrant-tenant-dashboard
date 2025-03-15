@@ -68,6 +68,7 @@ function App() {
             <Route path="/service-charge" element={<ProtectedRoute><ServiceCharge /></ProtectedRoute>} />
             <Route path="/compliance" element={<ProtectedRoute><Compliance /></ProtectedRoute>} />
             <Route path="/utilities" element={<ProtectedRoute><Utilities /></ProtectedRoute>} />
+            <Route path="/properties/:id" element={<ProtectedRoute><Utilities /></ProtectedRoute>} />
             <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
             <Route path="/reports" element={<RoleProtectedRoute requiredRole="admin"><Reports /></RoleProtectedRoute>} />
             <Route path="/users" element={<RoleProtectedRoute requiredRole="admin"><UserManagement /></RoleProtectedRoute>} />

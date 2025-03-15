@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Property } from '@/types/property';
 import PropertySearch from '@/components/utilities/PropertySearch';
 import PropertyGrid from '@/components/utilities/PropertyGrid';
+import { useLocation } from 'react-router-dom';
 
 interface PropertyDisplayProps {
   searchQuery: string;
@@ -19,6 +20,22 @@ const PropertyDisplay: React.FC<PropertyDisplayProps> = ({
   propertiesLoading,
   onPropertySelect
 }) => {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Parse query parameters to check for propertyId
+    const params = new URLSearchParams(location.search);
+    const propertyId = params.get('propertyId');
+    
+    // If propertyId is in the URL and properties are loaded, find and select the property
+    if (propertyId && filteredProperties.length > 0 && !propertiesLoading) {
+      const property = filteredProperties.find(p => p.id === propertyId);
+      if (property) {
+        onPropertySelect(property);
+      }
+    }
+  }, [location.search, filteredProperties, propertiesLoading, onPropertySelect]);
+
   return (
     <>
       <PropertySearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
