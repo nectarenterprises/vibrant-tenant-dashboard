@@ -1,26 +1,20 @@
 
 import React from 'react';
-import { FileUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { FolderType, DOCUMENT_TYPES } from '@/services/document/types';
+import { FolderType } from '@/services/document/types';
+
+// Import the new refactored components
+import FileSelectField from './upload/FileSelectField';
+import DocumentTypeField from './upload/DocumentTypeField';
+import DocumentNameField from './upload/DocumentNameField';
+import DocumentDescriptionField from './upload/DocumentDescriptionField';
+import UploadDialogFooter from './upload/DialogFooter';
 
 interface UploadDialogProps {
   isOpen: boolean;
@@ -51,6 +45,8 @@ const UploadDialog = ({
   onTypeChange,
   onUpload
 }: UploadDialogProps) => {
+  const handleClose = () => setIsOpen(false);
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent>
@@ -62,91 +58,33 @@ const UploadDialog = ({
         </DialogHeader>
         
         <div className="space-y-4 py-4">
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <label htmlFor="document-file" className="text-sm font-medium">
-              Select File
-            </label>
-            <div className="flex items-center gap-2">
-              <Input 
-                id="document-file" 
-                type="file" 
-                onChange={onFileSelect}
-                className="flex-1"
-              />
-            </div>
-            {fileUpload && (
-              <p className="text-xs text-muted-foreground">
-                Selected: {fileUpload.name} ({(fileUpload.size / 1024).toFixed(2)} KB)
-              </p>
-            )}
-          </div>
+          <FileSelectField 
+            fileUpload={fileUpload}
+            onFileSelect={onFileSelect}
+          />
           
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="document-type">Document Type</Label>
-            <Select
-              value={documentType}
-              onValueChange={(value) => onTypeChange(value as FolderType)}
-            >
-              <SelectTrigger id="document-type">
-                <SelectValue placeholder="Select document type" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(DOCUMENT_TYPES).map(([type, label]) => (
-                  <SelectItem key={type} value={type}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <DocumentTypeField 
+            documentType={documentType}
+            onTypeChange={onTypeChange}
+          />
           
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <label htmlFor="document-name" className="text-sm font-medium">
-              Document Name
-            </label>
-            <Input 
-              id="document-name" 
-              value={documentName} 
-              onChange={(e) => onNameChange(e.target.value)}
-              placeholder="Enter document name"
-            />
-          </div>
+          <DocumentNameField 
+            documentName={documentName}
+            onNameChange={onNameChange}
+          />
           
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <label htmlFor="document-description" className="text-sm font-medium">
-              Description (Optional)
-            </label>
-            <Textarea 
-              id="document-description" 
-              value={documentDescription} 
-              onChange={(e) => onDescriptionChange(e.target.value)}
-              placeholder="Enter document description"
-              rows={3}
-            />
-          </div>
+          <DocumentDescriptionField 
+            documentDescription={documentDescription}
+            onDescriptionChange={onDescriptionChange}
+          />
         </div>
         
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setIsOpen(false)}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={onUpload}
-            disabled={!fileUpload || isUploading}
-          >
-            {isUploading ? (
-              <>
-                <div className="animate-spin mr-2 h-4 w-4 border-t-2 border-b-2 border-current rounded-full"></div>
-                Uploading...
-              </>
-            ) : (
-              <>
-                <FileUp className="h-4 w-4 mr-2" />
-                Upload
-              </>
-            )}
-          </Button>
-        </DialogFooter>
+        <UploadDialogFooter 
+          isUploading={isUploading}
+          fileUpload={fileUpload}
+          onUpload={onUpload}
+          onClose={handleClose}
+        />
       </DialogContent>
     </Dialog>
   );
