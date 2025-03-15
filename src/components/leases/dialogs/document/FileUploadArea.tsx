@@ -18,11 +18,9 @@ const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 }) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setSelectedFile(file);
-      // Only set document name from file if there's no selected file yet
+      setSelectedFile(e.target.files[0]);
       if (!selectedFile) {
-        setDocumentName(file.name);
+        setDocumentName(e.target.files[0].name);
       }
     }
   };

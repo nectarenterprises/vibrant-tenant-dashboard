@@ -1,13 +1,5 @@
 
-import { getProperty, fetchPropertyEvents, fetchUserProperties } from './PropertyFetchService';
-import { addProperty } from './PropertyCreateService';
-import { getPropertyImageUrl, uploadPropertyImage } from './PropertyImageService';
-
-export {
-  getProperty,
-  fetchPropertyEvents,
-  fetchUserProperties,
-  addProperty,
-  getPropertyImageUrl,
-  uploadPropertyImage
-};
+// Re-export all property-related services for easier importing
+export * from './PropertyFetchService';
+export * from './PropertyCreateService';
+export * from './PropertyImageService';

@@ -52,10 +52,10 @@ const DocumentCategories: React.FC<DocumentCategoriesProps> = ({ property }) => 
   // Fetch document counts on component mount
   useEffect(() => {
     const fetchDocumentCounts = async () => {
-      const leaseCount = getDocumentsByType('lease');
-      const utilityCount = getDocumentsByType('utility');
-      const complianceCount = getDocumentsByType('compliance');
-      const serviceChargeCount = getDocumentsByType('service-charge');
+      const leaseCount = await getDocumentsByType(property.id, 'lease');
+      const utilityCount = await getDocumentsByType(property.id, 'utility');
+      const complianceCount = await getDocumentsByType(property.id, 'compliance');
+      const serviceChargeCount = await getDocumentsByType(property.id, 'service-charge');
       
       setDocumentCounts({
         lease: leaseCount.length,
@@ -72,14 +72,7 @@ const DocumentCategories: React.FC<DocumentCategoriesProps> = ({ property }) => 
   const handleUpload = () => {
     const uploadData = prepareUpload();
     if (uploadData) {
-      const mutationData = {
-        file: uploadData.file,
-        name: uploadData.name,
-        type: uploadData.documentType,
-        description: uploadData.description,
-        additionalMetadata: uploadData.metadata
-      };
-      uploadMutation.mutate(mutationData);
+      uploadMutation.mutate(uploadData);
     }
   };
   

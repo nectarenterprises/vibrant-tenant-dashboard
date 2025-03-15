@@ -1,9 +1,11 @@
 
-import React from 'react';
-import { usePropertyPhoto } from './usePropertyPhoto';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { getPropertyImageUrl } from '@/services/property/PropertyImageService';
 import PhotoHeaderImage from './PhotoHeaderImage';
 import PhotoHeaderContent from './PhotoHeaderContent';
 import UploadDialog from './UploadDialog';
+import { usePropertyPhoto } from './usePropertyPhoto';
 
 interface PropertyPhotoHeaderProps {
   propertyId: string;
@@ -27,7 +29,7 @@ const PropertyPhotoHeader: React.FC<PropertyPhotoHeaderProps> = ({
     setSelectedFile,
     isUploading,
     handleUpload
-  } = usePropertyPhoto({ propertyId });
+  } = usePropertyPhoto(propertyId, propertyName, onPhotoUpdated);
 
   return (
     <>

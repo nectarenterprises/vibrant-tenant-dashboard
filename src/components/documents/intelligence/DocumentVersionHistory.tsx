@@ -2,13 +2,11 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { downloadDocument } from '@/services/document';
-import { updateDocumentAccessTimestamp } from '@/services/FileStorageService';
+import { downloadDocument } from '@/services/FileStorageService';
 import { DocumentVersion } from '@/services/document/types';
 import { format } from 'date-fns';
 import { Download, Check } from 'lucide-react';
 import { PropertyDocument } from '@/types/property';
-import { toast } from '@/components/ui/use-toast';
 
 interface DocumentVersionHistoryProps {
   isOpen: boolean;
@@ -25,31 +23,10 @@ const DocumentVersionHistory: React.FC<DocumentVersionHistoryProps> = ({
   versions,
   isLoading
 }) => {
-  const handleDownload = async (filePath: string, fileName: string) => {
-    await downloadDocument(filePath, fileName);
+  const handleDownload = async (filePath: string) => {
+    await downloadDocument(filePath);
   };
-
-  const handleVersionDownload = async (version: any) => {
-    if (!document) return;
-    
-    try {
-      await downloadDocument(version.filePath, document.name);
-      await updateDocumentAccessTimestamp(document.id);
-      
-      toast({
-        title: "Version downloaded",
-        description: `Version ${version.version} has been downloaded successfully.`
-      });
-    } catch (error) {
-      console.error('Error downloading version:', error);
-      toast({
-        variant: "destructive",
-        title: "Download failed",
-        description: "There was an error downloading the document version."
-      });
-    }
-  };
-
+  
   if (!document) return null;
   
   return (
@@ -96,7 +73,7 @@ const DocumentVersionHistory: React.FC<DocumentVersionHistoryProps> = ({
                     <Button 
                       variant="ghost" 
                       size="icon"
-                      onClick={() => handleVersionDownload(version)}
+                      onClick={() => handleDownload(version.filePath)}
                     >
                       <Download className="h-4 w-4" />
                     </Button>

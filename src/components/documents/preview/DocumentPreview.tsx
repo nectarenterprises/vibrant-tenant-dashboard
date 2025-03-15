@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { PropertyDocument } from '@/types/property';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Download, X } from 'lucide-react';
-import { downloadDocument, updateDocumentAccessTimestamp } from '@/services/FileStorageService';
+import { Download, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { downloadDocument } from '@/services/document';
 import { toast } from '@/components/ui/use-toast';
 
 interface DocumentPreviewProps {
@@ -33,15 +33,20 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     
     const loadPreview = async () => {
       try {
+        // This is a simplified implementation - in a real app, you would generate a signed URL
+        // or use a proper file preview service
         const fileExtension = document.filePath.split('.').pop()?.toLowerCase();
         
         if (fileExtension === 'pdf') {
           setIsPdf(true);
           setIsImage(false);
+          // For PDFs, we would normally generate a preview URL
+          // For now, we'll set a placeholder
           setPreviewUrl(`/api/preview/${document.id}`);
         } else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension || '')) {
           setIsImage(true);
           setIsPdf(false);
+          // For images, we would normally serve them directly
           setPreviewUrl(`/api/files/${document.filePath}`);
         } else {
           setIsImage(false);
@@ -63,6 +68,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     loadPreview();
     
     return () => {
+      // Clean up any resources if needed
       if (previewUrl && previewUrl.startsWith('blob:')) {
         URL.revokeObjectURL(previewUrl);
       }
@@ -73,9 +79,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     if (!document) return;
     
     try {
-      await downloadDocument(document.filePath, document.name);
-      await updateDocumentAccessTimestamp(document.id);
-      
+      await downloadDocument(document.filePath);
       toast({
         title: "Download started",
         description: `${document.name} is being downloaded`

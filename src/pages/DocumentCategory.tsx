@@ -12,7 +12,6 @@ import { cn } from '@/lib/utils';
 import { FolderType } from '@/services/document/types';
 import { toast } from '@/components/ui/use-toast';
 import { downloadDocument } from '@/services/document';
-import { updateDocumentAccessTimestamp } from '@/services/FileStorageService';
 import DocumentList from '@/components/documents/DocumentList';
 import UploadDialog from '@/components/documents/UploadDialog';
 import { getFolderTypeMap } from '@/services/document/folders';
@@ -91,10 +90,7 @@ const DocumentCategory = () => {
     if (uploadData) {
       // Use our enhanced upload mutation with additional metadata
       uploadMutation.mutate({
-        file: uploadData.file,
-        name: uploadData.name,
-        type: uploadData.documentType,
-        description: uploadData.description,
+        ...uploadData,
         additionalMetadata
       });
     }
@@ -111,9 +107,6 @@ const DocumentCategory = () => {
   const handleDownload = async (document: any) => {
     try {
       await downloadDocument(document.filePath, document.name);
-      // Record access
-      await updateDocumentAccessTimestamp(document.id);
-      
       toast({
         title: "Document downloaded",
         description: `${document.name} has been downloaded successfully.`

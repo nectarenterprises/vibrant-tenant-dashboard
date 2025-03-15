@@ -1,58 +1,42 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/use-toast';
+import { deleteFile } from './storage';
+import { deleteDocumentMetadata } from './metadata';
+
+const STORAGE_BUCKET = 'documents';
 
 /**
- * Delete a file from Supabase storage
- * @param path Path of the file to delete
- * @returns Delete result with success or error
+ * Deletes a document and its metadata
  */
-export const deleteFile = async (path: string) => {
+export const deleteDocument = async (
+  documentId: string,
+  filePath: string
+): Promise<boolean> => {
   try {
-    const { error } = await supabase.storage
-      .from('documents')
-      .remove([path]);
-
-    if (error) {
-      throw error;
-    }
-
-    return { success: true };
-  } catch (error) {
-    console.error('Error deleting file:', error);
-    throw error;
-  }
-};
-
-/**
- * Delete a document from database and storage
- * @param documentId ID of the document to delete
- * @param filePath Path of the file to delete
- * @returns Delete result with success or error
- */
-export const deleteDocument = async (documentId: string, filePath: string) => {
-  if (!documentId) {
-    throw new Error('Document ID is required');
-  }
-  
-  try {
-    // Delete metadata from database first
-    const { error: dbError } = await supabase
-      .from('property_documents')
-      .delete()
-      .eq('id', documentId);
+    console.log(`Deleting document: ${documentId}, filePath: ${filePath}`);
     
-    if (dbError) {
-      throw dbError;
+    // Delete the file from storage
+    const deleteFileSuccess = await deleteFile(STORAGE_BUCKET, filePath);
+    
+    if (!deleteFileSuccess) {
+      console.error('Failed to delete file from storage');
+      return false;
     }
     
-    // Delete file from storage
-    if (filePath) {
-      await deleteFile(filePath);
-    }
+    console.log('File deleted from storage, now deleting metadata');
     
-    return true;
+    // Delete document metadata
+    const deleteMetadataSuccess = await deleteDocumentMetadata(documentId);
+    
+    console.log('Document deletion complete:', deleteMetadataSuccess);
+    return deleteMetadataSuccess;
   } catch (error) {
     console.error('Error deleting document:', error);
-    throw error;
+    toast({
+      variant: "destructive",
+      title: "Delete failed",
+      description: "There was an error deleting the document.",
+    });
+    return false;
   }
 };

@@ -1,47 +1,32 @@
 
-// Import from the correct services
-import { uploadFile, uploadPropertyDocument, uploadDocument } from './fileUpload';
-import { 
-  downloadFile, 
-  getFileDownloadUrl,
-  downloadDocument
+// Export all document-related services from a single entry point
+export { 
+  uploadPropertyDocument 
+} from './fileUpload';
+
+export { 
+  downloadDocument 
 } from './fileDownload';
-import { deleteFile, deleteDocument } from './fileDelete';
-import {
-  updateFileMetadata,
-  replaceFile
+
+export { 
+  deleteDocument 
+} from './fileDelete';
+
+export { 
+  updateDocument,
+  toggleFavorite,
+  uploadNewDocumentVersion
 } from './fileUpdate';
-import { 
-  getDocuments, 
-  searchDocuments, 
-  getDocumentById,
-  getDocumentsByFolderId,
+
+export {
+  getPropertyDocuments,
+  getDocumentVersionHistory,
   getRecentDocuments,
   getExpiringDocuments
 } from './fileQuery';
-import { 
-  recordDocumentAccess,
-  updateDocumentAccessTimestamp
-} from './access';
 
-// Export all functions
+// Export the file access functions
 export {
-  uploadFile,
-  uploadPropertyDocument,
-  uploadDocument,
-  downloadFile,
-  getFileDownloadUrl,
-  downloadDocument,
-  deleteFile,
-  deleteDocument,
-  updateFileMetadata,
-  replaceFile,
-  getDocuments,
-  searchDocuments,
-  getDocumentById,
-  getDocumentsByFolderId,
-  getRecentDocuments,
-  getExpiringDocuments,
   recordDocumentAccess,
-  updateDocumentAccessTimestamp
-};
+  getRecentlyAccessedDocuments
+} from './fileAccess';

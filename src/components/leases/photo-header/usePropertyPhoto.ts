@@ -1,98 +1,78 @@
 
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { uploadDocument } from '@/services/document';
+import { uploadPropertyDocument } from '@/services/document';
+import { uploadPropertyImage, updatePropertyImage } from '@/services/property/PropertyImageService';
 import { toast } from '@/components/ui/use-toast';
+import { DocumentType } from '@/types/property';
 
-export interface UsePropertyPhotoProps {
-  propertyId: string | undefined;
-}
-
-export const usePropertyPhoto = ({ propertyId }: UsePropertyPhotoProps) => {
-  const [isUploading, setIsUploading] = useState(false);
+export const usePropertyPhoto = (
+  propertyId: string,
+  propertyName: string,
+  onPhotoUpdated: () => void
+) => {
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const queryClient = useQueryClient();
-  
-  // Define upload function that will be used by the mutation
-  const uploadPhoto = async (file: File) => {
-    if (!propertyId) return null;
-    
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      toast({
+        variant: "destructive",
+        title: "No file selected",
+        description: "Please select an image to upload."
+      });
+      return;
+    }
+
+    setIsUploading(true);
+
     try {
-      setIsUploading(true);
+      const imagePath = await uploadPropertyImage(selectedFile);
       
-      // Use the updated uploadDocument function with correct parameters
-      const result = await uploadDocument(
+      if (!imagePath) {
+        throw new Error("Failed to upload image");
+      }
+
+      const updated = await updatePropertyImage(propertyId, imagePath);
+      
+      if (!updated) {
+        throw new Error("Failed to update property record");
+      }
+
+      await uploadPropertyDocument(
         propertyId,
-        file,
-        "Property Photo",
-        "photo",
-        "Main property photo"
+        selectedFile,
+        'photo' as DocumentType,
+        `Property Photo - ${new Date().toLocaleDateString()}`,
+        `Property photo for ${propertyName}`
       );
       
-      if (!result) {
-        throw new Error('Failed to upload property photo');
-      }
+      toast({
+        title: "Photo uploaded successfully",
+        description: "Your property photo has been updated."
+      });
       
-      return result;
+      setUploadDialogOpen(false);
+      setSelectedFile(null);
+      onPhotoUpdated();
     } catch (error) {
-      console.error('Error uploading property photo:', error);
+      console.error("Error uploading photo:", error);
       toast({
         variant: "destructive",
         title: "Upload failed",
-        description: "There was an error uploading the property photo."
+        description: "There was an error uploading your photo."
       });
-      return null;
     } finally {
       setIsUploading(false);
     }
   };
-  
-  const uploadMutation = useMutation({
-    mutationFn: uploadPhoto,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['documents', propertyId] });
-      toast({
-        title: "Photo uploaded",
-        description: "The property photo has been uploaded successfully."
-      });
-      setUploadDialogOpen(false);
-      setSelectedFile(null);
-    },
-    onError: (error) => {
-      console.error('Photo upload error:', error);
-      toast({
-        variant: "destructive",
-        title: "Upload failed",
-        description: "There was an error uploading the property photo."
-      });
-    },
-    onSettled: () => {
-      setIsUploading(false);
-    }
-  });
-
-  const handleUpload = async () => {
-    if (selectedFile) {
-      uploadMutation.mutate(selectedFile);
-    }
-  };
 
   return {
-    isUploading,
-    setIsUploading,
     uploadDialogOpen,
     setUploadDialogOpen,
     selectedFile,
     setSelectedFile,
-    uploadPhoto,
-    uploadMutation,
-    handleUpload,
-    photoUrl,
-    setPhotoUrl,
-    isLoading,
-    setIsLoading
+    isUploading,
+    handleUpload
   };
 };

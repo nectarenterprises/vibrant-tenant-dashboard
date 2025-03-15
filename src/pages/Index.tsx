@@ -1,123 +1,126 @@
-
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
-import PropertyCard from '@/components/dashboard/PropertyCard';
-import UtilityChart from '@/components/utilities/UtilityChart';
-import CalendarWidget from '@/components/calendar/CalendarWidget';
-import ComplianceWidget from '@/components/compliance/ComplianceWidget';
-import { getProperties } from '@/services/PropertyService';
-import { getUtilities } from '@/services/UtilityService';
-import { getComplianceItems } from '@/services/ComplianceService';
-import { getCalendarEvents } from '@/services/CalendarService';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useToast } from '@/components/ui/use-toast';
+import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import WelcomeHeader from '@/components/dashboard/WelcomeHeader';
+import PropertyCard from '@/components/dashboard/PropertyCard';
+import CalendarWidget from '@/components/dashboard/CalendarWidget';
+import UtilityChart from '@/components/dashboard/UtilityChart';
+import { Property, UtilityData } from '@/types/property';
+import { fetchUserProperties, fetchPropertyEvents } from '@/services/property';
+import { useAuth } from '@/contexts/AuthContext';
+
+const mockUtilityData: UtilityData[] = [
+  { 
+    month: 'Jan', 
+    gasUsage: 250, gasCost: 125, 
+    waterUsage: 42, waterCost: 36, 
+    electricityUsage: 320, electricityCost: 80 
+  },
+  { 
+    month: 'Feb', 
+    gasUsage: 280, gasCost: 140, 
+    waterUsage: 38, waterCost: 33, 
+    electricityUsage: 300, electricityCost: 75 
+  },
+  { 
+    month: 'Mar', 
+    gasUsage: 220, gasCost: 110, 
+    waterUsage: 45, waterCost: 38, 
+    electricityUsage: 340, electricityCost: 85 
+  },
+  { 
+    month: 'Apr', 
+    gasUsage: 180, gasCost: 90, 
+    waterUsage: 40, waterCost: 34, 
+    electricityUsage: 280, electricityCost: 70 
+  },
+  { 
+    month: 'May', 
+    gasUsage: 160, gasCost: 80, 
+    waterUsage: 43, waterCost: 37, 
+    electricityUsage: 290, electricityCost: 72.5 
+  },
+  { 
+    month: 'Jun', 
+    gasUsage: 140, gasCost: 70, 
+    waterUsage: 48, waterCost: 41, 
+    electricityUsage: 350, electricityCost: 87.5 
+  }
+];
 
 const Index = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [properties, setProperties] = useState<any[]>([]);
-  const [utilityData, setUtilityData] = useState<any[]>([]);
-  const [complianceData, setComplianceData] = useState<any[]>([]);
-  const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const hasProperties = properties && properties.length > 0;
-  const userName = user?.email?.split('@')[0];
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const propertiesData = await getProperties();
-        setProperties(propertiesData);
-
-        const utilityData = await getUtilities();
-        setUtilityData(utilityData);
-
-        const complianceItems = await getComplianceItems();
-        setComplianceData(complianceItems);
-
-        const calendarEvents = await getCalendarEvents();
-        setCalendarEvents(calendarEvents);
-      } catch (error: any) {
-        toast({
-          variant: "destructive",
-          title: "Failed to load dashboard data",
-          description: error.message || "Something went wrong. Please try again.",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [toast]);
-
-  if (isLoading) {
+  
+  const { data: properties = [], isLoading: propertiesLoading } = useQuery({
+    queryKey: ['properties'],
+    queryFn: fetchUserProperties,
+    enabled: !!user
+  });
+  
+  const { data: events = [], isLoading: eventsLoading } = useQuery({
+    queryKey: ['property-events'],
+    queryFn: fetchPropertyEvents,
+    enabled: !!user
+  });
+  
+  const uniqueProperties = properties.reduce((acc: Property[], current) => {
+    const x = acc.find(item => 
+      item.name === current.name && 
+      item.address === current.address
+    );
+    if (!x) {
+      return acc.concat([current]);
+    } else {
+      return acc;
+    }
+  }, []);
+  
+  if (!user) {
     return (
-      <div className="container mx-auto p-4 animate-pulse">
-        <WelcomeHeader userName={userName} />
-        <div className="dashboard-grid mb-8">
-          <Skeleton className="h-64 w-full rounded-xl" />
-          <Skeleton className="h-64 w-full rounded-xl" />
-          <Skeleton className="h-64 w-full rounded-xl" />
-          <Skeleton className="h-64 w-full rounded-xl" />
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Skeleton className="h-96 w-full rounded-xl" />
-          <Skeleton className="h-96 w-full rounded-xl" />
-        </div>
+      <div className="flex items-center justify-center h-screen flex-col gap-4">
+        <h1 className="text-2xl font-bold">Please log in to view your dashboard</h1>
+        <p>You need to be logged in to access your properties and dashboard.</p>
       </div>
     );
   }
-
-  if (!hasProperties && !isLoading) {
-    return (
-      <div className="container mx-auto p-6">
-        <WelcomeHeader userName={userName} />
-        <div className="text-center mt-8">
-          <p className="text-lg text-gray-600 mb-4">
-            Looks like you haven't added any properties yet.
-          </p>
-          <Button onClick={() => navigate('/properties/new')}>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Add Your First Property
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
+  
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <WelcomeHeader userName={userName} />
-          <p className="text-slate-500">
-            Here's a summary of your SweetLease activity.
-          </p>
-        </div>
-        <Button onClick={() => navigate('/properties/new')}>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Add New Property
-        </Button>
-      </div>
-      
-      <div className="dashboard-grid mb-8">
-        {properties.map((property) => (
-          <PropertyCard key={property.id} property={property} />
-        ))}
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto p-6">
+        <WelcomeHeader userName={user.email?.split('@')[0] || 'User'} />
         
-        <UtilityChart data={utilityData} />
-      </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <CalendarWidget events={calendarEvents} />
-        <ComplianceWidget complianceItems={complianceData} />
+        <h2 className="text-xl font-semibold mb-4">Your Properties</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="lg:col-span-2">
+            {propertiesLoading ? (
+              <div className="flex items-center justify-center h-40">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+              </div>
+            ) : uniqueProperties.length === 0 ? (
+              <div className="text-center py-10 bg-muted rounded-lg">
+                <h3 className="text-lg font-medium mb-2">No properties found</h3>
+                <p className="text-muted-foreground">Add your first property to get started.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {uniqueProperties.map((property, index) => (
+                  <PropertyCard 
+                    key={property.id} 
+                    property={property} 
+                    delay={index}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          
+          <div>
+            <CalendarWidget events={events} properties={uniqueProperties} />
+          </div>
+        </div>
+        
+        <div className="mt-8">
+          <UtilityChart data={mockUtilityData} properties={uniqueProperties} />
+        </div>
       </div>
     </div>
   );

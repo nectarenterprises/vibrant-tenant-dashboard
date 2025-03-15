@@ -1,79 +1,47 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink, Location } from 'react-router-dom';
 import { 
-  Home, 
-  FileText, 
-  Calendar as CalendarIcon, 
-  Building2, 
-  BarChart3, 
-  ShieldCheck, 
-  FileBarChart,
-  Zap,
-  Users,
-  User
+  Home, FileClock, FileText, FileSpreadsheet, 
+  LayoutDashboard, Zap, BarChart2, CalendarDays
 } from 'lucide-react';
-import { useRole } from '@/contexts/RoleContext';
+import { cn } from '@/lib/utils';
 
 interface SidebarLinksProps {
   collapsed?: boolean;
-  location?: ReturnType<typeof useLocation>;
+  location: Location;
   onClick?: () => void;
 }
 
-const SidebarLinks: React.FC<SidebarLinksProps> = ({ 
-  collapsed = false, 
-  location: propLocation,
-  onClick 
-}) => {
-  const locationFromHook = useLocation();
-  const location = propLocation || locationFromHook;
-  const { isAdmin } = useRole();
-  
-  const isActive = (path: string) => {
-    if (path === '/') {
-      return location.pathname === '/';
-    }
-    return location.pathname.startsWith(path);
-  };
-
+export const SidebarLinks = ({ collapsed, location, onClick }: SidebarLinksProps) => {
   const links = [
-    { path: '/', label: 'Dashboard', icon: <Home size={20} /> },
-    { path: '/leases', label: 'Leases', icon: <Building2 size={20} /> },
-    { path: '/documents', label: 'Documents', icon: <FileText size={20} /> },
-    { path: '/service-charge', label: 'Service Charge', icon: <BarChart3 size={20} /> },
-    { path: '/compliance', label: 'Compliance', icon: <ShieldCheck size={20} /> },
-    { path: '/utilities', label: 'Utilities', icon: <Zap size={20} /> },
-    { path: '/calendar', label: 'Calendar', icon: <CalendarIcon size={20} /> },
-    { path: '/reports', label: 'Reports', icon: <FileBarChart size={20} />, adminOnly: true },
-    { path: '/users', label: 'User Management', icon: <Users size={20} />, adminOnly: true },
-    { path: '/profile', label: 'My Profile', icon: <User size={20} /> }
+    { name: 'Dashboard', href: '/', icon: <Home className="h-5 w-5" /> },
+    { name: 'Leases', href: '/leases', icon: <FileClock className="h-5 w-5" /> },
+    { name: 'Documents', href: '/documents', icon: <FileText className="h-5 w-5" /> },
+    { name: 'Service Charge', href: '/service-charge', icon: <LayoutDashboard className="h-5 w-5" /> },
+    { name: 'Compliance', href: '/compliance', icon: <FileSpreadsheet className="h-5 w-5" /> },
+    { name: 'Utilities', href: '/utilities', icon: <Zap className="h-5 w-5" /> },
+    { name: 'Calendar', href: '/calendar', icon: <CalendarDays className="h-5 w-5" /> },
+    { name: 'Reports', href: '/reports', icon: <BarChart2 className="h-5 w-5" /> }
   ];
 
   return (
-    <div className="mt-6 space-y-1">
-      {links.map((link) => {
-        // Skip admin-only links for non-admin users
-        if (link.adminOnly && !isAdmin) return null;
-        
-        return (
-          <Link
-            key={link.path}
-            to={link.path}
-            className={`flex items-center ${collapsed ? 'justify-center' : 'px-4'} py-3 ${
-              isActive(link.path)
-                ? 'bg-tenant-green text-white'
-                : 'text-gray-700 hover:bg-gray-100'
-            } rounded-md transition-colors`}
-            onClick={onClick}
-          >
-            <span className={collapsed ? '' : 'mr-3'}>{link.icon}</span>
-            {!collapsed && <span>{link.label}</span>}
-          </Link>
-        );
-      })}
+    <div className={cn("flex flex-col", collapsed ? "space-y-0" : "space-y-1", "px-2")}>
+      {links.map((link) => (
+        <NavLink
+          key={link.name}
+          to={link.href}
+          className={({ isActive }) =>
+            `flex items-center ${collapsed ? "justify-center" : "space-x-2"} rounded-md p-2 text-sm font-medium hover:bg-secondary hover:text-foreground ${
+              isActive ? 'bg-secondary text-foreground' : 'text-muted-foreground'
+            }`
+          }
+          onClick={onClick}
+        >
+          {link.icon}
+          {!collapsed && <span>{link.name}</span>}
+        </NavLink>
+      ))}
     </div>
   );
 };
-
-export default SidebarLinks;

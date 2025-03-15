@@ -3,162 +3,128 @@ import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 import { PropertyDocument, DocumentType } from '@/types/property';
 import { transformToPropertyDocument } from './types';
+import { FolderType } from './types';
 
 /**
- * Upload a file to Supabase storage
- * @param file The file to upload
- * @param path Path to storage folder
- * @returns Upload result with data or error
- */
-export const uploadFile = async (file: File, path: string = 'documents') => {
-  try {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${uuidv4()}.${fileExt}`;
-    const filePath = `${path}/${fileName}`;
-
-    const { data, error } = await supabase.storage
-      .from('documents')
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
-
-    if (error) {
-      throw error;
-    }
-
-    return { data, filePath };
-  } catch (error) {
-    console.error('Error uploading file:', error);
-    throw error;
-  }
-};
-
-/**
- * Upload document for a property with metadata
+ * Uploads a document for a property
  */
 export const uploadPropertyDocument = async (
   propertyId: string,
   file: File,
-  metadata: {
-    name: string;
-    description?: string;
-    documentType: DocumentType;
-    tags?: string[];
-    expiryDate?: string;
-    keyDates?: {
-      commencement?: string;
-      expiry?: string;
-      breakOption?: string[];
-      rentReview?: string[];
-    };
-    notificationPeriod?: number;
-  }
-) => {
+  documentType: DocumentType,
+  name: string,
+  description: string,
+  additionalMetadata: Record<string, any> = {}
+): Promise<PropertyDocument | null> => {
   try {
-    // Upload file to storage
-    const { filePath } = await uploadFile(file);
-    
-    // Get current user
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
+    const userId = (await supabase.auth.getUser()).data.user?.id;
+    if (!userId) {
       throw new Error('User not authenticated');
     }
-    
-    // Save metadata to database
-    const documentData = {
-      property_id: propertyId,
-      name: metadata.name,
-      description: metadata.description || '',
-      file_path: filePath,
-      document_type: metadata.documentType,
-      upload_date: new Date().toISOString(),
-      user_id: user.id,
-      tags: metadata.tags || [],
-      is_favorite: false,
-      version: 1,
-      expiry_date: metadata.expiryDate,
-      key_dates: metadata.keyDates || {},
-      notification_period: metadata.notificationPeriod || 0
-    };
-    
-    const { data, error } = await supabase
-      .from('property_documents')
-      .insert(documentData)
-      .select()
-      .single();
-    
-    if (error) {
-      throw error;
-    }
-    
-    return transformToPropertyDocument(data);
-  } catch (error) {
-    console.error('Error uploading property document:', error);
-    throw error;
-  }
-};
 
-/**
- * Upload a document to a property
- * @param propertyId The property ID to associate with the document
- * @param file The file to upload
- * @param name Name for the document
- * @param documentType Type of document
- * @param description Optional description
- * @param additionalMetadata Optional additional metadata
- * @returns The uploaded document metadata
- */
-export const uploadDocument = async (
-  propertyId: string,
-  file: File,
-  name: string,
-  documentType: string,
-  description?: string,
-  additionalMetadata?: any
-) => {
-  try {
-    // Create a path for the file
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${uuidv4()}.${fileExt}`;
-    const filePath = `properties/${propertyId}/${Date.now()}_${file.name}`;
-    
-    // Upload the file
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    // Generate a unique path for the file
+    const ext = file.name.split('.').pop();
+    const filename = `${uuidv4()}.${ext}`;
+    const filePath = `${propertyId}/${documentType}/${filename}`;
+
+    // Upload file to storage
+    const { error: uploadError } = await supabase.storage
       .from('documents')
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
-    
+      .upload(filePath, file);
+
     if (uploadError) {
+      console.error('Error uploading file:', uploadError);
       throw uploadError;
     }
-    
-    // Create document metadata in the database
-    const { data, error } = await supabase
+
+    // Create metadata record in the database
+    const { data: documentData, error: insertError } = await supabase
       .from('property_documents')
       .insert({
-        property_id: propertyId,
-        name: name,
-        description: description,
+        name,
+        description,
         file_path: filePath,
         document_type: documentType,
-        upload_date: new Date().toISOString(),
-        version: 1,
+        property_id: propertyId,
+        user_id: userId,
         ...additionalMetadata
       })
       .select()
       .single();
-    
-    if (error) {
-      throw error;
+
+    if (insertError) {
+      console.error('Error inserting document metadata:', insertError);
+      throw insertError;
     }
-    
-    return data;
+
+    // Return the document
+    return transformToPropertyDocument(documentData);
   } catch (error) {
-    console.error('Error uploading document:', error);
-    throw error;
+    console.error('Error in uploadPropertyDocument:', error);
+    return null;
+  }
+};
+
+/**
+ * Uploads a new version of an existing document
+ */
+export const uploadNewDocumentVersion = async (
+  existingDocument: PropertyDocument,
+  file: File,
+  versionNotes: string
+): Promise<PropertyDocument | null> => {
+  try {
+    const userId = (await supabase.auth.getUser()).data.user?.id;
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+
+    // Generate a unique path for the file
+    const ext = file.name.split('.').pop();
+    const filename = `${uuidv4()}.${ext}`;
+    const filePath = `${existingDocument.propertyId}/${existingDocument.documentType}/${filename}`;
+
+    // Upload file to storage
+    const { error: uploadError } = await supabase.storage
+      .from('documents')
+      .upload(filePath, file);
+
+    if (uploadError) {
+      console.error('Error uploading file:', uploadError);
+      throw uploadError;
+    }
+
+    // Store the previous version information
+    let previousVersions = existingDocument.previousVersions || [];
+    previousVersions.push({
+      version: existingDocument.version || 1,
+      filePath: existingDocument.filePath,
+      uploadDate: existingDocument.uploadDate,
+      notes: existingDocument.versionNotes
+    });
+
+    // Update the document record with the new version
+    const { data: updatedDocument, error: updateError } = await supabase
+      .from('property_documents')
+      .update({
+        file_path: filePath,
+        version: (existingDocument.version || 1) + 1,
+        version_notes: versionNotes,
+        previous_versions: previousVersions,
+        upload_date: new Date().toISOString()
+      })
+      .eq('id', existingDocument.id)
+      .select()
+      .single();
+
+    if (updateError) {
+      console.error('Error updating document version:', updateError);
+      throw updateError;
+    }
+
+    return transformToPropertyDocument(updatedDocument);
+  } catch (error) {
+    console.error('Error in uploadNewDocumentVersion:', error);
+    return null;
   }
 };

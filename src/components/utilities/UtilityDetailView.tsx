@@ -1,110 +1,223 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Property } from '@/types/property';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { PropertyDocument } from '@/types/property';
+import { LucideIcon, Download, File } from 'lucide-react';
+import UtilityBaseChart from './shared/UtilityBaseChart';
 import { getPropertyDocuments } from '@/services/FileStorageService';
-import UtilityChart from './UtilityChart';
-import UtilityDocuments from './UtilityDocuments';
-import UtilityBillDashboard from './bill-processing/UtilityBillDashboard';
+import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/use-toast';
+import { downloadDocument } from '@/services/document';
 
 interface UtilityDetailViewProps {
-  property: Property;
+  title: string;
+  data: Array<{ month: string; usage: number; cost: number }>;
+  Icon: LucideIcon;
+  iconColor: string;
+  iconBgColor: string;
+  primaryColor: string;
+  secondaryColor: string;
+  usageUnit: string;
   onBack: () => void;
+  propertyId: string;
+  utilityType: 'electricity' | 'water' | 'gas';
 }
 
-const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({ property, onBack }) => {
-  const [activeTab, setActiveTab] = useState('usage');
-  const [documents, setDocuments] = useState([]);
-  const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
+const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
+  title,
+  data,
+  Icon,
+  iconColor,
+  iconBgColor,
+  primaryColor,
+  secondaryColor,
+  usageUnit,
+  onBack,
+  propertyId,
+  utilityType
+}) => {
+  const [utilityDocuments, setUtilityDocuments] = useState<PropertyDocument[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const totalUsage = data.reduce((acc, item) => acc + item.usage, 0);
+  const totalCost = data.reduce((acc, item) => acc + item.cost, 0);
+  const averageUsage = totalUsage / data.length || 0;
+  const averageCost = totalCost / data.length || 0;
 
   useEffect(() => {
-    const loadDocuments = async () => {
-      setIsLoadingDocuments(true);
+    const fetchUtilityDocuments = async () => {
+      if (!propertyId) return;
+      
+      setIsLoading(true);
       try {
-        const docs = await getPropertyDocuments();
-        const utilityDocs = docs.filter(doc => doc.documentType === 'utility');
-        setDocuments(utilityDocs);
+        // Fetch documents of type 'utility'
+        const documents = await getPropertyDocuments(propertyId, 'utility');
+        // Filter documents based on utility type (looking for keywords in name/description)
+        const filteredDocs = documents.filter(doc => {
+          const searchText = `${doc.name.toLowerCase()} ${doc.description?.toLowerCase() || ''}`;
+          return searchText.includes(utilityType.toLowerCase());
+        });
+        
+        setUtilityDocuments(filteredDocs);
       } catch (error) {
-        console.error('Error loading utility documents:', error);
+        console.error('Error fetching utility documents:', error);
       } finally {
-        setIsLoadingDocuments(false);
+        setIsLoading(false);
       }
     };
 
-    loadDocuments();
-  }, [property.id]);
+    fetchUtilityDocuments();
+  }, [propertyId, utilityType]);
 
-  const utilityData = [
-    { month: 'Jan', electricityUsage: 320, electricityCost: 80, gasUsage: 250, gasCost: 125, waterUsage: 42, waterCost: 36 },
-    { month: 'Feb', electricityUsage: 300, electricityCost: 75, gasUsage: 280, gasCost: 140, waterUsage: 38, waterCost: 33 },
-    { month: 'Mar', electricityUsage: 340, electricityCost: 85, gasUsage: 220, gasCost: 110, waterUsage: 45, waterCost: 38 },
-    { month: 'Apr', electricityUsage: 280, electricityCost: 70, gasUsage: 180, gasCost: 90, waterUsage: 40, waterCost: 34 },
-    { month: 'May', electricityUsage: 290, electricityCost: 72.5, gasUsage: 160, gasCost: 80, waterUsage: 43, waterCost: 37 },
-    { month: 'Jun', electricityUsage: 350, electricityCost: 87.5, gasUsage: 140, gasCost: 70, waterUsage: 48, waterCost: 41 }
-  ];
-
-  const handleDownloadDocument = (document) => {
-    console.log('Download document:', document);
-  };
-
-  const handleDeleteDocument = (document) => {
-    console.log('Delete document:', document);
-  };
-
-  const handleUploadClick = () => {
-    console.log('Upload clicked');
+  const handleDownloadDocument = async (document: PropertyDocument) => {
+    try {
+      await downloadDocument(document.filePath, document.name);
+      toast({
+        title: "Document downloaded",
+        description: `${document.name} has been downloaded successfully.`
+      });
+    } catch (error) {
+      console.error('Error downloading document:', error);
+      toast({
+        variant: "destructive",
+        title: "Download failed",
+        description: "There was an error downloading the document."
+      });
+    }
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">{property.name} - Utilities</h2>
-        <button
-          onClick={onBack}
-          className="text-sm flex items-center gap-1 text-tenant-green hover:text-tenant-darkGreen transition-colors"
-        >
-          ← Back to all properties
-        </button>
+      <button 
+        onClick={onBack}
+        className="text-sm flex items-center gap-1 text-tenant-green hover:text-tenant-darkGreen transition-colors"
+      >
+        ← Back to utilities overview
+      </button>
+
+      <div className="flex items-center gap-2 mb-4">
+        <div className={`${iconBgColor} p-2 rounded-full`}>
+          <Icon className={`h-6 w-6 ${iconColor}`} />
+        </div>
+        <h2 className="text-2xl font-bold tracking-tight">{title} Detail View</h2>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-3 w-full md:w-auto">
-          <TabsTrigger value="usage">Usage Analysis</TabsTrigger>
-          <TabsTrigger value="bills">Bill Processing</TabsTrigger>
-          <TabsTrigger value="documents">Documents</TabsTrigger>
-        </TabsList>
+      <UtilityBaseChart
+        data={data}
+        title={title}
+        Icon={Icon}
+        iconColor={iconColor}
+        iconBgColor={iconBgColor}
+        primaryColor={primaryColor}
+        secondaryColor={secondaryColor}
+        usageUnit={usageUnit}
+      />
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-muted-foreground">Total Usage</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold">{totalUsage.toLocaleString()} {usageUnit}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-muted-foreground">Total Cost</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold">£{totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-muted-foreground">Avg. Monthly Usage</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold">{averageUsage.toLocaleString(undefined, { maximumFractionDigits: 0 })} {usageUnit}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-muted-foreground">Avg. Monthly Cost</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold">£{averageCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+          </CardContent>
+        </Card>
+      </div>
 
-        <TabsContent value="usage" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Utility Usage</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <UtilityChart data={utilityData} />
-            </CardContent>
-          </Card>
-        </TabsContent>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg">Monthly Breakdown</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Period</TableHead>
+                <TableHead>Usage ({usageUnit})</TableHead>
+                <TableHead>Cost (£)</TableHead>
+                <TableHead>Unit Rate (£/{usageUnit})</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.month}</TableCell>
+                  <TableCell>{item.usage.toLocaleString()}</TableCell>
+                  <TableCell>£{item.cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                  <TableCell>
+                    £{(item.cost / item.usage).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
-        <TabsContent value="bills" className="mt-6">
-          <UtilityBillDashboard 
-            property={property}
-            utilityDocuments={documents}
-            documentsLoading={isLoadingDocuments}
-            onUploadClick={() => {}}
-          />
-        </TabsContent>
-
-        <TabsContent value="documents" className="mt-6">
-          <UtilityDocuments 
-            utilityDocuments={documents}
-            documentsLoading={isLoadingDocuments}
-            documentType="utility"
-            onUploadClick={() => {}}
-            onDownload={() => {}}
-            onDelete={() => {}}
-          />
-        </TabsContent>
-      </Tabs>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg">{title} Invoices</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="flex items-center justify-center h-24">
+              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
+            </div>
+          ) : utilityDocuments.length === 0 ? (
+            <div className="text-center py-8 border rounded-md border-dashed">
+              <File className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+              <p className="text-muted-foreground">No {utilityType} invoices found</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {utilityDocuments.map((document) => (
+                <div key={document.id} className="flex items-center justify-between p-3 border rounded-md hover:bg-muted/50 transition-colors">
+                  <div>
+                    <p className="font-medium">{document.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(document.uploadDate).toLocaleDateString()} • {document.description}
+                    </p>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="flex items-center gap-1"
+                    onClick={() => handleDownloadDocument(document)}
+                  >
+                    <Download className="h-4 w-4" />
+                    Download
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
