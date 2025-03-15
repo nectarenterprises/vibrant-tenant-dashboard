@@ -47,7 +47,14 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
           userRoles = ['admin', 'standard'];
           localStorage.setItem(`user_roles_${user.id}`, JSON.stringify(userRoles));
         } else {
-          userRoles = JSON.parse(storedRoles) as UserRole[];
+          const parsedRoles = JSON.parse(storedRoles);
+          // Ensure we have valid UserRole types
+          userRoles = parsedRoles.filter((role: string) => 
+            ['admin', 'standard', 'viewer'].includes(role)
+          ) as UserRole[];
+          
+          // Ensure there's at least one role
+          if (userRoles.length === 0) userRoles = ['standard'];
         }
         
         setRoles(userRoles);

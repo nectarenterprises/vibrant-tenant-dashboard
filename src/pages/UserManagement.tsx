@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -40,7 +41,15 @@ const UserManagement = () => {
       const combinedUsers: UserData[] = profiles.map((profile: any) => {
         // In a real app, this would come from a secure API
         const storedRoles = localStorage.getItem(`user_roles_${profile.id}`);
-        const roles = storedRoles ? JSON.parse(storedRoles) as UserRole[] : ['standard'];
+        // Parse roles and ensure they're valid UserRole types
+        const parsedRoles = storedRoles ? JSON.parse(storedRoles) : ['standard'];
+        // Validate that each role is a valid UserRole
+        const roles = parsedRoles.filter((role: string) => 
+          ['admin', 'standard', 'viewer'].includes(role)
+        ) as UserRole[];
+        
+        // Ensure there's at least one role
+        if (roles.length === 0) roles.push('standard');
         
         return {
           id: profile.id,
