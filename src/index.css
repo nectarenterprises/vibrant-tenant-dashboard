@@ -125,6 +125,15 @@
   .animate-aurora {
     animation: aurora 15s linear infinite;
   }
+  
+  /* Bento grid animations */
+  .bento-hover {
+    @apply transition-all duration-300 hover:translate-y-[-5px] hover:shadow-lg;
+  }
+  
+  .bento-gradient {
+    @apply bg-gradient-to-br from-white/50 to-transparent dark:from-white/10 dark:to-transparent;
+  }
 }
 
 /* Add dark mode transition for all elements */
