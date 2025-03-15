@@ -62,6 +62,12 @@ const ServiceChargeComparisonDashboard: React.FC<ServiceChargeComparisonDashboar
             <ComparisonChart data={currentYearData} formatCurrency={formatCurrency} />
           </div>
           
+          {/* Comparison Summary - Moved above the table */}
+          <ComparisonSummary 
+            data={currentYearData} 
+            formatCurrency={formatCurrency} 
+          />
+          
           {/* Table View */}
           <div>
             <ComparisonTable 
@@ -72,11 +78,6 @@ const ServiceChargeComparisonDashboard: React.FC<ServiceChargeComparisonDashboar
               getChangeIcon={getChangeIcon}
             />
           </div>
-          
-          <ComparisonSummary 
-            data={currentYearData} 
-            formatCurrency={formatCurrency} 
-          />
         </CardContent>
       </Card>
     </div>
