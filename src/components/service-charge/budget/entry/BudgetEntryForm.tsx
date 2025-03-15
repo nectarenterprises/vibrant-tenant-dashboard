@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -6,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Trash2 } from 'lucide-react';
 import { ServiceChargeCategoryBreakdown } from '@/types/service-charge';
+import CategoryBreakdownList from './CategoryBreakdownList';
+import NewCategoryInput from './NewCategoryInput';
 
 interface BudgetEntryFormProps {
   propertyId: string;
@@ -33,6 +36,10 @@ const BudgetEntryForm: React.FC<BudgetEntryFormProps> = ({ propertyId, onSubmit 
     updatedCategories[index].amount = amount;
     
     // Recalculate percentages
+    recalculatePercentages(updatedCategories);
+  };
+  
+  const recalculatePercentages = (updatedCategories: ServiceChargeCategoryBreakdown[]) => {
     const total = updatedCategories.reduce((sum, cat) => sum + cat.amount, 0);
     updatedCategories.forEach(cat => {
       cat.percentage = total > 0 ? (cat.amount / total) * 100 : 0;
@@ -45,25 +52,18 @@ const BudgetEntryForm: React.FC<BudgetEntryFormProps> = ({ propertyId, onSubmit 
   const handleAddCategory = () => {
     if (newCategoryName.trim() === '') return;
     
-    setCategories([
+    const updatedCategories = [
       ...categories,
       { category: newCategoryName, amount: 0, percentage: 0 }
-    ]);
+    ];
     
+    setCategories(updatedCategories);
     setNewCategoryName('');
   };
   
   const handleRemoveCategory = (index: number) => {
     const updatedCategories = categories.filter((_, i) => i !== index);
-    setCategories(updatedCategories);
-    
-    // Recalculate total and percentages
-    const total = updatedCategories.reduce((sum, cat) => sum + cat.amount, 0);
-    updatedCategories.forEach(cat => {
-      cat.percentage = total > 0 ? (cat.amount / total) * 100 : 0;
-    });
-    
-    setTotalAmount(total);
+    recalculatePercentages(updatedCategories);
   };
   
   const handleSubmit = (e: React.FormEvent) => {
@@ -143,60 +143,17 @@ const BudgetEntryForm: React.FC<BudgetEntryFormProps> = ({ propertyId, onSubmit 
               </div>
             </div>
             
-            <div className="space-y-4">
-              {categories.map((category, index) => (
-                <div key={index} className="grid grid-cols-12 gap-2 items-center">
-                  <div className="col-span-5">
-                    <Input value={category.category} disabled />
-                  </div>
-                  <div className="col-span-3">
-                    <Input 
-                      type="number" 
-                      value={category.amount}
-                      onChange={(e) => handleCategoryAmountChange(index, parseFloat(e.target.value) || 0)}
-                      min={0}
-                      step="0.01"
-                    />
-                  </div>
-                  <div className="col-span-3">
-                    <Input 
-                      value={`${category.percentage.toFixed(1)}%`}
-                      disabled
-                    />
-                  </div>
-                  <div className="col-span-1 flex justify-end">
-                    <Button 
-                      type="button" 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => handleRemoveCategory(index)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <CategoryBreakdownList 
+              categories={categories}
+              onAmountChange={handleCategoryAmountChange}
+              onRemoveCategory={handleRemoveCategory}
+            />
             
-            <div className="grid grid-cols-12 gap-2 items-center mt-4">
-              <div className="col-span-5">
-                <Input 
-                  placeholder="New category name" 
-                  value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e.target.value)}
-                />
-              </div>
-              <div className="col-span-3">
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  onClick={handleAddCategory}
-                  className="w-full"
-                >
-                  Add Category
-                </Button>
-              </div>
-            </div>
+            <NewCategoryInput
+              newCategoryName={newCategoryName}
+              onNameChange={setNewCategoryName}
+              onAddCategory={handleAddCategory}
+            />
           </div>
           
           <Button type="submit" className="w-full">Save Budget</Button>

@@ -2,9 +2,8 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Property } from '@/types/property';
-import BudgetComparison from './BudgetComparison';
-import BudgetEntryForm from './BudgetEntryForm';
-import { toast } from '@/components/ui/use-toast';
+import BudgetComparison from './comparison/BudgetComparison';
+import BudgetEntryTab from './entry/BudgetEntryTab';
 
 interface BudgetDashboardProps {
   property: Property;
@@ -12,16 +11,6 @@ interface BudgetDashboardProps {
 
 const BudgetDashboard: React.FC<BudgetDashboardProps> = ({ property }) => {
   const [activeTab, setActiveTab] = useState<string>('comparison');
-  
-  const handleSubmitBudget = (budgetData: any) => {
-    console.log('Submitted budget data:', budgetData);
-    // In a real implementation, this would save the data to the database
-    
-    toast({
-      title: 'Budget saved',
-      description: 'The service charge budget has been saved successfully.',
-    });
-  };
   
   return (
     <div className="space-y-6">
@@ -36,10 +25,7 @@ const BudgetDashboard: React.FC<BudgetDashboardProps> = ({ property }) => {
         </TabsContent>
         
         <TabsContent value="entry">
-          <BudgetEntryForm 
-            propertyId={property.id} 
-            onSubmit={handleSubmitBudget} 
-          />
+          <BudgetEntryTab propertyId={property.id} />
         </TabsContent>
       </Tabs>
     </div>
