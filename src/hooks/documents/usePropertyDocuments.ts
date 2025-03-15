@@ -1,7 +1,9 @@
 
+import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Property, PropertyDocument } from '@/types/property';
 import { FolderType } from '@/services/document/types';
+import { toast } from '@/components/ui/use-toast';
 
 // Import the smaller, more focused hooks
 import { useDocumentQueries } from './useDocumentQueries';
@@ -13,23 +15,6 @@ import { useDocumentUpload } from './useDocumentUpload';
  * Main hook that composes smaller document hooks
  */
 export const usePropertyDocuments = () => {
-  // Use the document upload hook
-  const {
-    fileUpload,
-    documentName,
-    documentDescription,
-    documentType,
-    uploadDialogOpen,
-    setFileUpload,
-    setDocumentName,
-    setDocumentDescription,
-    setDocumentType,
-    setUploadDialogOpen,
-    resetUploadForm,
-    handleFileSelect,
-    prepareUpload
-  } = useDocumentUpload();
-
   // Use the document selection hook
   const {
     selectedProperty,
@@ -38,7 +23,7 @@ export const usePropertyDocuments = () => {
     setSearchQuery,
     setSelectedProperty,
     setSelectedFolder,
-    getFilteredDocuments,
+    getFilteredDocuments: filterDocuments,
     handlePropertySelect,
     handleFolderSelect,
     handleDownload,
@@ -57,6 +42,25 @@ export const usePropertyDocuments = () => {
     getDocumentsByType
   } = useDocumentQueries(selectedProperty, selectedFolder);
 
+  // Use the document upload hook
+  const {
+    fileUpload,
+    documentName,
+    documentDescription,
+    documentType,
+    uploadDialogOpen,
+    isUploading,
+    setFileUpload,
+    setDocumentName,
+    setDocumentDescription,
+    setDocumentType,
+    setUploadDialogOpen,
+    setIsUploading,
+    resetUploadForm,
+    handleFileSelect,
+    prepareUpload
+  } = useDocumentUpload();
+
   // Use document mutations hook
   const {
     uploadMutation,
@@ -69,39 +73,64 @@ export const usePropertyDocuments = () => {
 
   // Fetch properties function
   const fetchProperties = async (userId: string): Promise<Property[]> => {
-    const { data, error } = await supabase
-      .from('properties')
-      .select('*')
-      .eq('user_id', userId);
+    if (!userId) return [];
+
+    try {
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .eq('user_id', userId);
+        
+      if (error) throw error;
       
-    if (error) throw error;
-    
-    return data.map(property => ({
-      id: property.id,
-      name: property.name,
-      address: property.address,
-      rentalFee: Number(property.rental_fee),
-      nextPaymentDate: property.next_payment_date,
-      leaseExpiry: property.lease_expiry,
-      createdAt: property.created_at,
-      updatedAt: property.updated_at,
-      incentives: [] // Adding empty incentives array as required by Property type
-    }));
+      return data.map(property => ({
+        id: property.id,
+        name: property.name,
+        address: property.address,
+        rentalFee: Number(property.rental_fee),
+        nextPaymentDate: property.next_payment_date,
+        leaseExpiry: property.lease_expiry,
+        createdAt: property.created_at,
+        updatedAt: property.updated_at,
+        incentives: [] // Adding empty incentives array as required by Property type
+      }));
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+      toast({
+        variant: "destructive",
+        title: "Failed to fetch properties",
+        description: "There was an error loading your properties."
+      });
+      return [];
+    }
   };
 
   // Handle document deletion
-  const handleDelete = (document: PropertyDocument) => {
+  const handleDelete = async (document: PropertyDocument) => {
     if (confirm(`Are you sure you want to delete "${document.name}"?`)) {
-      deleteMutation.mutate({ id: document.id, filePath: document.filePath });
+      try {
+        const success = await deleteDocument(document.id, document.filePath);
+        if (success) {
+          toast({
+            title: "Document deleted",
+            description: `${document.name} has been deleted.`
+          });
+          refetchDocuments();
+        }
+      } catch (error) {
+        console.error('Error deleting document:', error);
+        toast({
+          variant: "destructive",
+          title: "Delete failed",
+          description: "There was an error deleting the document."
+        });
+      }
     }
   };
 
-  // Handle document upload
-  const handleUpload = () => {
-    const uploadData = prepareUpload();
-    if (uploadData) {
-      uploadMutation.mutate(uploadData);
-    }
+  // Create a wrapper for getFilteredDocuments that uses the current documents
+  const getFilteredDocuments = () => {
+    return filterDocuments(documents);
   };
 
   return {
@@ -121,6 +150,7 @@ export const usePropertyDocuments = () => {
     documentDescription,
     documentType,
     uploadDialogOpen,
+    isUploading,
     setFileUpload,
     setDocumentName,
     setDocumentDescription,
@@ -144,7 +174,6 @@ export const usePropertyDocuments = () => {
     deleteMutation,
     fetchProperties,
     handleDelete,
-    handleUpload,
     recordDocumentAccess
   };
 };

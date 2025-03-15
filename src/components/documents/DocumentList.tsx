@@ -41,7 +41,7 @@ const DocumentList = ({
           />
         </div>
         <div className="flex space-x-2">
-          <Button onClick={onUploadClick}>
+          <Button onClick={onUploadClick} className="bg-tenant-green hover:bg-tenant-darkGreen">
             <Upload className="h-4 w-4 mr-2" />
             Upload
           </Button>
@@ -64,7 +64,7 @@ const DocumentList = ({
             {searchQuery ? "Try a different search term" : "Upload your first document to get started"}
           </p>
           {!searchQuery && (
-            <Button onClick={onUploadClick}>
+            <Button onClick={onUploadClick} className="bg-tenant-green hover:bg-tenant-darkGreen">
               <Upload className="h-4 w-4 mr-2" />
               Upload Document
             </Button>
@@ -78,14 +78,17 @@ const DocumentList = ({
               className="flex items-center justify-between p-3 border rounded-md hover:bg-muted/50 transition-colors"
             >
               <div className="flex items-center space-x-3">
-                <FileText className="h-8 w-8 text-primary" />
+                <FileText className="h-8 w-8 text-tenant-green" />
                 <div>
                   <p className="font-medium">{document.name}</p>
                   {document.description && (
                     <p className="text-sm text-muted-foreground">{document.description}</p>
                   )}
                   <p className="text-xs text-muted-foreground">
-                    Uploaded {format(new Date(document.uploadDate), 'MMM d, yyyy')}
+                    Type: {document.documentType}
+                    {document.uploadDate && (
+                      <> • Uploaded {format(new Date(document.uploadDate), 'MMM d, yyyy')}</>
+                    )}
                   </p>
                 </div>
               </div>

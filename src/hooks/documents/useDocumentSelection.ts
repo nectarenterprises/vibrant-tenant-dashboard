@@ -17,6 +17,8 @@ export const useDocumentSelection = () => {
   
   // Filter documents based on search query
   const getFilteredDocuments = (documents: PropertyDocument[] = []) => {
+    if (!documents || documents.length === 0) return [];
+    
     return searchQuery 
       ? documents.filter(doc => 
           doc.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -38,8 +40,16 @@ export const useDocumentSelection = () => {
   };
 
   // Handle document download
-  const handleDownload = (document: PropertyDocument) => {
-    downloadDocument(document.filePath, document.id);
+  const handleDownload = async (document: PropertyDocument) => {
+    try {
+      await downloadDocument(document.filePath, document.id);
+      // Record access after successful download
+      if (document.id) {
+        await recordDocumentAccess(document.id);
+      }
+    } catch (error) {
+      console.error('Error downloading document:', error);
+    }
   };
 
   return {

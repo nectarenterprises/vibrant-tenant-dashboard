@@ -37,7 +37,6 @@ const DocumentsContainer = ({
   selectedProperty,
   selectedFolder,
   searchQuery,
-  documents,
   documentsLoading,
   uploadDialogOpen,
   fileUpload,
@@ -77,14 +76,7 @@ const DocumentsContainer = ({
       </CardHeader>
       
       <CardContent>
-        <DocumentSearch 
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          onUploadClick={() => setUploadDialogOpen(true)}
-          onRefresh={refetchDocuments}
-        />
-        
-        <DocumentList
+        <DocumentList 
           documents={filteredDocuments}
           isLoading={documentsLoading}
           searchQuery={searchQuery}
