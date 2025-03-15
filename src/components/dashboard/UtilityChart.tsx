@@ -81,7 +81,7 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
         tooltipFormatter={formatCurrency}
         yAxisTickFormatter={formatCurrency}
         additionalLines={getAdditionalLines()}
-        showGrid={true}
+        showGrid={false}
         className={!activeUtilities.electricity ? "hidden" : ""}
       />
     </div>

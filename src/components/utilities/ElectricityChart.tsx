@@ -2,6 +2,7 @@
 import React from 'react';
 import { Zap } from 'lucide-react';
 import UtilityBaseChart from './shared/UtilityBaseChart';
+import { TENANT_COLORS } from '@/components/ui/styled-chart';
 
 // Mock data for electricity usage
 const mockElectricityData = [
@@ -21,7 +22,7 @@ const ElectricityChart: React.FC = () => {
       Icon={Zap}
       iconColor="text-tenant-purple"
       iconBgColor="bg-purple-100"
-      primaryColor="#8B5CF6"
+      primaryColor={TENANT_COLORS.chartGreen}
       secondaryColor="#4C1D95"
       usageUnit="kWh"
     />

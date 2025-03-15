@@ -21,8 +21,8 @@ import { cn } from '@/lib/utils';
 
 // Chart configuration
 const chartConfig = {
-  areaFillOpacity: 0.6,
-  strokeWidth: 2,
+  areaFillOpacity: 0.7,
+  strokeWidth: 3,
   activeDot: { r: 6, strokeWidth: 0 },
   dot: { r: 0 },  // Hide dots by default
   animationDuration: 1000,
@@ -40,13 +40,15 @@ const TENANT_COLORS = {
   orange: '#F97316',
   teal: '#0EA5E9',
   purple: '#8B5CF6',
+  chartGreen: '#2D6A4F',
+  chartPink: '#FFEAE2',
 };
 
 // Themed gradients for area charts
 const areaGradients = {
   green: [
-    { offset: '0%', color: TENANT_COLORS.primary, opacity: 0.8 },
-    { offset: '100%', color: TENANT_COLORS.primary, opacity: 0 },
+    { offset: '0%', color: TENANT_COLORS.chartGreen, opacity: 0.8 },
+    { offset: '100%', color: TENANT_COLORS.chartGreen, opacity: 0 },
   ],
   mint: [
     { offset: '0%', color: TENANT_COLORS.quaternary, opacity: 0.8 },
@@ -116,8 +118,8 @@ export const StyledAreaChart: React.FC<StyledAreaChartProps> = ({
   data,
   dataKey,
   xAxisDataKey = 'name',
-  stroke = TENANT_COLORS.primary,
-  fill = TENANT_COLORS.primary,
+  stroke = TENANT_COLORS.chartGreen,
+  fill = TENANT_COLORS.chartGreen,
   gradientId = 'greenGradient',
   height = 300,
   tooltipFormatter,
@@ -125,7 +127,7 @@ export const StyledAreaChart: React.FC<StyledAreaChartProps> = ({
   yAxisTickFormatter,
   className,
   additionalLines = [],
-  showGrid = true,
+  showGrid = false,
   yAxisWidth = 50,
   legendPosition = 'bottom',
 }) => {
@@ -165,6 +167,9 @@ export const StyledAreaChart: React.FC<StyledAreaChartProps> = ({
                 </linearGradient>
               );
             })}
+            <pattern id="chartPattern" x="0" y="0" width="100%" height="100%">
+              <rect x="0" y="0" width="100%" height="100%" fill={TENANT_COLORS.chartPink} />
+            </pattern>
           </defs>
           {showGrid && (
             <CartesianGrid 
@@ -192,26 +197,37 @@ export const StyledAreaChart: React.FC<StyledAreaChartProps> = ({
             cursor={{ stroke: '#9ca3af', strokeWidth: 1, strokeDasharray: '3 3' }}
           />
           <Legend align="center" verticalAlign={legendPosition} />
+          
+          {/* Background area with pattern fill */}
+          <Area
+            type="monotone"
+            dataKey={dataKey}
+            stroke="transparent"
+            fill="url(#chartPattern)"
+            fillOpacity={1}
+            strokeWidth={0}
+          />
+          
+          {/* Main colored area */}
           <Area
             type="monotone"
             dataKey={dataKey}
             stroke={stroke}
-            fill={`url(#${gradientId})`}
-            fillOpacity={chartConfig.areaFillOpacity}
             strokeWidth={chartConfig.strokeWidth}
+            fill="transparent"
             dot={chartConfig.dot}
             activeDot={chartConfig.activeDot}
             animationDuration={chartConfig.animationDuration}
           />
+          
           {additionalLines.map((line, index) => (
             <Area
               key={`line-${index}`}
               type="monotone"
               dataKey={line.dataKey}
               stroke={line.stroke}
-              fill={line.gradientId ? `url(#${line.gradientId})` : undefined}
-              fillOpacity={chartConfig.areaFillOpacity}
               strokeWidth={chartConfig.strokeWidth}
+              fill="transparent"
               dot={chartConfig.dot}
               activeDot={chartConfig.activeDot}
               animationDuration={chartConfig.animationDuration}
@@ -251,16 +267,22 @@ export const StyledLineChart: React.FC<StyledLineChartProps> = ({
   xAxisTickFormatter,
   yAxisTickFormatter,
   className,
-  showGrid = true,
+  showGrid = false,
   yAxisWidth = 50,
 }) => {
   return (
     <div className={cn("w-full h-full", className)} style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart
+        <AreaChart
           data={data}
           margin={{ top: 10, right: 20, left: 0, bottom: 5 }}
         >
+          <defs>
+            <pattern id="chartPattern" x="0" y="0" width="100%" height="100%">
+              <rect x="0" y="0" width="100%" height="100%" fill={TENANT_COLORS.chartPink} />
+            </pattern>
+          </defs>
+          
           {showGrid && (
             <CartesianGrid 
               stroke={chartConfig.gridStroke} 
@@ -287,6 +309,17 @@ export const StyledLineChart: React.FC<StyledLineChartProps> = ({
             cursor={{ stroke: '#9ca3af', strokeWidth: 1, strokeDasharray: '3 3' }}
           />
           <Legend />
+          
+          {/* Background area with pattern fill */}
+          <Area
+            type="monotone"
+            dataKey={lines[0].dataKey}
+            stroke="transparent"
+            fill="url(#chartPattern)"
+            fillOpacity={1}
+            strokeWidth={0}
+          />
+          
           {lines.map((line, index) => (
             <Line
               key={`line-${index}`}
@@ -301,7 +334,7 @@ export const StyledLineChart: React.FC<StyledLineChartProps> = ({
               animationBegin={300 * index}
             />
           ))}
-        </LineChart>
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );
@@ -337,7 +370,7 @@ export const StyledBarChart: React.FC<StyledBarChartProps> = ({
   xAxisTickFormatter,
   yAxisTickFormatter,
   className,
-  showGrid = true,
+  showGrid = false,
   yAxisWidth = 50,
   layout = 'horizontal',
   barSize = 30,
@@ -352,6 +385,12 @@ export const StyledBarChart: React.FC<StyledBarChartProps> = ({
           layout={layout}
           barSize={barSize}
         >
+          <defs>
+            <pattern id="chartPattern" x="0" y="0" width="100%" height="100%">
+              <rect x="0" y="0" width="100%" height="100%" fill={TENANT_COLORS.chartPink} />
+            </pattern>
+          </defs>
+          
           {showGrid && (
             <CartesianGrid 
               stroke={chartConfig.gridStroke} 

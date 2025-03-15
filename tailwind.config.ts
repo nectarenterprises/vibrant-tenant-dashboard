@@ -72,6 +72,11 @@ export default {
           orange: '#F97316',
           teal: '#0EA5E9',
           purple: '#8B5CF6',
+          softPink: '#FFDEE2',
+          softPeach: '#FDE1D3',
+          softBlue: '#D3E4FD',
+          chartGreen: '#2D6A4F',
+          chartPink: '#FFEAE2'
         }
       },
       borderRadius: {

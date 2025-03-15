@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Calendar, Upload } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
-import { StyledLineChart } from '@/components/ui/styled-chart';
+import { StyledLineChart, TENANT_COLORS } from '@/components/ui/styled-chart';
 
 interface UtilityUsageCardProps {
   title: string;
@@ -75,7 +75,7 @@ const UtilityUsageCard: React.FC<UtilityUsageCardProps> = ({
             <StyledLineChart
               data={data}
               lines={[
-                { dataKey: 'usage', stroke: primaryColor, name: 'Usage' },
+                { dataKey: 'usage', stroke: TENANT_COLORS.chartGreen, name: 'Usage' },
                 { dataKey: 'cost', stroke: secondaryColor, name: 'Cost' }
               ]}
               xAxisDataKey="period"

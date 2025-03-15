@@ -57,7 +57,7 @@ const UtilityBaseChart: React.FC<UtilityBaseChartProps> = ({
         lines={[
           { 
             dataKey: 'usage', 
-            stroke: primaryColor,
+            stroke: TENANT_COLORS.chartGreen,
             name: `Usage (${usageUnit})`
           },
           { 
@@ -69,7 +69,7 @@ const UtilityBaseChart: React.FC<UtilityBaseChartProps> = ({
         xAxisDataKey="month"
         height={260}
         tooltipFormatter={customTooltipFormatter}
-        showGrid={true}
+        showGrid={false}
       />
     </div>
   );
