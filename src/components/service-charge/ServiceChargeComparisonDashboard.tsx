@@ -9,7 +9,12 @@ import {
 } from '@/components/ui/card';
 import { Property } from '@/types/property';
 import { ComparisonPeriod, ViewMode } from './comparison/types';
-import { formatCurrency } from './comparison/utils';
+import { 
+  formatCurrency, 
+  getChangeColor, 
+  getChangeBadgeColor, 
+  getChangeIcon 
+} from './comparison/utils.tsx';
 import PeriodSelector from './comparison/PeriodSelector';
 import ViewModeSelector from './comparison/ViewModeSelector';
 import ComparisonChart from './comparison/ComparisonChart';
