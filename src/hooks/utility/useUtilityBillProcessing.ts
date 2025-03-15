@@ -48,7 +48,7 @@ export const useUtilityBillProcessing = (propertyId: string) => {
         toast({
           title: "Using simulated data",
           description: "AI processing couldn't extract data accurately. Using simulated data instead.",
-          variant: "warning"
+          variant: "destructive" // Changed from "warning" to "destructive" to match available variants
         });
       }
       

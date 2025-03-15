@@ -100,4 +100,5 @@ export interface ProcessingResult {
   extractedData: ExtractedUtilityData;
   confidenceScores: ConfidenceScores;
   documentId: string;
+  fallback?: boolean; // Added fallback flag to indicate when simulated data is used
 }
