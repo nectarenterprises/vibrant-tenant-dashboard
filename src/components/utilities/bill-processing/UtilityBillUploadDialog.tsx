@@ -43,6 +43,8 @@ const UtilityBillUploadDialog: React.FC<UtilityBillUploadDialogProps> = ({
     uploadProgress,
     processingStatus,
     extractionResult,
+    processingError,
+    isFallbackData,
     uploadMutation,
     saveMutation,
     resetProcessing
@@ -136,6 +138,7 @@ const UtilityBillUploadDialog: React.FC<UtilityBillUploadDialogProps> = ({
               confidenceScores={extractionResult.confidenceScores}
               onSave={handleSaveVerifiedData}
               onCancel={handleClose}
+              isFallbackData={isFallbackData}
             />
           )
         );
@@ -144,7 +147,7 @@ const UtilityBillUploadDialog: React.FC<UtilityBillUploadDialogProps> = ({
         return <CompletedState onClose={handleClose} />;
         
       case 'failed':
-        return <FailedState onClose={handleClose} onReset={resetProcessing} />;
+        return <FailedState onClose={handleClose} onReset={resetProcessing} errorMessage={processingError} />;
     }
   };
   

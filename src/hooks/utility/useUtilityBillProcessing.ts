@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useUtilityBillUpload } from './useUtilityBillUpload';
 import { useUtilityBillExtraction } from './useUtilityBillExtraction';
 import { useUtilityBillSave } from './useUtilityBillSave';
+import { toast } from '@/components/ui/use-toast';
 import { 
   UtilityBill, 
   UtilityBillUpload, 
@@ -16,6 +17,8 @@ export type ProcessingStatus = 'idle' | 'uploading' | 'processing' | 'verifying'
 export const useUtilityBillProcessing = (propertyId: string) => {
   const [processingStatus, setProcessingStatus] = useState<ProcessingStatus>('idle');
   const [extractionResult, setExtractionResult] = useState<ProcessingResult | null>(null);
+  const [processingError, setProcessingError] = useState<string | null>(null);
+  const [isFallbackData, setIsFallbackData] = useState(false);
   const queryClient = useQueryClient();
   
   const { uploadProgress, uploadDocument } = useUtilityBillUpload(propertyId);
@@ -26,6 +29,8 @@ export const useUtilityBillProcessing = (propertyId: string) => {
   const handleUploadDocument = async (fileUpload: UtilityBillUpload): Promise<ProcessingResult> => {
     try {
       setProcessingStatus('uploading');
+      setProcessingError(null);
+      setIsFallbackData(false);
       
       // Upload document and get document ID
       const documentId = await uploadDocument(fileUpload);
@@ -37,10 +42,21 @@ export const useUtilityBillProcessing = (propertyId: string) => {
       setProcessingStatus('verifying');
       setExtractionResult(processingResult);
       
+      // Check if fallback data was used
+      if (processingResult.fallback) {
+        setIsFallbackData(true);
+        toast({
+          title: "Using simulated data",
+          description: "AI processing couldn't extract data accurately. Using simulated data instead.",
+          variant: "warning"
+        });
+      }
+      
       return processingResult;
     } catch (error) {
       console.error('Error in handleUploadDocument:', error);
       setProcessingStatus('failed');
+      setProcessingError(error.message || "Failed to process document");
       throw error;
     }
   };
@@ -49,7 +65,7 @@ export const useUtilityBillProcessing = (propertyId: string) => {
   const uploadMutation = useMutation({
     mutationFn: handleUploadDocument,
     onSuccess: () => {
-      console.log('Upload completed successfully');
+      console.log('Upload and processing completed successfully');
     }
   });
   
@@ -61,6 +77,8 @@ export const useUtilityBillProcessing = (propertyId: string) => {
     onSuccess: () => {
       setProcessingStatus('idle');
       setExtractionResult(null);
+      setProcessingError(null);
+      setIsFallbackData(false);
     }
   });
   
@@ -68,12 +86,16 @@ export const useUtilityBillProcessing = (propertyId: string) => {
   const resetProcessing = () => {
     setProcessingStatus('idle');
     setExtractionResult(null);
+    setProcessingError(null);
+    setIsFallbackData(false);
   };
   
   return {
     uploadProgress,
     processingStatus,
     extractionResult,
+    processingError,
+    isFallbackData,
     uploadMutation,
     saveMutation,
     resetProcessing
