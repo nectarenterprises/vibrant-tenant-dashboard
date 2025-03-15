@@ -13,6 +13,8 @@ export interface Property {
   serviceChargeAmount?: number;
   utilityData?: UtilityData[];
   complianceStatus?: ComplianceStatus;
+  leaseStart?: string;
+  leaseType?: string;
 }
 
 export interface Incentive {
@@ -70,6 +72,7 @@ export interface PropertyDocument {
   notificationPeriod?: number; // in days
   lastAccessed?: string;
   versionNotes?: string;
+  notes?: string; // Added notes property to fix DocumentVersion issue
 }
 
 export interface DocumentTag {

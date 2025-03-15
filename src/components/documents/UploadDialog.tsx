@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,7 @@ import FileSelectField from './upload/FileSelectField';
 import DocumentTypeField from './upload/DocumentTypeField';
 import DocumentNameField from './upload/DocumentNameField';
 import DocumentDescriptionField from './upload/DocumentDescriptionField';
+import DocumentTypeFields from './upload/DocumentTypeFields';
 import UploadDialogFooter from './upload/DialogFooter';
 
 interface UploadDialogProps {
@@ -29,6 +30,8 @@ interface UploadDialogProps {
   onDescriptionChange: (description: string) => void;
   onTypeChange: (type: FolderType) => void;
   onUpload: () => void;
+  additionalMetadata?: Record<string, any>;
+  onAdditionalMetadataChange?: (metadata: Record<string, any>) => void;
 }
 
 const UploadDialog = ({
@@ -43,8 +46,24 @@ const UploadDialog = ({
   onNameChange,
   onDescriptionChange,
   onTypeChange,
-  onUpload
+  onUpload,
+  additionalMetadata = {},
+  onAdditionalMetadataChange = () => {}
 }: UploadDialogProps) => {
+  const [formValues, setFormValues] = useState<Record<string, any>>(additionalMetadata);
+
+  // Update parent component when form values change
+  useEffect(() => {
+    if (onAdditionalMetadataChange) {
+      onAdditionalMetadataChange(formValues);
+    }
+  }, [formValues, onAdditionalMetadataChange]);
+
+  // Reset form values when document type changes
+  useEffect(() => {
+    setFormValues({});
+  }, [documentType]);
+
   const handleClose = () => {
     if (!isUploading) {
       setIsOpen(false);
@@ -53,7 +72,7 @@ const UploadDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent>
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Upload Document</DialogTitle>
           <DialogDescription>
@@ -80,6 +99,13 @@ const UploadDialog = ({
           <DocumentDescriptionField 
             documentDescription={documentDescription}
             onDescriptionChange={onDescriptionChange}
+          />
+          
+          {/* Render dynamic fields based on document type */}
+          <DocumentTypeFields 
+            documentType={documentType}
+            formValues={formValues}
+            setFormValues={setFormValues}
           />
         </div>
         

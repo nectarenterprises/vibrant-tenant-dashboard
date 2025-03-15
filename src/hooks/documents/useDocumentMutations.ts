@@ -1,86 +1,108 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
-import { 
-  uploadPropertyDocument,
-  deleteDocument
-} from '@/services/document';
-import { FolderType } from '@/services/document/types';
-import { DocumentType } from '@/types/property';
+import { uploadPropertyDocument } from '@/services/document/fileUpload';
+import { deleteDocument } from '@/services/document';
 
 /**
- * Hook for document-related mutations
+ * Hook for document upload and delete mutations
  */
 export const useDocumentMutations = (
-  propertyId: string | undefined,
-  resetForm: () => void
+  propertyId?: string,
+  onUploadSuccess?: () => void
 ) => {
   const queryClient = useQueryClient();
-
-  // Upload document mutation
+  
+  // Upload mutation
   const uploadMutation = useMutation({
-    mutationFn: async (data: { 
-      file: File, 
-      name: string, 
-      description: string, 
-      documentType: FolderType 
+    mutationFn: async ({ 
+      file,
+      name,
+      description,
+      documentType,
+      metadata = {},
+      additionalMetadata = {}
+    }: {
+      file: File;
+      name: string;
+      description: string;
+      documentType: string;
+      metadata?: any;
+      additionalMetadata?: Record<string, any>;
     }) => {
-      if (!data.file || !propertyId) return null;
+      if (!propertyId) throw new Error('Property ID is required');
       
       return uploadPropertyDocument(
         propertyId,
-        data.file,
-        data.documentType as DocumentType,
-        data.name || data.file.name,
-        data.description
+        file,
+        documentType,
+        name,
+        description,
+        metadata.tags,
+        metadata.expiryDate,
+        metadata.keyDates,
+        metadata.notificationPeriod,
+        additionalMetadata
       );
     },
-    onSuccess: (result, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['property-documents', propertyId, variables.documentType] });
-      queryClient.invalidateQueries({ queryKey: ['recent-documents'] });
-      queryClient.invalidateQueries({ queryKey: ['expiring-documents'] });
-      resetForm();
-      
-      toast({
-        title: "Document uploaded",
-        description: "Your document has been uploaded successfully.",
-      });
+    onSuccess: (success) => {
+      if (success) {
+        // Invalidate relevant queries
+        queryClient.invalidateQueries({ queryKey: ['documents', propertyId] });
+        queryClient.invalidateQueries({ queryKey: ['recentDocuments'] });
+        queryClient.invalidateQueries({ queryKey: ['expiringDocuments'] });
+        
+        // Show success message
+        toast({
+          title: 'Document uploaded',
+          description: 'The document has been uploaded successfully.',
+        });
+        
+        // Call success callback
+        if (onUploadSuccess) {
+          onUploadSuccess();
+        }
+      }
     },
     onError: (error) => {
       console.error('Upload error:', error);
       toast({
-        variant: "destructive",
-        title: "Upload failed",
-        description: "There was an error uploading your document."
+        variant: 'destructive',
+        title: 'Upload failed',
+        description: error instanceof Error ? error.message : 'There was an error uploading the document.',
       });
     }
   });
-
-  // Delete document mutation
+  
+  // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async ({ id, filePath }: { id: string; filePath: string }) => {
       return deleteDocument(id, filePath);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['property-documents'] });
-      queryClient.invalidateQueries({ queryKey: ['recent-documents'] });
-      queryClient.invalidateQueries({ queryKey: ['expiring-documents'] });
-      
-      toast({
-        title: "Document deleted",
-        description: "The document has been deleted successfully.",
-      });
+    onSuccess: (success) => {
+      if (success) {
+        // Invalidate relevant queries
+        queryClient.invalidateQueries({ queryKey: ['documents', propertyId] });
+        queryClient.invalidateQueries({ queryKey: ['recentDocuments'] });
+        queryClient.invalidateQueries({ queryKey: ['expiringDocuments'] });
+        
+        // Show success message
+        toast({
+          title: 'Document deleted',
+          description: 'The document has been deleted successfully.',
+        });
+      }
     },
     onError: (error) => {
       console.error('Delete error:', error);
       toast({
-        variant: "destructive",
-        title: "Delete failed",
-        description: "There was an error deleting the document."
+        variant: 'destructive',
+        title: 'Delete failed',
+        description: error instanceof Error ? error.message : 'There was an error deleting the document.',
       });
     }
   });
-
+  
   return {
     uploadMutation,
     deleteMutation

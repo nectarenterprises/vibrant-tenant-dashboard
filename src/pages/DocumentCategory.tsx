@@ -54,11 +54,15 @@ const DocumentCategory = () => {
     documentDescription,
     documentType,
     uploadDialogOpen,
+    isUploading,
+    additionalMetadata,
     setFileUpload,
     setDocumentName,
     setDocumentDescription,
     setDocumentType,
     setUploadDialogOpen,
+    setIsUploading,
+    setAdditionalMetadata,
     resetUploadForm,
     handleFileSelect,
     prepareUpload
@@ -84,7 +88,11 @@ const DocumentCategory = () => {
   const handleUpload = () => {
     const uploadData = prepareUpload();
     if (uploadData) {
-      uploadMutation.mutate(uploadData);
+      // Use our enhanced upload mutation with additional metadata
+      uploadMutation.mutate({
+        ...uploadData,
+        additionalMetadata
+      });
     }
   };
   
@@ -176,6 +184,8 @@ const DocumentCategory = () => {
             onDescriptionChange={setDocumentDescription}
             onTypeChange={setDocumentType}
             onUpload={handleUpload}
+            additionalMetadata={additionalMetadata}
+            onAdditionalMetadataChange={setAdditionalMetadata}
           />
         </div>
       </main>

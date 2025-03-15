@@ -1,4 +1,3 @@
-
 import { PropertyDocument, DocumentType, DocumentTag } from '@/types/property';
 
 export type FolderType = DocumentType;

@@ -13,6 +13,7 @@ export const useDocumentUpload = () => {
   const [documentType, setDocumentType] = useState<FolderType>('lease');
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [additionalMetadata, setAdditionalMetadata] = useState<Record<string, any>>({});
 
   // Reset form values
   const resetUploadForm = () => {
@@ -22,6 +23,7 @@ export const useDocumentUpload = () => {
     setDocumentType('lease');
     setUploadDialogOpen(false);
     setIsUploading(false);
+    setAdditionalMetadata({});
   };
 
   // Handle file selection
@@ -56,7 +58,8 @@ export const useDocumentUpload = () => {
       file: fileUpload,
       name: documentName,
       description: documentDescription,
-      documentType
+      documentType,
+      metadata: additionalMetadata
     };
   };
 
@@ -67,12 +70,14 @@ export const useDocumentUpload = () => {
     documentType,
     uploadDialogOpen,
     isUploading,
+    additionalMetadata,
     setFileUpload,
     setDocumentName,
     setDocumentDescription,
     setDocumentType,
     setUploadDialogOpen,
     setIsUploading,
+    setAdditionalMetadata,
     resetUploadForm,
     handleFileSelect,
     prepareUpload
