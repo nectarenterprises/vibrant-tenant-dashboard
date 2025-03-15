@@ -5,14 +5,32 @@ import { AlertTriangle } from 'lucide-react';
 
 interface FormHeaderProps {
   isFallbackData: boolean;
+  documentType?: string;
 }
 
-const FormHeader: React.FC<FormHeaderProps> = ({ isFallbackData }) => {
+const FormHeader: React.FC<FormHeaderProps> = ({ isFallbackData, documentType = 'utility bill' }) => {
+  const getDocumentTypeLabel = () => {
+    switch (documentType) {
+      case 'utility':
+        return 'utility bill';
+      case 'lease':
+        return 'lease agreement';
+      case 'service-charge':
+        return 'service charge budget';
+      case 'compliance':
+        return 'compliance document';
+      default:
+        return documentType;
+    }
+  };
+  
+  const documentTypeLabel = getDocumentTypeLabel();
+  
   return (
     <div className="mb-6">
       <h3 className="text-lg font-semibold mb-2">Verify Extracted Data</h3>
       <p className="text-gray-500 mb-4">
-        Please review the extracted utility bill information below and make any necessary corrections.
+        Please review the extracted {documentTypeLabel} information below and make any necessary corrections.
       </p>
       
       {isFallbackData && (

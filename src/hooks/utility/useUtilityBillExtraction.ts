@@ -3,9 +3,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { ProcessingResult } from '@/types/utility';
 
 export const useUtilityBillExtraction = () => {
-  const processDocument = async (documentId: string, propertyId: string): Promise<ProcessingResult> => {
+  const processDocument = async (documentId: string, propertyId: string, documentType = 'utility'): Promise<ProcessingResult> => {
     try {
-      console.log('Processing document:', documentId, 'for property:', propertyId);
+      console.log('Processing document:', documentId, 'for property:', propertyId, 'of type:', documentType);
       
       // Call the processing edge function
       const { data: processingData, error: processingError } = await supabase.functions
@@ -13,6 +13,7 @@ export const useUtilityBillExtraction = () => {
           body: {
             documentId,
             propertyId,
+            documentType,
             userId: (await supabase.auth.getUser()).data.user?.id
           }
         });
@@ -29,7 +30,8 @@ export const useUtilityBillExtraction = () => {
         extractedData: processingData.extractedData,
         confidenceScores: processingData.confidenceScores,
         documentId,
-        fallback: processingData.fallback || false
+        fallback: processingData.fallback || false,
+        documentType: documentType
       };
       
       return result;

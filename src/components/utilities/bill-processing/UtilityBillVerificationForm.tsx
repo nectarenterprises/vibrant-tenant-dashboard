@@ -11,6 +11,7 @@ interface UtilityBillVerificationFormProps {
   onSave: (verifiedData: ExtractedUtilityData) => void;
   onCancel: () => void;
   isFallbackData?: boolean;
+  documentType?: string;
 }
 
 const UtilityBillVerificationForm: React.FC<UtilityBillVerificationFormProps> = ({
@@ -18,7 +19,8 @@ const UtilityBillVerificationForm: React.FC<UtilityBillVerificationFormProps> = 
   confidenceScores,
   onSave,
   onCancel,
-  isFallbackData = false
+  isFallbackData = false,
+  documentType = 'utility'
 }) => {
   const [formData, setFormData] = useState<ExtractedUtilityData>({...extractedData});
   
@@ -35,7 +37,7 @@ const UtilityBillVerificationForm: React.FC<UtilityBillVerificationFormProps> = 
   
   return (
     <div className="py-2 space-y-4">
-      <FormHeader isFallbackData={isFallbackData} />
+      <FormHeader isFallbackData={isFallbackData} documentType={documentType} />
       <FormFields 
         formData={formData}
         confidenceScores={confidenceScores}

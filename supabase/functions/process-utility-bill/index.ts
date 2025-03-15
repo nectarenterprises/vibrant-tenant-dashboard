@@ -8,6 +8,7 @@ interface RequestPayload {
   documentId: string;
   propertyId: string;
   userId: string;
+  documentType?: string;
 }
 
 // Main handler function for the edge function
@@ -20,7 +21,7 @@ Deno.serve(async (req) => {
   try {
     // Extract the request payload
     const payload: RequestPayload = await req.json();
-    const { documentId, propertyId, userId } = payload;
+    const { documentId, propertyId, userId, documentType = 'utility' } = payload;
 
     if (!documentId || !propertyId || !userId) {
       return new Response(
@@ -35,9 +36,10 @@ Deno.serve(async (req) => {
     const useSimulation = !googleApiKey || !processorId || Deno.env.get('USE_SIMULATION') === 'true';
 
     // Output configuration for debugging
-    console.log('Processing utility bill with configuration:');
+    console.log('Processing document with configuration:');
     console.log(`Document ID: ${documentId}`);
     console.log(`Property ID: ${propertyId}`);
+    console.log(`Document Type: ${documentType}`);
     console.log(`Google API Key Available: ${!!googleApiKey}`);
     console.log(`Processor ID Available: ${!!processorId}`);
     console.log(`Using Simulation: ${useSimulation}`);
@@ -59,10 +61,10 @@ Deno.serve(async (req) => {
       throw new Error('Document not found: ' + (documentError?.message || 'unknown error'));
     }
     
-    // Use simulation instead of actual processing for now
+    // Use simulation instead of actual processing if needed
     if (useSimulation) {
-      console.log('Using simulated data extraction for demonstration');
-      const mockExtractedData = simulateExtractionForDemo(documentData.name);
+      console.log(`Using simulated data extraction for ${documentType} document`);
+      const mockExtractedData = simulateExtractionForDemo(documentData.name, documentType);
       
       // Update the extraction record with the simulated results
       await updateExtractionStatus(
@@ -85,7 +87,7 @@ Deno.serve(async (req) => {
     }
 
     // The following section will be executed when actual Document AI processing is available
-    console.log(`Processing utility bill with Document AI: ${documentId} for property: ${propertyId}`);
+    console.log(`Processing ${documentType} document with Document AI: ${documentId} for property: ${propertyId}`);
 
     // Get document URL
     const { data: documentUrl } = supabase
@@ -122,7 +124,8 @@ Deno.serve(async (req) => {
         fileBase64,
         documentData.name,
         googleApiKey,
-        processorId
+        processorId,
+        documentType
       );
       
       console.log('Document AI processing result:', JSON.stringify(result));
@@ -154,8 +157,8 @@ Deno.serve(async (req) => {
       console.error('Document processing error:', error);
       
       // Fall back to simulation if real processing fails
-      console.log('Falling back to simulated extraction due to error:', error.message);
-      const mockExtractedData = simulateExtractionForDemo(documentData.name);
+      console.log(`Falling back to simulated extraction for ${documentType} due to error:`, error.message);
+      const mockExtractedData = simulateExtractionForDemo(documentData.name, documentType);
       
       // Update the extraction record with the simulated results
       await updateExtractionStatus(
@@ -177,7 +180,7 @@ Deno.serve(async (req) => {
       );
     }
   } catch (error) {
-    console.error('Error processing utility bill:', error);
+    console.error('Error processing document:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

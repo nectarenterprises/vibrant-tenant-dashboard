@@ -11,21 +11,22 @@ import {
   ProcessingResult,
   ExtractedUtilityData
 } from '@/types/utility';
+import { DocumentType } from '@/types/property';
 
 export type ProcessingStatus = 'idle' | 'uploading' | 'processing' | 'verifying' | 'completed' | 'failed';
 
-export const useUtilityBillProcessing = (propertyId: string) => {
+export const useUtilityBillProcessing = (propertyId: string, documentType: DocumentType = 'utility') => {
   const [processingStatus, setProcessingStatus] = useState<ProcessingStatus>('idle');
   const [extractionResult, setExtractionResult] = useState<ProcessingResult | null>(null);
   const [processingError, setProcessingError] = useState<string | null>(null);
   const [isFallbackData, setIsFallbackData] = useState(false);
   const queryClient = useQueryClient();
   
-  const { uploadProgress, uploadDocument } = useUtilityBillUpload(propertyId);
+  const { uploadProgress, uploadDocument } = useUtilityBillUpload(propertyId, documentType);
   const { processDocument } = useUtilityBillExtraction();
   const { saveUtilityBill } = useUtilityBillSave(propertyId, queryClient);
   
-  // Upload and process utility bill document
+  // Upload and process document
   const handleUploadDocument = async (fileUpload: UtilityBillUpload): Promise<ProcessingResult> => {
     try {
       setProcessingStatus('uploading');
@@ -37,7 +38,7 @@ export const useUtilityBillProcessing = (propertyId: string) => {
       
       // Process document with AI
       setProcessingStatus('processing');
-      const processingResult = await processDocument(documentId, propertyId);
+      const processingResult = await processDocument(documentId, propertyId, documentType);
       
       setProcessingStatus('verifying');
       setExtractionResult(processingResult);
@@ -47,7 +48,7 @@ export const useUtilityBillProcessing = (propertyId: string) => {
         setIsFallbackData(true);
         toast({
           title: "Using simulated data",
-          description: "We're using simulated data until Document AI integration is complete. Please review all fields carefully.",
+          description: `We're using simulated data for this ${documentType} document. Please review all fields carefully.`,
           variant: "destructive"
         });
       } else {
