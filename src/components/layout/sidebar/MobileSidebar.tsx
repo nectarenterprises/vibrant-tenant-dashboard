@@ -24,12 +24,12 @@ export const MobileSidebar = ({ location }: MobileSidebarProps) => {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="md:hidden fixed top-4 left-4 z-50 bg-background animate-[rotate_30s_linear_infinite]">
-          <Hexagon className="h-6 w-6 text-black fill-black" />
+          <Hexagon className="h-8 w-8 text-black fill-black" />
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-64 p-0">
         <SheetHeader className="p-4">
-          <SheetTitle className="text-black">SweetLease</SheetTitle>
+          <SheetTitle className="text-2xl text-black">SweetLease</SheetTitle>
           <SheetDescription>
             Manage your properties with ease.
           </SheetDescription>

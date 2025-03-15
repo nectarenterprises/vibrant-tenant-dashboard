@@ -21,7 +21,7 @@ export const DesktopSidebar = ({ collapsed, setCollapsed, location }: DesktopSid
       collapsed ? "w-20" : "w-64"
     )}>
       <div className="p-4 flex items-center justify-between">
-        {!collapsed && <div className="font-bold text-xl text-black">SweetLease</div>}
+        {!collapsed && <div className="font-bold text-2xl text-black">SweetLease</div>}
         <Button 
           variant="ghost" 
           size="icon" 
@@ -31,7 +31,7 @@ export const DesktopSidebar = ({ collapsed, setCollapsed, location }: DesktopSid
             "transition-all duration-3000 animate-[rotate_30s_linear_infinite]"
           )}
         >
-          <Hexagon className="h-6 w-6 text-black fill-black" />
+          <Hexagon className="h-8 w-8 text-black fill-black" />
         </Button>
       </div>
       
