@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Sidebar from '@/components/layout/Sidebar';
 import PropertyCard from '@/components/dashboard/PropertyCard';
 import { Property, PropertyDocument } from '@/types/property';
@@ -14,27 +15,8 @@ import { getPropertyDocuments, downloadDocument, deleteDocument } from '@/servic
 import { toast } from '@/components/ui/use-toast';
 import UploadDialog from '@/components/documents/UploadDialog';
 import { FolderType } from '@/services/document/types';
-
-const mockProperties: Property[] = [
-  {
-    id: '1',
-    name: 'Victoria Office',
-    address: '123 Buckingham Palace Road, Victoria, London SW1W 9SH',
-    rentalFee: 3500,
-    nextPaymentDate: '2023-04-15',
-    leaseExpiry: '2024-03-31',
-    incentives: [] // Add required incentives array
-  },
-  {
-    id: '2',
-    name: 'Covent Garden Retail',
-    address: '45 Long Acre, Covent Garden, London WC2E 9JT',
-    rentalFee: 4200,
-    nextPaymentDate: '2023-04-10',
-    leaseExpiry: '2023-12-31',
-    incentives: [] // Add required incentives array
-  }
-];
+import { useAuth } from '@/contexts/AuthContext';
+import { fetchUserProperties } from '@/services/property';
 
 const Utilities = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -47,8 +29,15 @@ const Utilities = () => {
   const [documentName, setDocumentName] = useState('');
   const [documentDescription, setDocumentDescription] = useState('');
   const [documentType, setDocumentType] = useState<FolderType>('utility');
+  const { user } = useAuth();
   
-  const filteredProperties = mockProperties.filter(property => 
+  const { data: properties = [], isLoading: propertiesLoading } = useQuery({
+    queryKey: ['properties', user?.id],
+    queryFn: fetchUserProperties,
+    enabled: !!user?.id
+  });
+  
+  const filteredProperties = properties.filter(property => 
     property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     property.address.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -275,7 +264,12 @@ const Utilities = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProperties.length > 0 ? (
+              {propertiesLoading ? (
+                <div className="col-span-full flex flex-col items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                  <p className="mt-4 text-muted-foreground">Loading properties...</p>
+                </div>
+              ) : filteredProperties.length > 0 ? (
                 filteredProperties.map((property, index) => (
                   <div 
                     key={property.id} 

@@ -1,5 +1,5 @@
-
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Sidebar from '@/components/layout/Sidebar';
 import PropertyCard from '@/components/dashboard/PropertyCard';
 import { Property } from '@/types/property';
@@ -12,37 +12,23 @@ import ServiceChargeComparisonDashboard from '@/components/service-charge/Servic
 import ServiceChargeAnomalies from '@/components/service-charge/ServiceChargeAnomalies';
 import ServiceChargeQueries from '@/components/service-charge/ServiceChargeQueries';
 import ServiceChargeCategoryBreakdown from '@/components/service-charge/ServiceChargeCategoryBreakdown';
-
-// Mock data - using updated London properties
-const mockProperties: Property[] = [
-  {
-    id: '1',
-    name: 'Victoria Office',
-    address: '123 Buckingham Palace Road, Victoria, London SW1W 9SH',
-    rentalFee: 3500,
-    nextPaymentDate: '2023-04-15',
-    leaseExpiry: '2024-03-31',
-    incentives: [] // Add required incentives array
-  },
-  {
-    id: '2',
-    name: 'Covent Garden Retail',
-    address: '45 Long Acre, Covent Garden, London WC2E 9JT',
-    rentalFee: 4200,
-    nextPaymentDate: '2023-04-10',
-    leaseExpiry: '2023-12-31',
-    incentives: [] // Add required incentives array
-  }
-];
+import { useAuth } from '@/contexts/AuthContext';
+import { fetchUserProperties } from '@/services/property';
 
 const ServiceCharge = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [activeTab, setActiveTab] = useState('details');
+  const { user } = useAuth();
   
-  // Filter properties based on search query
-  const filteredProperties = mockProperties.filter(property => 
+  const { data: properties = [], isLoading: propertiesLoading } = useQuery({
+    queryKey: ['properties', user?.id],
+    queryFn: fetchUserProperties,
+    enabled: !!user?.id
+  });
+  
+  const filteredProperties = properties.filter(property => 
     property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     property.address.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -111,7 +97,6 @@ const ServiceCharge = () => {
         <div className="container mx-auto p-6">
           <h1 className="text-3xl font-bold mb-6">Service Charge</h1>
           
-          {/* Search Bar */}
           {!selectedProperty && (
             <div className="relative mb-6">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -139,7 +124,12 @@ const ServiceCharge = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProperties.length > 0 ? (
+              {propertiesLoading ? (
+                <div className="col-span-full flex flex-col items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                  <p className="mt-4 text-muted-foreground">Loading properties...</p>
+                </div>
+              ) : filteredProperties.length > 0 ? (
                 filteredProperties.map((property, index) => (
                   <div 
                     key={property.id} 
