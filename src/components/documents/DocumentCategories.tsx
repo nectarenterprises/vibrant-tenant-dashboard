@@ -78,13 +78,14 @@ const DocumentCategories: React.FC<DocumentCategoriesProps> = ({ property }) => 
   
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-4">
         <h2 className="text-2xl font-semibold">{property.name} Documents</h2>
         <Button 
           onClick={() => setUploadDialogOpen(true)}
-          className="flex items-center gap-2"
+          className="w-full flex items-center justify-center gap-2 py-6"
+          size="lg"
         >
-          <Upload className="h-4 w-4" />
+          <Upload className="h-5 w-5" />
           Upload Files
         </Button>
       </div>
@@ -92,30 +93,34 @@ const DocumentCategories: React.FC<DocumentCategoriesProps> = ({ property }) => 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <CategoryCard
           title="Lease Documents"
-          icon={<FileText className="h-8 w-8 text-tenant-yellow" />}
+          icon={<FileText className="h-8 w-8 text-white" />}
           count={documentCounts.lease}
           onClick={() => navigate(`/documents/${property.id}/lease`)}
+          bgColor="bg-tenant-green"
         />
         
         <CategoryCard
-          title="Utility Documents"
-          icon={<FileText className="h-8 w-8 text-tenant-green" />}
+          title="Utility Bills"
+          icon={<FileText className="h-8 w-8 text-white" />}
           count={documentCounts.utility}
           onClick={() => navigate(`/documents/${property.id}/utility`)}
+          bgColor="bg-tenant-green"
         />
         
         <CategoryCard
           title="Compliance Documents"
-          icon={<FileText className="h-8 w-8 text-tenant-blue" />} 
+          icon={<FileText className="h-8 w-8 text-white" />} 
           count={documentCounts.compliance}
           onClick={() => navigate(`/documents/${property.id}/compliance`)}
+          bgColor="bg-tenant-green"
         />
         
         <CategoryCard
-          title="Service Charge Documents"
-          icon={<FileText className="h-8 w-8 text-tenant-orange" />}
+          title="Service Charge Budgets"
+          icon={<FileText className="h-8 w-8 text-white" />}
           count={documentCounts['service-charge']}
           onClick={() => navigate(`/documents/${property.id}/service-charge`)}
+          bgColor="bg-tenant-green"
         />
       </div>
       
