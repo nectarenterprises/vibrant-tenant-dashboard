@@ -5,6 +5,15 @@ import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
 
+// Define a type for the document_tags table response
+type DocumentTagResponse = {
+  id: string;
+  name: string;
+  color: string;
+  user_id: string;
+  created_at: string;
+};
+
 export const useDocumentTags = () => {
   const [tags, setTags] = useState<DocumentTag[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,7 +46,7 @@ export const useDocumentTags = () => {
       }
       
       // Map the database fields to our DocumentTag type
-      setTags(data.map(tag => ({
+      setTags((data as DocumentTagResponse[]).map(tag => ({
         id: tag.id,
         name: tag.name,
         color: tag.color
@@ -91,9 +100,9 @@ export const useDocumentTags = () => {
       }
       
       const createdTag: DocumentTag = {
-        id: data.id,
-        name: data.name,
-        color: data.color
+        id: (data as DocumentTagResponse).id,
+        name: (data as DocumentTagResponse).name,
+        color: (data as DocumentTagResponse).color
       };
       
       setTags(prev => [...prev, createdTag]);

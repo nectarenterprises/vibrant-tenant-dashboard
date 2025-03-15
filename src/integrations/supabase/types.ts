@@ -9,6 +9,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      document_tags: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          color: string
+          created_at?: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -106,32 +130,59 @@ export type Database = {
         Row: {
           description: string | null
           document_type: string
+          expiry_date: string | null
           file_path: string
           id: string
+          is_favorite: boolean | null
+          key_dates: Json | null
+          last_accessed: string | null
           name: string
+          notification_period: number | null
+          previous_versions: Json | null
           property_id: string
+          tags: Json | null
           upload_date: string
           user_id: string
+          version: number | null
+          version_notes: string | null
         }
         Insert: {
           description?: string | null
           document_type: string
+          expiry_date?: string | null
           file_path: string
           id?: string
+          is_favorite?: boolean | null
+          key_dates?: Json | null
+          last_accessed?: string | null
           name: string
+          notification_period?: number | null
+          previous_versions?: Json | null
           property_id: string
+          tags?: Json | null
           upload_date?: string
           user_id: string
+          version?: number | null
+          version_notes?: string | null
         }
         Update: {
           description?: string | null
           document_type?: string
+          expiry_date?: string | null
           file_path?: string
           id?: string
+          is_favorite?: boolean | null
+          key_dates?: Json | null
+          last_accessed?: string | null
           name?: string
+          notification_period?: number | null
+          previous_versions?: Json | null
           property_id?: string
+          tags?: Json | null
           upload_date?: string
           user_id?: string
+          version?: number | null
+          version_notes?: string | null
         }
         Relationships: [
           {

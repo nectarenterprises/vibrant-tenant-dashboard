@@ -4,6 +4,27 @@ import { PropertyDocument, DocumentType, DocumentTag } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
 import { FolderType, DocumentVersion } from './types';
 
+// Define a type for the property_documents table response
+type PropertyDocumentResponse = {
+  id: string;
+  property_id: string;
+  user_id: string;
+  name: string;
+  description: string | null;
+  file_path: string;
+  document_type: string;
+  upload_date: string;
+  tags: string | null;
+  is_favorite: boolean;
+  version: number;
+  expiry_date: string | null;
+  key_dates: string | null;
+  notification_period: number | null;
+  previous_versions: string | null;
+  version_notes: string | null;
+  last_accessed: string | null;
+};
+
 /**
  * Saves document metadata to the database
  */
@@ -161,7 +182,7 @@ export const fetchDocumentMetadata = async (
     }
     
     // Transform to frontend model
-    return data.map(doc => ({
+    return (data as PropertyDocumentResponse[]).map(doc => ({
       id: doc.id,
       propertyId: doc.property_id,
       name: doc.name,
@@ -302,21 +323,28 @@ export const addDocumentVersion = async (
       return false;
     }
     
+    // Cast the result to the correct type
+    const typedDoc = currentDoc as {
+      version: number;
+      previous_versions: string | null;
+      file_path: string;
+    };
+    
     // Calculate new version number
-    const newVersion = (currentDoc.version || 1) + 1;
+    const newVersion = (typedDoc.version || 1) + 1;
     
     // Prepare previous version entry
     const previousVersion: DocumentVersion = {
-      version: currentDoc.version || 1,
+      version: typedDoc.version || 1,
       uploadDate: new Date().toISOString(),
       uploadedBy: (await supabase.auth.getUser()).data.user?.id || 'unknown',
-      filePath: currentDoc.file_path,
+      filePath: typedDoc.file_path,
       notes: notes
     };
     
     // Update previous versions array
-    const previousVersions = currentDoc.previous_versions ? 
-      [...JSON.parse(currentDoc.previous_versions), previousVersion] : 
+    const previousVersions = typedDoc.previous_versions ? 
+      [...JSON.parse(typedDoc.previous_versions), previousVersion] : 
       [previousVersion];
     
     // Update document with new version info
@@ -371,18 +399,28 @@ export const getDocumentVersions = async (documentId: string): Promise<DocumentV
       return [];
     }
     
+    // Cast the result to the correct type
+    const typedData = data as {
+      version: number;
+      previous_versions: string | null;
+      file_path: string;
+      upload_date: string;
+      user_id: string;
+      version_notes: string | null;
+    };
+    
     // Current version
     const currentVersion: DocumentVersion = {
-      version: data.version || 1,
-      uploadDate: data.upload_date,
-      uploadedBy: data.user_id,
-      filePath: data.file_path,
-      notes: data.version_notes
+      version: typedData.version || 1,
+      uploadDate: typedData.upload_date,
+      uploadedBy: typedData.user_id,
+      filePath: typedData.file_path,
+      notes: typedData.version_notes || undefined
     };
     
     // Previous versions
-    const previousVersions: DocumentVersion[] = data.previous_versions ? 
-      JSON.parse(data.previous_versions) : [];
+    const previousVersions: DocumentVersion[] = typedData.previous_versions ? 
+      JSON.parse(typedData.previous_versions) : [];
     
     // Return all versions with current one first
     return [currentVersion, ...previousVersions];
@@ -423,7 +461,7 @@ export const fetchRecentDocuments = async (limit: number = 5): Promise<PropertyD
       return [];
     }
     
-    return data.map(doc => ({
+    return (data as PropertyDocumentResponse[]).map(doc => ({
       id: doc.id,
       propertyId: doc.property_id,
       name: doc.name,
@@ -486,7 +524,7 @@ export const fetchExpiringDocuments = async (daysThreshold: number = 90): Promis
       return [];
     }
     
-    return data.map(doc => ({
+    return (data as PropertyDocumentResponse[]).map(doc => ({
       id: doc.id,
       propertyId: doc.property_id,
       name: doc.name,
