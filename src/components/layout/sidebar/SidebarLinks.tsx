@@ -10,7 +10,8 @@ import {
   ShieldCheck, 
   FileBarChart,
   Zap,
-  Users
+  Users,
+  User
 } from 'lucide-react';
 import { useRole } from '@/contexts/RoleContext';
 
@@ -45,7 +46,8 @@ const SidebarLinks: React.FC<SidebarLinksProps> = ({
     { path: '/utilities', label: 'Utilities', icon: <Zap size={20} /> },
     { path: '/calendar', label: 'Calendar', icon: <CalendarIcon size={20} /> },
     { path: '/reports', label: 'Reports', icon: <FileBarChart size={20} />, adminOnly: true },
-    { path: '/users', label: 'User Management', icon: <Users size={20} />, adminOnly: true }
+    { path: '/users', label: 'User Management', icon: <Users size={20} />, adminOnly: true },
+    { path: '/profile', label: 'My Profile', icon: <User size={20} /> }
   ];
 
   return (

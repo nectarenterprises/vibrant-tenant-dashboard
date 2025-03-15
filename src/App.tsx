@@ -18,6 +18,7 @@ import Utilities from './pages/Utilities';
 import Calendar from './pages/Calendar';
 import Reports from './pages/Reports';
 import UserManagement from './pages/UserManagement';
+import UserProfile from './pages/UserProfile';
 import Sidebar from './components/layout/Sidebar';
 import RoleProtectedRoute from './components/auth/RoleProtectedRoute';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -66,6 +67,7 @@ function App() {
             <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
             <Route path="/reports" element={<RoleProtectedRoute requiredRole="admin"><Reports /></RoleProtectedRoute>} />
             <Route path="/users" element={<RoleProtectedRoute requiredRole="admin"><UserManagement /></RoleProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
