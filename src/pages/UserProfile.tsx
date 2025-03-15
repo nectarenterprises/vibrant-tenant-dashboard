@@ -12,6 +12,12 @@ const UserProfile = () => {
   const { roles, isAdmin } = useRole();
   const { profile, isLoading, updateProfile } = useProfileData();
 
+  // Fix the updateProfile return type issue by creating a wrapper function
+  const handleProfileUpdate = async (formData: { firstName: string; lastName: string; }) => {
+    await updateProfile(formData);
+    // Just returning void now
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto p-6">
@@ -42,7 +48,7 @@ const UserProfile = () => {
             <ProfileCard 
               profile={profile} 
               roles={roles}
-              onSave={updateProfile}
+              onSave={handleProfileUpdate}
               isLoading={isLoading}
             />
           )}

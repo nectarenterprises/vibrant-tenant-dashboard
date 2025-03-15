@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -9,8 +10,10 @@ import { v4 as uuidv4 } from 'uuid';
  */
 export const updateFileMetadata = async (fileId: string, metadata: any) => {
   try {
+    // Use the appropriate table name that exists in the database
+    // Instead of "documents", use "property_documents" or another valid table
     const { data, error } = await supabase
-      .from('documents')
+      .from('property_documents')
       .update(metadata)
       .eq('id', fileId);
 
