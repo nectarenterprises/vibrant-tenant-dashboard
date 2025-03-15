@@ -1,9 +1,11 @@
+
 import React, { useState } from 'react';
 import { Camera, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { uploadPropertyDocument } from '@/services/document';
 import { uploadPropertyImage, updatePropertyImage } from '@/services/property/PropertyImageService';
 import { toast } from '@/components/ui/use-toast';
+import { DocumentType } from '@/types/property';
 import { 
   Dialog, 
   DialogContent, 

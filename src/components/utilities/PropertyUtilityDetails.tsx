@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Property, PropertyDocument } from '@/types/property';
+import { Property, PropertyDocument, DocumentType } from '@/types/property';
 import UtilityDashboard from './UtilityDashboard';
 import UtilityDocuments from './UtilityDocuments';
 import { FolderType } from '@/services/document/types';

@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Property } from '@/types/property';
+import { Property, DocumentType } from '@/types/property';
 import LeaseDetails from './LeaseDetails';
 import { fetchTenantDetails } from '@/services/tenant/TenantService';
 import { fetchPropertyDetails } from '@/services/property/PropertyDetailsService';
@@ -36,20 +35,17 @@ const LeaseDetailsContainer: React.FC<LeaseDetailsContainerProps> = ({ property 
   const [showPremisesDialog, setShowPremisesDialog] = useState(false);
   const [showIncentivesDialog, setShowIncentivesDialog] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [documentType, setDocumentType] = useState<'lease' | 'utility' | 'compliance' | 'service-charge' | 'other'>('lease');
+  const [documentType, setDocumentType] = useState<DocumentType>('lease');
   const [documentName, setDocumentName] = useState('');
   
-  // State for refreshing documents
   const [refreshDocuments, setRefreshDocuments] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Load all data on property change
   useEffect(() => {
     const loadAllData = async () => {
       setIsLoading(true);
       
       try {
-        // Load tenant details
         const tenantData = await fetchTenantDetails(property.id);
         if (tenantData) {
           setTenantName(tenantData.tenant_name);
@@ -57,14 +53,12 @@ const LeaseDetailsContainer: React.FC<LeaseDetailsContainerProps> = ({ property 
           setContactEmail(tenantData.contact_email || '');
           setContactPhone(tenantData.contact_phone || '');
         } else {
-          // Reset fields if no tenant data found
           setTenantName('');
           setContactName('');
           setContactEmail('');
           setContactPhone('');
         }
         
-        // Load property details
         const propertyDetails = await fetchPropertyDetails(property.id);
         if (propertyDetails) {
           setPropertyType(propertyDetails.property_type || '');
@@ -76,7 +70,6 @@ const LeaseDetailsContainer: React.FC<LeaseDetailsContainerProps> = ({ property 
           setLeaseDuration(propertyDetails.lease_duration || '');
           setSecurityDeposit(propertyDetails.security_deposit || '');
         } else {
-          // Reset fields if no property details found
           setPropertyType('');
           setFloorArea('');
           setYearBuilt('');
@@ -87,12 +80,8 @@ const LeaseDetailsContainer: React.FC<LeaseDetailsContainerProps> = ({ property 
           setSecurityDeposit('');
         }
         
-        // Load premises schedule (already in property object)
         setPremisesSchedule(property.premisesSchedule || '');
-        
-        // Load incentives (already in property object)
         setIncentives(property.incentives || []);
-        
       } catch (error) {
         console.error('Error loading data:', error);
         toast({
@@ -108,20 +97,21 @@ const LeaseDetailsContainer: React.FC<LeaseDetailsContainerProps> = ({ property 
     loadAllData();
   }, [property.id, property.premisesSchedule, property.incentives]);
   
-  // Handle document upload success
   const handleDocumentUploaded = () => {
     setRefreshDocuments(prev => prev + 1);
   };
   
-  // Handle tenant saved successfully
   const handleTenantSaved = () => {
-    // Could potentially refresh the tenant data, but not needed since we set it directly
+  };
+  
+  const handleDocumentTypeChange = (type: DocumentType) => {
+    setDocumentType(type);
   };
 
   return (
     <LeaseDetails
       property={property}
-      propertyId={property.id} // Adding the missing propertyId prop
+      propertyId={property.id}
       propertyType={propertyType}
       floorArea={floorArea}
       yearBuilt={yearBuilt}
@@ -165,7 +155,7 @@ const LeaseDetailsContainer: React.FC<LeaseDetailsContainerProps> = ({ property 
       setShowPremisesDialog={setShowPremisesDialog}
       setShowIncentivesDialog={setShowIncentivesDialog}
       setSelectedFile={setSelectedFile}
-      setDocumentType={setDocumentType}
+      setDocumentType={handleDocumentTypeChange}
       setDocumentName={setDocumentName}
       onDocumentUploaded={handleDocumentUploaded}
       onTenantSaved={handleTenantSaved}

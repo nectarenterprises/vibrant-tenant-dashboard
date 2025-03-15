@@ -1,6 +1,7 @@
-import { DocumentTag } from '@/types/property';
 
-export type FolderType = 'lease' | 'utility' | 'compliance' | 'service-charge' | 'photo' | 'other';
+import { DocumentTag, DocumentType } from '@/types/property';
+
+export type FolderType = DocumentType;
 
 export const DOCUMENT_TYPES: Record<FolderType, string> = {
   lease: 'Lease Documents',
@@ -139,7 +140,7 @@ export const transformToPropertyDocument = (doc: PropertyDocumentResponse) => ({
   name: doc.name,
   description: doc.description,
   filePath: doc.file_path,
-  documentType: doc.document_type as FolderType,
+  documentType: doc.document_type as DocumentType,
   uploadDate: doc.upload_date,
   tags: doc.tags ? JSON.parse(doc.tags as string) : undefined,
   isFavorite: doc.is_favorite || false,

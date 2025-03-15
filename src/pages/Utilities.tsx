@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Sidebar from '@/components/layout/Sidebar';
-import { Property, PropertyDocument } from '@/types/property';
+import { Property, PropertyDocument, DocumentType } from '@/types/property';
 import { cn } from '@/lib/utils';
 import { FolderType } from '@/services/document/types';
 import { getPropertyDocuments, downloadDocument, deleteDocument } from '@/services/document';
