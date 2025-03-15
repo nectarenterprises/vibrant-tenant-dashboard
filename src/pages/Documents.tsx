@@ -4,16 +4,14 @@ import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import Sidebar from '@/components/layout/Sidebar';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { getPropertyFolderStructure } from '@/services/document/types';
 
-// Import custom components
-import PropertySelector from '@/components/documents/PropertySelector';
-import FolderSelector from '@/components/documents/FolderSelector';
-import DocumentList from '@/components/documents/DocumentList';
-import UploadDialog from '@/components/documents/UploadDialog';
-import EmptyState from '@/components/documents/EmptyState';
+// Import custom hooks
 import { usePropertyDocuments } from '@/hooks/documents/usePropertyDocuments';
+
+// Import refactored components
+import SidebarSelectors from '@/components/documents/SidebarSelectors';
+import DocumentsContainer from '@/components/documents/DocumentsContainer';
 
 const Documents = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -58,9 +56,6 @@ const Documents = () => {
     ? getPropertyFolderStructure(selectedProperty.id)
     : [];
 
-  // Get filtered documents based on search query
-  const filteredDocuments = getFilteredDocuments();
-
   return (
     <div className="min-h-screen bg-background flex">
       <Sidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
@@ -75,68 +70,43 @@ const Documents = () => {
           <h1 className="text-3xl font-bold mb-6">Document Management</h1>
           
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            <div className="md:col-span-3 space-y-6">
-              {/* Property Selector */}
-              <PropertySelector
+            <div className="md:col-span-3">
+              <SidebarSelectors 
                 properties={properties}
                 selectedProperty={selectedProperty}
-                isLoading={propertiesLoading}
-                onSelectProperty={(propertyId) => handlePropertySelect(propertyId, properties)}
+                folderStructure={folderStructure}
+                selectedFolder={selectedFolder}
+                propertiesLoading={propertiesLoading}
+                handlePropertySelect={handlePropertySelect}
+                handleFolderSelect={handleFolderSelect}
               />
-              
-              {/* Folder Selector (only show if property is selected) */}
-              {selectedProperty && (
-                <FolderSelector
-                  folders={folderStructure}
-                  selectedFolder={selectedFolder}
-                  onSelectFolder={handleFolderSelect}
-                />
-              )}
             </div>
             
             <div className="md:col-span-9">
-              {!selectedProperty ? (
-                <EmptyState type="property" />
-              ) : !selectedFolder ? (
-                <EmptyState type="folder" />
-              ) : (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{selectedProperty.name} - {selectedFolder.name}</CardTitle>
-                    <CardDescription>Manage your property documents</CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    {/* Document List Component */}
-                    <DocumentList
-                      documents={filteredDocuments}
-                      isLoading={documentsLoading}
-                      searchQuery={searchQuery}
-                      onSearchChange={setSearchQuery}
-                      onUploadClick={() => setUploadDialogOpen(true)}
-                      onRefresh={refetchDocuments}
-                      onDownload={handleDownload}
-                      onDelete={handleDelete}
-                    />
-                    
-                    {/* Upload Dialog */}
-                    <UploadDialog
-                      isOpen={uploadDialogOpen}
-                      setIsOpen={setUploadDialogOpen}
-                      fileUpload={fileUpload}
-                      documentName={documentName}
-                      documentDescription={documentDescription}
-                      documentType={documentType}
-                      isUploading={uploadMutation.isPending}
-                      onFileSelect={handleFileSelect}
-                      onNameChange={setDocumentName}
-                      onDescriptionChange={setDocumentDescription}
-                      onTypeChange={setDocumentType}
-                      onUpload={handleUpload}
-                    />
-                  </CardContent>
-                </Card>
-              )}
+              <DocumentsContainer
+                selectedProperty={selectedProperty}
+                selectedFolder={selectedFolder}
+                searchQuery={searchQuery}
+                documents={[]} // This is unused since we use getFilteredDocuments directly 
+                documentsLoading={documentsLoading}
+                uploadDialogOpen={uploadDialogOpen}
+                fileUpload={fileUpload}
+                documentName={documentName}
+                documentDescription={documentDescription}
+                documentType={documentType}
+                uploadMutation={uploadMutation}
+                setSearchQuery={setSearchQuery}
+                setUploadDialogOpen={setUploadDialogOpen}
+                handleFileSelect={handleFileSelect}
+                handleUpload={handleUpload}
+                handleDownload={handleDownload}
+                handleDelete={handleDelete}
+                refetchDocuments={refetchDocuments}
+                setDocumentName={setDocumentName}
+                setDocumentDescription={setDocumentDescription}
+                setDocumentType={setDocumentType}
+                getFilteredDocuments={getFilteredDocuments}
+              />
             </div>
           </div>
         </div>
