@@ -10,14 +10,7 @@ import {
 import { UtilityBillUpload } from '@/types/utility';
 import { useUtilityBillProcessing } from '@/hooks/utility/useUtilityBillProcessing';
 import { format } from 'date-fns';
-
-// Import state components
-import UploadState from './dialog-states/UploadState';
-import UploadingState from './dialog-states/UploadingState';
-import ProcessingState from './dialog-states/ProcessingState';
-import CompletedState from './dialog-states/CompletedState';
-import FailedState from './dialog-states/FailedState';
-import UtilityBillVerificationForm from './UtilityBillVerificationForm';
+import DialogStateContainer from './dialog-states/DialogStateContainer';
 
 interface UtilityBillUploadDialogProps {
   isOpen: boolean;
@@ -107,50 +100,6 @@ const UtilityBillUploadDialog: React.FC<UtilityBillUploadDialogProps> = ({
     }
   };
   
-  // Render different content based on processing status
-  const renderDialogContent = () => {
-    switch (processingStatus) {
-      case 'idle':
-        return (
-          <UploadState
-            fileUpload={fileUpload}
-            handleFileChange={handleFileChange}
-            formRegister={register}
-            utilityType={utilityType}
-            billDate={billDate}
-            setValue={setValue}
-            onSubmit={onSubmit}
-            onClose={handleClose}
-          />
-        );
-        
-      case 'uploading':
-        return <UploadingState uploadProgress={uploadProgress} />;
-        
-      case 'processing':
-        return <ProcessingState />;
-        
-      case 'verifying':
-        return (
-          extractionResult && (
-            <UtilityBillVerificationForm 
-              extractedData={extractionResult.extractedData}
-              confidenceScores={extractionResult.confidenceScores}
-              onSave={handleSaveVerifiedData}
-              onCancel={handleClose}
-              isFallbackData={isFallbackData}
-            />
-          )
-        );
-        
-      case 'completed':
-        return <CompletedState onClose={handleClose} />;
-        
-      case 'failed':
-        return <FailedState onClose={handleClose} onReset={resetProcessing} errorMessage={processingError} />;
-    }
-  };
-  
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="sm:max-w-[600px]">
@@ -158,7 +107,23 @@ const UtilityBillUploadDialog: React.FC<UtilityBillUploadDialogProps> = ({
           <DialogTitle>Upload Utility Bill</DialogTitle>
         </DialogHeader>
         
-        {renderDialogContent()}
+        <DialogStateContainer
+          processingStatus={processingStatus}
+          fileUpload={fileUpload}
+          handleFileChange={handleFileChange}
+          formRegister={register}
+          utilityType={utilityType}
+          billDate={billDate}
+          setValue={setValue}
+          onSubmit={onSubmit}
+          handleClose={handleClose}
+          uploadProgress={uploadProgress}
+          extractionResult={extractionResult}
+          processingError={processingError}
+          isFallbackData={isFallbackData}
+          handleSaveVerifiedData={handleSaveVerifiedData}
+          resetProcessing={resetProcessing}
+        />
       </DialogContent>
     </Dialog>
   );
