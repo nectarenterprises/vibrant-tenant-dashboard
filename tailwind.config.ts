@@ -114,7 +114,7 @@ export default {
         },
         'rotate': {
           '0%': { transform: 'rotate(0deg)' },
-          '100%': { transform: 'rotate(180deg)' }
+          '100%': { transform: 'rotate(360deg)' }
         }
       },
       animation: {
@@ -124,7 +124,7 @@ export default {
         'pulse-gentle': 'pulse-gentle 4s ease-in-out infinite',
         'fade-in': 'fade-in 0.6s ease-out',
         'slide-in-right': 'slide-in-right 0.5s ease-out',
-        'rotate': 'rotate 0.3s ease-in-out'
+        'rotate': 'rotate 30s linear infinite'
       }
     }
   },
