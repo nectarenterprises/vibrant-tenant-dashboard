@@ -3,12 +3,13 @@ import React from 'react';
 import { Property, PropertyDocument } from '@/types/property';
 import UtilityDashboard from './UtilityDashboard';
 import UtilityDocuments from './UtilityDocuments';
+import { FolderType } from '@/services/document/types';
 
 interface PropertyUtilityDetailsProps {
   property: Property;
   utilityDocuments: PropertyDocument[];
   documentsLoading: boolean;
-  documentType: string;
+  documentType: FolderType;
   onBack: () => void;
   onUploadClick: () => void;
   onDownload: (document: PropertyDocument) => void;
