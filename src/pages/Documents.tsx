@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
@@ -44,8 +43,13 @@ const Documents = () => {
     fetchProperties
   } = usePropertyDocuments();
 
-  // Create a wrapper function that doesn't require arguments
-  const getDocumentsWrapper = () => getFilteredDocumentsFn();
+  // Get filtered documents based on search query
+  const getFilteredDocumentsWrapper = () => {
+    if (!selectedProperty || !selectedFolder) {
+      return [];
+    }
+    return getFilteredDocumentsFn();
+  };
 
   // Query to fetch properties
   const { data: properties = [], isLoading: propertiesLoading } = useQuery({
@@ -108,7 +112,7 @@ const Documents = () => {
                 setDocumentName={setDocumentName}
                 setDocumentDescription={setDocumentDescription}
                 setDocumentType={setDocumentType}
-                getFilteredDocuments={getDocumentsWrapper}
+                getFilteredDocuments={getFilteredDocumentsWrapper}
               />
             </div>
           </div>

@@ -16,9 +16,13 @@ export const useDocumentSelection = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   // Filter documents based on search query
-  const getFilteredDocuments = () => {
-    // Return empty array by default for handling in component
-    return [] as PropertyDocument[];
+  const getFilteredDocuments = (documents: PropertyDocument[] = []) => {
+    return searchQuery 
+      ? documents.filter(doc => 
+          doc.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+          (doc.description && doc.description.toLowerCase().includes(searchQuery.toLowerCase()))
+        )
+      : documents;
   };
 
   // Handle property selection

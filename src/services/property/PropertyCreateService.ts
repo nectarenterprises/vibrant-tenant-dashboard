@@ -1,11 +1,9 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Property } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
 import { uploadPropertyImage, getPropertyImageUrl } from './PropertyImageService';
+import { FolderType } from '@/services/document/types';
 
-// Define a new interface for property input that doesn't extend Property
-// This avoids the type conflict with the image field
 interface PropertyInput {
   name: string;
   address: string;
@@ -16,15 +14,29 @@ interface PropertyInput {
   serviceChargeAmount?: number;
   utilityData?: any;
   complianceStatus?: any;
-  incentives: Array<any>; // Add incentives field to match Property type
+  incentives: Array<any>;
 }
+
+const initializeDocumentFolders = async (propertyId: string) => {
+  const folders: FolderType[] = ['lease', 'utility', 'compliance', 'service-charge', 'other'];
+  
+  for (const folder of folders) {
+    const folderPath = `${propertyId}/${folder}`;
+    const { error } = await supabase.storage
+      .from('documents')
+      .upload(`${folderPath}/.keep`, new Uint8Array(0));
+    
+    if (error && error.message !== 'The resource already exists') {
+      console.error(`Error creating folder ${folder}:`, error);
+    }
+  }
+};
 
 /**
  * Adds a new property for the current authenticated user
  */
 export const addProperty = async (property: PropertyInput): Promise<Property | null> => {
   try {
-    // Get the current user's ID
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
@@ -36,18 +48,15 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
       return null;
     }
 
-    // Upload image if provided
     let imagePath = null;
     if (property.image instanceof File) {
       imagePath = await uploadPropertyImage(property.image);
     }
 
-    // Set default values for new fields
     const serviceChargeAmount = property.serviceChargeAmount || 0;
     const utilityData = property.utilityData || createDefaultUtilityData();
     const complianceStatus = property.complianceStatus || createDefaultComplianceStatus();
 
-    // We'll add the new fields to our insert data object separately
     const insertData = {
       name: property.name,
       address: property.address,
@@ -58,14 +67,12 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
       image_path: imagePath,
     };
 
-    // Now store the additional data in a metadata field
     const metadata = {
       service_charge_amount: serviceChargeAmount,
       utility_data: utilityData,
       compliance_status: complianceStatus
     };
 
-    // Merging the additional data with the base data
     const dataToInsert = {
       ...insertData,
       incentives: JSON.stringify(metadata)
@@ -86,7 +93,8 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
       return null;
     }
     
-    // Extract metadata from the incentives field
+    await initializeDocumentFolders(data.id);
+    
     let metadataObj: Record<string, any> = {};
     try {
       metadataObj = data.incentives ? (typeof data.incentives === 'string' ? JSON.parse(data.incentives) : data.incentives) : {};
@@ -105,7 +113,7 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
       createdAt: data.created_at,
       updatedAt: data.updated_at,
       image: data.image_path ? getPropertyImageUrl(data.image_path) : undefined,
-      incentives: property.incentives || [], // Use provided incentives or default to empty array
+      incentives: property.incentives || [],
       serviceChargeAmount: metadataObj.service_charge_amount || 0,
       utilityData: metadataObj.utility_data || [],
       complianceStatus: metadataObj.compliance_status || {}
@@ -120,9 +128,6 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
   }
 };
 
-/**
- * Creates default utility data for a new property
- */
 const createDefaultUtilityData = () => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   
@@ -137,9 +142,6 @@ const createDefaultUtilityData = () => {
   }));
 };
 
-/**
- * Creates default compliance status for a new property
- */
 const createDefaultComplianceStatus = () => {
   const today = new Date();
   const nextMonth = new Date(today);
