@@ -41,6 +41,27 @@ export interface DocumentMetadata {
   };
 }
 
+// Define a type for the property_documents table response
+export type PropertyDocumentResponse = {
+  id: string;
+  property_id: string;
+  user_id: string;
+  name: string;
+  description: string | null;
+  file_path: string;
+  document_type: string;
+  upload_date: string;
+  tags: string | null;
+  is_favorite: boolean | null;
+  version: number;
+  expiry_date: string | null;
+  key_dates: string | null;
+  notification_period: number | null;
+  previous_versions: string | null;
+  version_notes: string | null;
+  last_accessed: string | null;
+};
+
 // Function to get folder structure for a property
 export const getPropertyFolderStructure = (propertyId: string): DocumentFolder[] => {
   return [
@@ -97,3 +118,20 @@ export interface DocumentVersion {
   filePath: string;
   notes?: string;
 }
+
+// Transform database response to frontend PropertyDocument model
+export const transformToPropertyDocument = (doc: PropertyDocumentResponse) => ({
+  id: doc.id,
+  propertyId: doc.property_id,
+  name: doc.name,
+  description: doc.description,
+  filePath: doc.file_path,
+  documentType: doc.document_type as FolderType,
+  uploadDate: doc.upload_date,
+  tags: doc.tags ? JSON.parse(doc.tags as string) : undefined,
+  isFavorite: doc.is_favorite || false,
+  version: doc.version || 1,
+  expiryDate: doc.expiry_date,
+  keyDates: doc.key_dates ? JSON.parse(doc.key_dates as string) : undefined,
+  notificationPeriod: doc.notification_period
+});
