@@ -143,6 +143,235 @@ export type Database = {
           },
         ]
       }
+      service_charge_anomalies: {
+        Row: {
+          category: string
+          current_amount: number
+          detected_at: string
+          id: string
+          notes: string | null
+          percentage_change: number
+          period_end: string
+          period_start: string
+          period_type: string
+          previous_amount: number
+          property_id: string
+          resolution_date: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          current_amount: number
+          detected_at?: string
+          id?: string
+          notes?: string | null
+          percentage_change: number
+          period_end: string
+          period_start: string
+          period_type: string
+          previous_amount: number
+          property_id: string
+          resolution_date?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          current_amount?: number
+          detected_at?: string
+          id?: string
+          notes?: string | null
+          percentage_change?: number
+          period_end?: string
+          period_start?: string
+          period_type?: string
+          previous_amount?: number
+          property_id?: string
+          resolution_date?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_charge_anomalies_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_charge_data: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          id: string
+          period_end: string
+          period_start: string
+          period_type: string
+          property_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          id?: string
+          period_end: string
+          period_start: string
+          period_type: string
+          property_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          id?: string
+          period_end?: string
+          period_start?: string
+          period_type?: string
+          property_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_charge_data_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_charge_queries: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          created_by: string
+          description: string
+          expected_response_date: string | null
+          id: string
+          potential_value: number | null
+          property_id: string
+          responsible_party: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by: string
+          description: string
+          expected_response_date?: string | null
+          id?: string
+          potential_value?: number | null
+          property_id: string
+          responsible_party?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string
+          expected_response_date?: string | null
+          id?: string
+          potential_value?: number | null
+          property_id?: string
+          responsible_party?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_charge_queries_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_charge_query_comments: {
+        Row: {
+          comment: string
+          created_at: string
+          created_by: string
+          id: string
+          query_id: string
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          created_by: string
+          id?: string
+          query_id: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          query_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_charge_query_comments_query_id_fkey"
+            columns: ["query_id"]
+            isOneToOne: false
+            referencedRelation: "service_charge_queries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_charge_query_documents: {
+        Row: {
+          file_name: string
+          file_path: string
+          file_type: string
+          id: string
+          query_id: string
+          uploaded_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          file_name: string
+          file_path: string
+          file_type: string
+          id?: string
+          query_id: string
+          uploaded_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          file_name?: string
+          file_path?: string
+          file_type?: string
+          id?: string
+          query_id?: string
+          uploaded_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_charge_query_documents_query_id_fkey"
+            columns: ["query_id"]
+            isOneToOne: false
+            referencedRelation: "service_charge_queries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenant_details: {
         Row: {
           contact_email: string | null
