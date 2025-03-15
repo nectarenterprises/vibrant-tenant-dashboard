@@ -90,6 +90,7 @@ export const createProperty = async (property: Partial<Property>): Promise<Prope
   }
   
   // Transform the property object to match the database schema
+  // Convert rentalFee to string for database compatibility
   const dbProperty = {
     name: property.name || '',
     address: property.address || '',
@@ -104,9 +105,10 @@ export const createProperty = async (property: Partial<Property>): Promise<Prope
     user_id: user.user.id
   };
   
+  // Insert a single property object, not an array
   const { data, error } = await supabase
     .from('properties')
-    .insert([dbProperty])
+    .insert(dbProperty)
     .select()
     .single();
     

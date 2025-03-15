@@ -69,17 +69,18 @@ const DocumentDialog: React.FC<DocumentDialogProps> = ({
         throw new Error('Missing required upload information');
       }
 
-      await uploadDocument({
-        file: selectedFile,
+      // Fixed: call uploadDocument with correct arguments
+      await uploadDocument(
         propertyId,
-        name: documentName,
-        type: documentType,
-        description: documentDescription
-      });
+        selectedFile,
+        documentName,
+        documentType,
+        documentDescription
+      );
 
       toast({
-        title: 'Document uploaded',
-        description: 'Your document has been uploaded successfully.',
+        title: "Document uploaded",
+        description: "Your document has been uploaded successfully.",
       });
 
       resetForm();
@@ -88,9 +89,9 @@ const DocumentDialog: React.FC<DocumentDialogProps> = ({
     } catch (error) {
       console.error('Error uploading document:', error);
       toast({
-        variant: 'destructive',
-        title: 'Upload failed',
-        description: 'There was an error uploading your document. Please try again.',
+        variant: "destructive",
+        title: "Upload failed",
+        description: "There was an error uploading your document. Please try again.",
       });
     } finally {
       setIsUploading(false);
@@ -129,9 +130,7 @@ const DocumentDialog: React.FC<DocumentDialogProps> = ({
 
         <DocumentDialogFooter
           isUploading={isUploading}
-          selectedFile={selectedFile}
-          documentName={documentName}
-          documentType={documentType}
+          uploadDisabled={uploadDisabled}
           handleCancel={handleCancel}
           handleUpload={handleUpload}
         />

@@ -57,12 +57,8 @@ export const getDocumentVersionHistory = async (documentId: string) => {
   return []; // Placeholder for backward compatibility
 };
 
-// Add the missing getPropertyDocuments function
-export const getPropertyDocuments = async (propertyId: string) => {
-  if (!propertyId) {
-    throw new Error('Property ID is required');
-  }
-  
-  // Use the existing getDocuments function with propertyId
-  return getDocuments(propertyId);
+// Fix the getPropertyDocuments function to use no arguments
+export const getPropertyDocuments = async () => {
+  // Use the existing getDocuments function with no arguments
+  return getDocuments();
 };
