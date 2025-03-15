@@ -9,8 +9,8 @@ interface DocumentDialogFooterProps {
   selectedFile: File | null;
   documentName: string;
   documentType: DocumentType;
-  handleDocumentUpload: () => Promise<void>;
   handleCancel: () => void;
+  handleUpload: () => void;
 }
 
 const DocumentDialogFooter: React.FC<DocumentDialogFooterProps> = ({
@@ -18,8 +18,8 @@ const DocumentDialogFooter: React.FC<DocumentDialogFooterProps> = ({
   selectedFile,
   documentName,
   documentType,
-  handleDocumentUpload,
-  handleCancel
+  handleCancel,
+  handleUpload
 }) => {
   return (
     <DialogFooter>
@@ -31,7 +31,7 @@ const DocumentDialogFooter: React.FC<DocumentDialogFooterProps> = ({
         Cancel
       </Button>
       <Button 
-        onClick={handleDocumentUpload}
+        onClick={handleUpload}
         disabled={isUploading || !selectedFile || !documentName || !documentType}
       >
         {isUploading ? 'Uploading...' : 'Upload Document'}

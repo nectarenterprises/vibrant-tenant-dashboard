@@ -26,7 +26,7 @@ export const getProperties = async (): Promise<Property[]> => {
     id: item.id,
     name: item.name,
     address: item.address,
-    rentalFee: parseFloat(item.rental_fee) || 0,
+    rentalFee: parseFloat(item.rental_fee || '0'),
     nextPaymentDate: item.next_payment_date,
     leaseExpiry: item.lease_expiry,
     image: item.image_path,
@@ -65,7 +65,7 @@ export const getProperty = async (id: string): Promise<Property> => {
     id: data.id,
     name: data.name,
     address: data.address,
-    rentalFee: parseFloat(data.rental_fee) || 0,
+    rentalFee: parseFloat(data.rental_fee || '0'),
     nextPaymentDate: data.next_payment_date,
     leaseExpiry: data.lease_expiry,
     image: data.image_path,
@@ -93,7 +93,7 @@ export const createProperty = async (property: Partial<Property>): Promise<Prope
   const dbProperty = {
     name: property.name || '',
     address: property.address || '',
-    rental_fee: property.rentalFee || 0,
+    rental_fee: property.rentalFee ? property.rentalFee.toString() : '0',
     next_payment_date: property.nextPaymentDate || new Date().toISOString(),
     lease_expiry: property.leaseExpiry || new Date().toISOString(),
     image_path: property.image,
@@ -119,7 +119,7 @@ export const createProperty = async (property: Partial<Property>): Promise<Prope
     id: data.id,
     name: data.name,
     address: data.address,
-    rentalFee: parseFloat(data.rental_fee) || 0,
+    rentalFee: parseFloat(data.rental_fee || '0'),
     nextPaymentDate: data.next_payment_date,
     leaseExpiry: data.lease_expiry,
     image: data.image_path,
@@ -134,7 +134,7 @@ export const createProperty = async (property: Partial<Property>): Promise<Prope
 };
 
 // Helper function to parse incentives
-const parseIncentives = (incentivesData: any): Incentive[] => {
+export const parseIncentives = (incentivesData: any): Incentive[] => {
   if (!incentivesData) return [];
   
   try {

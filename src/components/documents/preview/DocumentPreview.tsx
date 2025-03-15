@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { PropertyDocument } from '@/types/property';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Download, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { downloadDocument } from '@/services/document';
+import { Download, X } from 'lucide-react';
+import { downloadDocument, updateDocumentAccessTimestamp } from '@/services/FileStorageService';
 import { toast } from '@/components/ui/use-toast';
 
 interface DocumentPreviewProps {

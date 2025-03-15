@@ -181,8 +181,8 @@ const LeaseDialogs: React.FC<LeaseDialogsProps> = (props) => {
       />
       
       <DocumentDialog 
-        showDocumentDialog={showDocumentDialog}
-        setShowDocumentDialog={setShowDocumentDialog}
+        isOpen={showDocumentDialog}
+        onOpenChange={setShowDocumentDialog}
         selectedFile={selectedFile}
         setSelectedFile={setSelectedFile}
         documentType={documentType}

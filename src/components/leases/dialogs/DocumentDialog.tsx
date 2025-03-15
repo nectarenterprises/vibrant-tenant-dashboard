@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { DocumentType } from '@/types/property';
 import DocumentTypeSelector from './document/DocumentTypeSelector';
 import DocumentNameField from './document/DocumentNameField';
@@ -39,7 +38,7 @@ const DocumentDialog: React.FC<DocumentDialogProps> = ({
   const [documentDescription, setDocumentDescription] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleUpload = async () => {
     if (!selectedFile || !documentName || !documentType) {
       toast({
         variant: "destructive",
@@ -90,9 +89,7 @@ const DocumentDialog: React.FC<DocumentDialogProps> = ({
     }
   };
 
-  const handleNameChange = (value: string) => {
-    setDocumentName(value);
-  };
+  const handleCancel = () => onOpenChange(false);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -105,6 +102,7 @@ const DocumentDialog: React.FC<DocumentDialogProps> = ({
           <FileUploadArea
             selectedFile={selectedFile}
             setSelectedFile={setSelectedFile}
+            setDocumentName={setDocumentName}
           />
 
           <DocumentTypeSelector
@@ -114,7 +112,7 @@ const DocumentDialog: React.FC<DocumentDialogProps> = ({
 
           <DocumentNameField
             documentName={documentName}
-            onDocumentNameChange={handleNameChange}
+            setDocumentName={setDocumentName}
           />
 
           <DocumentDescriptionField
@@ -124,10 +122,12 @@ const DocumentDialog: React.FC<DocumentDialogProps> = ({
         </div>
 
         <DocumentDialogFooter
-          onCancel={() => onOpenChange(false)}
-          onUpload={handleSubmit}
           isUploading={isUploading}
-          uploadDisabled={!selectedFile || !documentName}
+          selectedFile={selectedFile}
+          documentName={documentName}
+          documentType={documentType}
+          handleCancel={handleCancel}
+          handleUpload={handleUpload}
         />
       </DialogContent>
     </Dialog>

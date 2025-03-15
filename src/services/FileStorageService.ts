@@ -58,18 +58,11 @@ export const getDocumentVersionHistory = async (documentId: string) => {
 };
 
 // Add the missing getPropertyDocuments function
-export const getPropertyDocuments = async (propertyId: string, documentType?: string) => {
+export const getPropertyDocuments = async (propertyId: string) => {
   if (!propertyId) {
     throw new Error('Property ID is required');
   }
   
   // Use the existing getDocuments function
-  const docs = await getDocuments(propertyId);
-  
-  // Filter by document type if provided
-  if (documentType) {
-    return docs.filter(doc => doc.documentType === documentType);
-  }
-  
-  return docs;
+  return getDocuments(propertyId);
 };
