@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { Property } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
@@ -53,9 +54,10 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
       imagePath = await uploadPropertyImage(property.image);
     }
 
+    // Only use provided values, don't generate mock data
     const serviceChargeAmount = property.serviceChargeAmount || 0;
-    const utilityData = property.utilityData || createDefaultUtilityData();
-    const complianceStatus = property.complianceStatus || createDefaultComplianceStatus();
+    const utilityData = property.utilityData || [];
+    const complianceStatus = property.complianceStatus || {};
 
     const insertData = {
       name: property.name,
@@ -128,58 +130,4 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
   }
 };
 
-const createDefaultUtilityData = () => {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  
-  return months.map(month => ({
-    month,
-    gasUsage: Math.floor(Math.random() * 300) + 100,
-    gasCost: Math.floor(Math.random() * 150) + 50,
-    waterUsage: Math.floor(Math.random() * 50) + 30,
-    waterCost: Math.floor(Math.random() * 40) + 30,
-    electricityUsage: Math.floor(Math.random() * 350) + 250,
-    electricityCost: Math.floor(Math.random() * 100) + 60
-  }));
-};
-
-const createDefaultComplianceStatus = () => {
-  const today = new Date();
-  const nextMonth = new Date(today);
-  nextMonth.setMonth(today.getMonth() + 1);
-  
-  const nextYear = new Date(today);
-  nextYear.setFullYear(today.getFullYear() + 1);
-  
-  return {
-    fireRiskAssessment: {
-      lastCompleted: today.toISOString().split('T')[0],
-      nextDue: nextYear.toISOString().split('T')[0],
-      status: 'completed'
-    },
-    electricalSafety: {
-      lastCompleted: today.toISOString().split('T')[0],
-      nextDue: nextYear.toISOString().split('T')[0],
-      status: 'completed'
-    },
-    gasInspection: {
-      lastCompleted: today.toISOString().split('T')[0],
-      nextDue: nextYear.toISOString().split('T')[0],
-      status: 'completed'
-    },
-    buildingInsurance: {
-      lastCompleted: today.toISOString().split('T')[0],
-      nextDue: nextYear.toISOString().split('T')[0],
-      status: 'completed'
-    },
-    asbestosReport: {
-      lastCompleted: '',
-      nextDue: nextMonth.toISOString().split('T')[0],
-      status: 'upcoming'
-    },
-    energyPerformance: {
-      lastCompleted: '',
-      nextDue: nextMonth.toISOString().split('T')[0],
-      status: 'upcoming'
-    }
-  };
-};
+// Remove the unused mock data generation functions

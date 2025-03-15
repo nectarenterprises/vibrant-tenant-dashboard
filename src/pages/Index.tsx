@@ -1,52 +1,12 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import WelcomeHeader from '@/components/dashboard/WelcomeHeader';
 import PropertyCard from '@/components/dashboard/PropertyCard';
 import CalendarWidget from '@/components/dashboard/CalendarWidget';
 import UtilityChart from '@/components/dashboard/UtilityChart';
-import { Property, UtilityData } from '@/types/property';
 import { fetchUserProperties, fetchPropertyEvents } from '@/services/property';
 import { useAuth } from '@/contexts/AuthContext';
-
-const mockUtilityData: UtilityData[] = [
-  { 
-    month: 'Jan', 
-    gasUsage: 250, gasCost: 125, 
-    waterUsage: 42, waterCost: 36, 
-    electricityUsage: 320, electricityCost: 80 
-  },
-  { 
-    month: 'Feb', 
-    gasUsage: 280, gasCost: 140, 
-    waterUsage: 38, waterCost: 33, 
-    electricityUsage: 300, electricityCost: 75 
-  },
-  { 
-    month: 'Mar', 
-    gasUsage: 220, gasCost: 110, 
-    waterUsage: 45, waterCost: 38, 
-    electricityUsage: 340, electricityCost: 85 
-  },
-  { 
-    month: 'Apr', 
-    gasUsage: 180, gasCost: 90, 
-    waterUsage: 40, waterCost: 34, 
-    electricityUsage: 280, electricityCost: 70 
-  },
-  { 
-    month: 'May', 
-    gasUsage: 160, gasCost: 80, 
-    waterUsage: 43, waterCost: 37, 
-    electricityUsage: 290, electricityCost: 72.5 
-  },
-  { 
-    month: 'Jun', 
-    gasUsage: 140, gasCost: 70, 
-    waterUsage: 48, waterCost: 41, 
-    electricityUsage: 350, electricityCost: 87.5 
-  }
-];
 
 const Index = () => {
   const { user } = useAuth();
@@ -63,7 +23,7 @@ const Index = () => {
     enabled: !!user
   });
   
-  const uniqueProperties = properties.reduce((acc: Property[], current) => {
+  const uniqueProperties = properties.reduce((acc, current) => {
     const x = acc.find(item => 
       item.name === current.name && 
       item.address === current.address
@@ -123,7 +83,7 @@ const Index = () => {
         </div>
         
         <div className="mt-8">
-          <UtilityChart data={mockUtilityData} properties={uniqueProperties} />
+          <UtilityChart data={[]} properties={uniqueProperties} />
         </div>
       </div>
     </div>
