@@ -16,7 +16,7 @@ export const useDocumentQueries = (propertyId?: string, folderType?: FolderType)
     queryKey: ['documents', propertyId, folderType],
     queryFn: async () => {
       if (!propertyId) return [];
-      // Fixed: don't pass propertyId since getDocuments already knows how to handle it
+      // Don't pass propertyId since getDocuments already knows how to handle it
       const docs = await getDocuments();
       
       // Filter by folder type if provided
@@ -37,8 +37,8 @@ export const useDocumentQueries = (propertyId?: string, folderType?: FolderType)
     queryKey: ['recent-documents', propertyId],
     queryFn: async () => {
       if (!propertyId) return [];
-      // Fixed: call getRecentDocuments with no arguments
-      return getRecentDocuments();
+      // Call getRecentDocuments with appropriate parameters
+      return getRecentDocuments(propertyId);
     },
     enabled: !!propertyId
   });
@@ -51,8 +51,8 @@ export const useDocumentQueries = (propertyId?: string, folderType?: FolderType)
     queryKey: ['expiring-documents', propertyId],
     queryFn: async () => {
       if (!propertyId) return [];
-      // Fixed: call getExpiringDocuments with no arguments
-      return getExpiringDocuments();
+      // Call getExpiringDocuments with appropriate parameters
+      return getExpiringDocuments(propertyId);
     },
     enabled: !!propertyId
   });

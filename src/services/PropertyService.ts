@@ -26,7 +26,7 @@ export const getProperties = async (): Promise<Property[]> => {
     id: item.id,
     name: item.name,
     address: item.address,
-    rentalFee: parseFloat(item.rental_fee || '0'),
+    rentalFee: parseFloat(String(item.rental_fee) || '0'),
     nextPaymentDate: item.next_payment_date,
     leaseExpiry: item.lease_expiry,
     image: item.image_path,
@@ -34,7 +34,8 @@ export const getProperties = async (): Promise<Property[]> => {
     incentives: parseIncentives(item.incentives),
     createdAt: item.created_at,
     updatedAt: item.updated_at,
-    serviceChargeAmount: item.service_charge_amount ? parseFloat(item.service_charge_amount) : undefined,
+    serviceChargeAmount: item.incentives && typeof item.incentives === 'object' ? 
+      parseFloat(String(item.incentives.service_charge_amount || 0)) : undefined,
     leaseStart: item.lease_start,
     leaseType: item.lease_type
   }));
@@ -65,7 +66,7 @@ export const getProperty = async (id: string): Promise<Property> => {
     id: data.id,
     name: data.name,
     address: data.address,
-    rentalFee: parseFloat(data.rental_fee || '0'),
+    rentalFee: parseFloat(String(data.rental_fee || '0')),
     nextPaymentDate: data.next_payment_date,
     leaseExpiry: data.lease_expiry,
     image: data.image_path,
@@ -73,7 +74,8 @@ export const getProperty = async (id: string): Promise<Property> => {
     incentives: parseIncentives(data.incentives),
     createdAt: data.created_at,
     updatedAt: data.updated_at,
-    serviceChargeAmount: data.service_charge_amount ? parseFloat(data.service_charge_amount) : undefined,
+    serviceChargeAmount: data.incentives && typeof data.incentives === 'object' ? 
+      parseFloat(String(data.incentives.service_charge_amount || 0)) : undefined,
     leaseStart: data.lease_start,
     leaseType: data.lease_type
   };
@@ -94,7 +96,7 @@ export const createProperty = async (property: Partial<Property>): Promise<Prope
   const dbProperty = {
     name: property.name || '',
     address: property.address || '',
-    rental_fee: property.rentalFee ? property.rentalFee.toString() : '0',
+    rental_fee: property.rentalFee !== undefined ? Number(property.rentalFee) : 0,
     next_payment_date: property.nextPaymentDate || new Date().toISOString(),
     lease_expiry: property.leaseExpiry || new Date().toISOString(),
     image_path: property.image,
@@ -105,7 +107,7 @@ export const createProperty = async (property: Partial<Property>): Promise<Prope
     user_id: user.user.id
   };
   
-  // Insert a single property object, not an array
+  // Insert a single property object
   const { data, error } = await supabase
     .from('properties')
     .insert(dbProperty)
@@ -121,7 +123,7 @@ export const createProperty = async (property: Partial<Property>): Promise<Prope
     id: data.id,
     name: data.name,
     address: data.address,
-    rentalFee: parseFloat(data.rental_fee || '0'),
+    rentalFee: parseFloat(String(data.rental_fee || '0')),
     nextPaymentDate: data.next_payment_date,
     leaseExpiry: data.lease_expiry,
     image: data.image_path,
@@ -129,7 +131,8 @@ export const createProperty = async (property: Partial<Property>): Promise<Prope
     incentives: parseIncentives(data.incentives),
     createdAt: data.created_at,
     updatedAt: data.updated_at,
-    serviceChargeAmount: data.service_charge_amount ? parseFloat(data.service_charge_amount) : undefined,
+    serviceChargeAmount: data.incentives && typeof data.incentives === 'object' ? 
+      parseFloat(String(data.incentives.service_charge_amount || 0)) : undefined,
     leaseStart: data.lease_start,
     leaseType: data.lease_type
   };
