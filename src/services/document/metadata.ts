@@ -47,7 +47,8 @@ export const saveDocumentMetadata = async (
         key_dates: keyDates ? JSON.stringify(keyDates) : null,
         notification_period: notificationPeriod || null,
         version: version,
-        version_notes: versionNotes || ''
+        version_notes: versionNotes || '',
+        is_favorite: false
       })
       .select()
       .single();
@@ -122,9 +123,9 @@ export const fetchDocumentMetadata = async (
       }
 
       if (searchOptions.tags && searchOptions.tags.length > 0) {
-        // Note: This is a simplified approach - actual implementation would depend on how tags are stored
+        // Note: This is a simplified approach for tag filtering
         for (const tag of searchOptions.tags) {
-          query = query.contains('tags', [tag]);
+          query = query.filter('tags', 'cs', tag);
         }
       }
 
@@ -142,7 +143,10 @@ export const fetchDocumentMetadata = async (
     }
     
     // Apply sorting
-    const sortField = searchOptions?.sortBy || 'upload_date';
+    const sortField = searchOptions?.sortBy === 'date' ? 'upload_date' : 
+                      searchOptions?.sortBy === 'name' ? 'name' : 
+                      searchOptions?.sortBy === 'type' ? 'document_type' : 
+                      'upload_date';
     const sortDirection = searchOptions?.sortOrder || 'desc';
     
     const { data, error } = await query.order(sortField, { ascending: sortDirection === 'asc' });

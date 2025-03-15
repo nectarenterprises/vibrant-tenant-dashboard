@@ -19,6 +19,7 @@ export const useDocumentTags = () => {
         return;
       }
       
+      // Use the correct table name that we just created
       const { data, error } = await supabase
         .from('document_tags')
         .select('*')
@@ -35,12 +36,13 @@ export const useDocumentTags = () => {
         return;
       }
       
+      // Map the database fields to our DocumentTag type
       setTags(data.map(tag => ({
         id: tag.id,
         name: tag.name,
         color: tag.color
       })));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in fetchTags:', error);
       setTags([]);
     } finally {
@@ -72,6 +74,7 @@ export const useDocumentTags = () => {
         user_id: user.id
       };
       
+      // Insert into the correct table
       const { data, error } = await supabase
         .from('document_tags')
         .insert(newTag)
@@ -95,7 +98,7 @@ export const useDocumentTags = () => {
       
       setTags(prev => [...prev, createdTag]);
       return createdTag;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in addTag:', error);
       return null;
     }
@@ -103,6 +106,7 @@ export const useDocumentTags = () => {
   
   const updateTag = async (tag: DocumentTag) => {
     try {
+      // Update the tag in the database
       const { error } = await supabase
         .from('document_tags')
         .update({
@@ -120,9 +124,10 @@ export const useDocumentTags = () => {
         return false;
       }
       
+      // Update the tag in our local state
       setTags(prev => prev.map(t => t.id === tag.id ? tag : t));
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in updateTag:', error);
       return false;
     }
@@ -130,6 +135,7 @@ export const useDocumentTags = () => {
   
   const deleteTag = async (tagId: string) => {
     try {
+      // Delete the tag from the database
       const { error } = await supabase
         .from('document_tags')
         .delete()
@@ -144,9 +150,10 @@ export const useDocumentTags = () => {
         return false;
       }
       
+      // Remove the tag from our local state
       setTags(prev => prev.filter(t => t.id !== tagId));
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in deleteTag:', error);
       return false;
     }
