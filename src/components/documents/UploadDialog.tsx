@@ -98,7 +98,7 @@ const UploadDialog = ({
           
           <DocumentDescriptionField 
             documentDescription={documentDescription}
-            onDescriptionChange={onDescriptionChange}
+            setDocumentDescription={onDescriptionChange}
           />
           
           {/* Render dynamic fields based on document type */}

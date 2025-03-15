@@ -133,6 +133,9 @@ const DocumentDialog: React.FC<DocumentDialogProps> = ({
           uploadDisabled={uploadDisabled}
           handleCancel={handleCancel}
           handleUpload={handleUpload}
+          selectedFile={selectedFile}
+          documentName={documentName}
+          documentType={documentType}
         />
       </DialogContent>
     </Dialog>

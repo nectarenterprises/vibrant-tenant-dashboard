@@ -23,7 +23,7 @@ const DocumentsSection = ({ setShowDocumentDialog, propertyId }: DocumentsSectio
     
     setLoading(true);
     try {
-      const docs = await getPropertyDocuments(propertyId);
+      const docs = await getPropertyDocuments();
       setDocuments(docs);
     } catch (error) {
       console.error('Error fetching documents:', error);

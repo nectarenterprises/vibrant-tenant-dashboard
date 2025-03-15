@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -22,7 +21,7 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({ property, onBack 
     const loadDocuments = async () => {
       setIsLoadingDocuments(true);
       try {
-        const docs = await getPropertyDocuments(property.id);
+        const docs = await getPropertyDocuments();
         const utilityDocs = docs.filter(doc => doc.documentType === 'utility');
         setDocuments(utilityDocs);
       } catch (error) {
@@ -35,7 +34,6 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({ property, onBack 
     loadDocuments();
   }, [property.id]);
 
-  // Utility chart data (mock data that would come from property)
   const utilityData = [
     { month: 'Jan', electricityUsage: 320, electricityCost: 80, gasUsage: 250, gasCost: 125, waterUsage: 42, waterCost: 36 },
     { month: 'Feb', electricityUsage: 300, electricityCost: 75, gasUsage: 280, gasCost: 140, waterUsage: 38, waterCost: 33 },
@@ -92,7 +90,7 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({ property, onBack 
             property={property}
             utilityDocuments={documents}
             documentsLoading={isLoadingDocuments}
-            onUploadClick={handleUploadClick}
+            onUploadClick={() => {}}
           />
         </TabsContent>
 
@@ -101,9 +99,9 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({ property, onBack 
             utilityDocuments={documents}
             documentsLoading={isLoadingDocuments}
             documentType="utility"
-            onUploadClick={handleUploadClick}
-            onDownload={handleDownloadDocument}
-            onDelete={handleDeleteDocument}
+            onUploadClick={() => {}}
+            onDownload={() => {}}
+            onDelete={() => {}}
           />
         </TabsContent>
       </Tabs>

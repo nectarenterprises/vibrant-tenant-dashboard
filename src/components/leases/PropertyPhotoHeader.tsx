@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Property } from '@/types/property';
-import { fetchProperty } from '@/services/property';
+import { getProperty } from '@/services/property';
 import { useAuth } from '@/contexts/AuthContext';
 import { uploadDocument } from '@/services/document';
 import { toast } from '@/components/ui/use-toast';
@@ -22,7 +22,7 @@ const PropertyPhotoHeader: React.FC = () => {
 
   const { data: property, isLoading: propertyLoading } = useQuery({
     queryKey: ['property', propertyId],
-    queryFn: () => fetchProperty(propertyId || ''),
+    queryFn: () => getProperty(propertyId || ''),
     enabled: !!propertyId
   });
 

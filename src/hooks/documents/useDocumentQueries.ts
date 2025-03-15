@@ -37,7 +37,7 @@ export const useDocumentQueries = (propertyId?: string, folderType?: FolderType)
     queryKey: ['recent-documents', propertyId],
     queryFn: async () => {
       if (!propertyId) return [];
-      // Fixed: call getRecentDocuments with the proper number of arguments
+      // Fixed: call getRecentDocuments with no arguments
       return getRecentDocuments();
     },
     enabled: !!propertyId
@@ -51,7 +51,7 @@ export const useDocumentQueries = (propertyId?: string, folderType?: FolderType)
     queryKey: ['expiring-documents', propertyId],
     queryFn: async () => {
       if (!propertyId) return [];
-      // Fixed: call getExpiringDocuments with the proper number of arguments
+      // Fixed: call getExpiringDocuments with no arguments
       return getExpiringDocuments();
     },
     enabled: !!propertyId
