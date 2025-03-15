@@ -7,12 +7,12 @@ import { cn } from '@/lib/utils';
 import { FolderType } from '@/services/document/types';
 import { getPropertyDocuments, downloadDocument, deleteDocument } from '@/services/document';
 import { toast } from '@/components/ui/use-toast';
-import UploadDialog from '@/components/documents/UploadDialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { fetchUserProperties } from '@/services/property';
-import PropertySearch from '@/components/utilities/PropertySearch';
-import PropertyGrid from '@/components/utilities/PropertyGrid';
 import PropertyUtilityDetails from '@/components/utilities/PropertyUtilityDetails';
+import UtilitiesHeader from '@/components/utilities/UtilitiesHeader';
+import PropertyDisplay from '@/components/utilities/PropertyDisplay';
+import UtilityUpload from '@/components/utilities/UtilityUpload';
 
 const Utilities = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -20,10 +20,6 @@ const Utilities = () => {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [utilityDocuments, setUtilityDocuments] = useState<PropertyDocument[]>([]);
   const [documentsLoading, setDocumentsLoading] = useState(false);
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [fileUpload, setFileUpload] = useState<File | null>(null);
-  const [documentName, setDocumentName] = useState('');
-  const [documentDescription, setDocumentDescription] = useState('');
   const [documentType, setDocumentType] = useState<FolderType>('utility');
   const { user } = useAuth();
   
@@ -100,34 +96,6 @@ const Utilities = () => {
     }
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFileUpload(e.target.files[0]);
-      setDocumentName(e.target.files[0].name);
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!fileUpload || !selectedProperty) {
-      toast({
-        variant: "destructive",
-        title: "Missing information",
-        description: "Please select a file to upload.",
-      });
-      return;
-    }
-
-    setUploadDialogOpen(false);
-    toast({
-      title: "Upload functionality",
-      description: "Full upload functionality would be implemented here.",
-    });
-    
-    setFileUpload(null);
-    setDocumentName('');
-    setDocumentDescription('');
-  };
-
   // Add a refetchDocuments function that calls fetchUtilityDocuments with the selected property ID
   const refetchDocuments = () => {
     if (selectedProperty) {
@@ -146,53 +114,37 @@ const Utilities = () => {
         )}
       >
         <div className="container mx-auto p-6">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-tenant-darkGreen to-tenant-green bg-clip-text text-transparent">Utilities Dashboard</h1>
-            <p className="text-muted-foreground">Monitor your property's utility usage and costs</p>
-          </div>
+          <UtilitiesHeader />
           
           {!selectedProperty && (
-            <PropertySearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+            <PropertyDisplay 
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              filteredProperties={filteredProperties}
+              propertiesLoading={propertiesLoading}
+              onPropertySelect={setSelectedProperty}
+            />
           )}
 
-          {selectedProperty ? (
+          {selectedProperty && (
             <PropertyUtilityDetails 
               property={selectedProperty}
               utilityDocuments={utilityDocuments}
               documentsLoading={documentsLoading}
               documentType={documentType}
               onBack={() => setSelectedProperty(null)}
-              onUploadClick={() => setUploadDialogOpen(true)}
+              onUploadClick={() => document.getElementById('utility-upload-trigger')?.click()}
               onDownload={handleDownload}
               onDelete={handleDelete}
               refetchDocuments={refetchDocuments}
             />
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <PropertyGrid
-                filteredProperties={filteredProperties}
-                propertiesLoading={propertiesLoading}
-                searchQuery={searchQuery}
-                onPropertySelect={setSelectedProperty}
-              />
-            </div>
           )}
         </div>
       </main>
       
-      <UploadDialog
-        isOpen={uploadDialogOpen}
-        setIsOpen={setUploadDialogOpen}
-        fileUpload={fileUpload}
-        documentName={documentName}
-        documentDescription={documentDescription}
-        documentType={documentType}
-        isUploading={false}
-        onFileSelect={handleFileSelect}
-        onNameChange={setDocumentName}
-        onDescriptionChange={setDocumentDescription}
-        onTypeChange={setDocumentType}
-        onUpload={handleUpload}
+      <UtilityUpload 
+        selectedProperty={selectedProperty} 
+        onUploadComplete={refetchDocuments} 
       />
     </div>
   );

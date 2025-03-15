@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Property, PropertyDocument } from '@/types/property';
 import { FolderType } from '@/services/document/types';
 import { toast } from '@/components/ui/use-toast';
+import { deleteDocument } from '@/services/document';
 
 // Import the smaller, more focused hooks
 import { useDocumentQueries } from './useDocumentQueries';
