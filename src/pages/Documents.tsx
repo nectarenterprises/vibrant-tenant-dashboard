@@ -1,38 +1,20 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Property } from '@/types/property';
-import { DocumentFolder } from '@/services/document/types';
 import { fetchUserProperties } from '@/services/property';
 import { useAuth } from '@/contexts/AuthContext';
-import { useDocumentSelection } from '@/hooks/documents/useDocumentSelection';
-import { useDocumentQueries } from '@/hooks/documents/useDocumentQueries';
-import { useDocumentMutations } from '@/hooks/documents/useDocumentMutations';
-import { useDocumentUpload } from '@/hooks/documents/useDocumentUpload';
-import DocumentsContainer from '@/components/documents/DocumentsContainer';
-import SidebarSelectors from '@/components/documents/SidebarSelectors';
-import { getPropertyFolderStructure } from '@/services/document/types';
-import { toast } from '@/components/ui/use-toast';
-import { downloadDocument } from '@/services/document';
 import Sidebar from '@/components/layout/Sidebar';
+import { cn } from '@/lib/utils';
+import PropertySearch from '@/components/utilities/PropertySearch';
+import PropertyGrid from '@/components/utilities/PropertyGrid';
+import DocumentCategories from '@/components/documents/DocumentCategories';
 
 const Documents = () => {
-  const { user } = useAuth();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [collapsed, setCollapsed] = useState(false);
-  
-  // Document selection state
-  const {
-    selectedProperty,
-    selectedFolder,
-    setSelectedProperty,
-    setSelectedFolder,
-    getFilteredDocuments,
-    handlePropertySelect,
-    handleFolderSelect,
-    handleDownload,
-    recordDocumentAccess
-  } = useDocumentSelection();
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const { user } = useAuth();
   
   // Fetch properties
   const { 
@@ -44,72 +26,12 @@ const Documents = () => {
     enabled: !!user
   });
   
-  // Get folder structure for selected property
-  const folderStructure = selectedProperty 
-    ? getPropertyFolderStructure(selectedProperty.id) 
-    : [];
-  
-  // Document queries - fetch documents based on selected property and folder
-  const {
-    documents,
-    documentsLoading,
-    refetchDocuments
-  } = useDocumentQueries(
-    selectedProperty?.id, 
-    selectedFolder?.type
+  // Filter properties based on search query
+  const filteredProperties = properties.filter(property => 
+    property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    property.address.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Document upload state
-  const {
-    fileUpload,
-    documentName,
-    documentDescription,
-    documentType,
-    uploadDialogOpen,
-    setFileUpload,
-    setDocumentName,
-    setDocumentDescription,
-    setDocumentType,
-    setUploadDialogOpen,
-    resetUploadForm,
-    handleFileSelect,
-    prepareUpload
-  } = useDocumentUpload();
-  
-  // Document mutations - handle document uploads, downloads, and deletes
-  const {
-    uploadMutation,
-    deleteMutation
-  } = useDocumentMutations(
-    selectedProperty?.id,
-    resetUploadForm
-  );
-  
-  // Handle document upload
-  const handleUpload = () => {
-    const uploadData = prepareUpload();
-    if (uploadData) {
-      uploadMutation.mutate(uploadData);
-    }
-  };
-  
-  // Handle document deletion
-  const handleDelete = (document: any) => {
-    if (confirm(`Are you sure you want to delete "${document.name}"?`)) {
-      deleteMutation.mutate({ 
-        id: document.id, 
-        filePath: document.filePath 
-      });
-    }
-  };
-  
-  // Reset selection if properties change
-  useEffect(() => {
-    if (properties.length > 0 && !selectedProperty) {
-      setSelectedProperty(properties[0]);
-    }
-  }, [properties, selectedProperty, setSelectedProperty]);
-  
   // If not logged in, show login message
   if (!user) {
     return (
@@ -121,48 +43,47 @@ const Documents = () => {
   }
   
   return (
-    <div className="flex h-screen bg-background">
-      <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
-      <div className="flex-1 flex ml-20 md:ml-64 transition-all duration-300" style={{ marginLeft: collapsed ? "5rem" : "16rem" }}>
-        <div className="w-64 border-r border-border bg-background overflow-auto">
-          <SidebarSelectors
-            properties={properties}
-            selectedProperty={selectedProperty}
-            folderStructure={folderStructure}
-            selectedFolder={selectedFolder}
-            propertiesLoading={propertiesLoading}
-            handlePropertySelect={(propertyId) => handlePropertySelect(propertyId, properties)}
-            handleFolderSelect={handleFolderSelect}
-          />
+    <div className="min-h-screen bg-background flex">
+      <Sidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
+      
+      <main 
+        className={cn(
+          "flex-1 transition-all duration-300 ease-in-out",
+          sidebarCollapsed ? "ml-20" : "ml-64"
+        )}
+      >
+        <div className="container mx-auto p-6">
+          <h1 className="text-3xl font-bold mb-6">Property Documents</h1>
+          
+          {!selectedProperty && (
+            <PropertySearch
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+            />
+          )}
+
+          {selectedProperty ? (
+            <div>
+              <button 
+                onClick={() => setSelectedProperty(null)}
+                className="mb-4 text-sm flex items-center gap-1 text-tenant-green hover:text-tenant-darkGreen transition-colors"
+              >
+                ← Back to all properties
+              </button>
+              <DocumentCategories property={selectedProperty} />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <PropertyGrid
+                filteredProperties={filteredProperties}
+                propertiesLoading={propertiesLoading}
+                searchQuery={searchQuery}
+                onPropertySelect={setSelectedProperty}
+              />
+            </div>
+          )}
         </div>
-        
-        <div className="flex-1 p-6 overflow-auto">
-          <DocumentsContainer
-            selectedProperty={selectedProperty}
-            selectedFolder={selectedFolder}
-            searchQuery={searchQuery}
-            documents={documents}
-            documentsLoading={documentsLoading}
-            uploadDialogOpen={uploadDialogOpen}
-            fileUpload={fileUpload}
-            documentName={documentName}
-            documentDescription={documentDescription}
-            documentType={selectedFolder?.type || 'lease'}
-            uploadMutation={uploadMutation}
-            setSearchQuery={setSearchQuery}
-            setUploadDialogOpen={setUploadDialogOpen}
-            handleFileSelect={handleFileSelect}
-            handleUpload={handleUpload}
-            handleDownload={handleDownload}
-            handleDelete={handleDelete}
-            refetchDocuments={refetchDocuments}
-            setDocumentName={setDocumentName}
-            setDocumentDescription={setDocumentDescription}
-            setDocumentType={setDocumentType}
-            getFilteredDocuments={() => getFilteredDocuments(documents)}
-          />
-        </div>
-      </div>
+      </main>
     </div>
   );
 };
