@@ -38,7 +38,8 @@ export const addDocumentVersion = async (
       uploadDate: new Date().toISOString(),
       uploadedBy: (await supabase.auth.getUser()).data.user?.id || 'unknown',
       filePath: currentDoc.file_path,
-      versionNotes: notes
+      versionNotes: notes,
+      notes: notes // Include notes for backward compatibility
     };
     
     // Update previous versions array
@@ -105,7 +106,8 @@ export const getDocumentVersions = async (documentId: string): Promise<DocumentV
       uploadDate: data.upload_date,
       uploadedBy: data.user_id,
       filePath: data.file_path,
-      versionNotes: data.version_notes || undefined
+      versionNotes: data.version_notes || undefined,
+      notes: data.version_notes || undefined // Include notes for backward compatibility
     };
     
     // Previous versions

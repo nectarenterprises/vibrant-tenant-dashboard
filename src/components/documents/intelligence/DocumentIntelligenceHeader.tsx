@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Search, Filter, SortAsc, SortDesc, Calendar, Clock } from 'lucide-react';
+import { PlusCircle, Search, Filter, SortAsc, SortDesc, Calendar, Clock, Upload } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { 
   DropdownMenu,
@@ -18,6 +18,7 @@ interface DocumentIntelligenceHeaderProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   onUploadClick: () => void;
+  onBatchUploadClick: () => void;
   onSortChange: (sortBy: 'date' | 'name' | 'type', sortOrder: 'asc' | 'desc') => void;
   onFilterClick: () => void;
 }
@@ -26,6 +27,7 @@ const DocumentIntelligenceHeader: React.FC<DocumentIntelligenceHeaderProps> = ({
   searchQuery,
   setSearchQuery,
   onUploadClick,
+  onBatchUploadClick,
   onSortChange,
   onFilterClick
 }) => {
@@ -80,10 +82,24 @@ const DocumentIntelligenceHeader: React.FC<DocumentIntelligenceHeaderProps> = ({
             <Filter className="h-4 w-4" />
           </Button>
           
-          <Button onClick={onUploadClick}>
-            <PlusCircle className="h-4 w-4 mr-2" />
-            Upload
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>
+                <PlusCircle className="h-4 w-4 mr-2" />
+                Upload
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={onUploadClick}>
+                <PlusCircle className="h-4 w-4 mr-2" />
+                <span>Single Upload</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onBatchUploadClick}>
+                <Upload className="h-4 w-4 mr-2" />
+                <span>Batch Upload</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       

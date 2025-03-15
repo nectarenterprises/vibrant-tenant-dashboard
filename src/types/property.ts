@@ -41,7 +41,7 @@ export interface EventData {
   propertyName?: string;
 }
 
-export type DocumentType = 'lease' | 'utility' | 'compliance' | 'service-charge' | 'photo' | 'other';
+export type DocumentType = 'lease' | 'utility' | 'compliance' | 'service-charge' | 'photo' | 'other' | 'correspondence' | 'tax' | 'insurance';
 
 export interface PropertyDocument {
   id: string;
@@ -68,8 +68,8 @@ export interface PropertyDocument {
     rentReview?: string[];
   };
   notificationPeriod?: number; // in days
-  lastAccessed?: string; // Adding lastAccessed property to fix the type error
-  versionNotes?: string; // Also adding versionNotes for consistency
+  lastAccessed?: string;
+  versionNotes?: string;
 }
 
 export interface DocumentTag {

@@ -29,7 +29,7 @@ export interface DocumentFolder {
   type: FolderType;
   icon: string;
   description?: string;
-  propertyId?: string; // Added propertyId to match usage in folders.ts
+  propertyId?: string;
 }
 
 // Update DocumentType values in the record to match the types in PropertyDocument
@@ -39,7 +39,10 @@ export const DOCUMENT_TYPES: Record<FolderType, string> = {
   'compliance': 'Compliance Documents',
   'service-charge': 'Service Charge Documents',
   'photo': 'Property Photos',
-  'other': 'Other Documents'
+  'other': 'Other Documents',
+  'correspondence': 'Correspondence',
+  'tax': 'Tax Documents',
+  'insurance': 'Insurance Documents'
 };
 
 // Adding PropertyDocumentResponse type alias for the basic.ts file
@@ -57,14 +60,14 @@ export const transformToPropertyDocument = (record: any): PropertyDocument => {
       filePath: record.file_path || '',
       documentType: record.document_type || 'other',
       uploadDate: record.upload_date || new Date().toISOString(),
-      propertyId: record.property_id || '', // Changed to propertyId to match PropertyDocument type
+      propertyId: record.property_id || '',
       tags: Array.isArray(record.tags) ? record.tags : [],
       isFavorite: record.is_favorite || false,
       version: record.version || 1,
       expiryDate: record.expiry_date || undefined,
       keyDates: record.key_dates || {},
-      lastAccessed: record.last_accessed || undefined,
       notificationPeriod: record.notification_period || 0,
+      lastAccessed: record.last_accessed || undefined,
       versionNotes: record.version_notes || ''
     };
   } catch (error) {
@@ -77,7 +80,7 @@ export const transformToPropertyDocument = (record: any): PropertyDocument => {
       filePath: '',
       documentType: 'other',
       uploadDate: new Date().toISOString(),
-      propertyId: record.property_id || '', // Changed to propertyId to match PropertyDocument type
+      propertyId: record.property_id || '',
       tags: [],
       isFavorite: false,
       version: 1
