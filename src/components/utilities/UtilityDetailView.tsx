@@ -35,6 +35,28 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({ property, onBack 
     loadDocuments();
   }, [property.id]);
 
+  // Utility chart data (mock data that would come from property)
+  const utilityData = [
+    { month: 'Jan', electricityUsage: 320, electricityCost: 80, gasUsage: 250, gasCost: 125, waterUsage: 42, waterCost: 36 },
+    { month: 'Feb', electricityUsage: 300, electricityCost: 75, gasUsage: 280, gasCost: 140, waterUsage: 38, waterCost: 33 },
+    { month: 'Mar', electricityUsage: 340, electricityCost: 85, gasUsage: 220, gasCost: 110, waterUsage: 45, waterCost: 38 },
+    { month: 'Apr', electricityUsage: 280, electricityCost: 70, gasUsage: 180, gasCost: 90, waterUsage: 40, waterCost: 34 },
+    { month: 'May', electricityUsage: 290, electricityCost: 72.5, gasUsage: 160, gasCost: 80, waterUsage: 43, waterCost: 37 },
+    { month: 'Jun', electricityUsage: 350, electricityCost: 87.5, gasUsage: 140, gasCost: 70, waterUsage: 48, waterCost: 41 }
+  ];
+
+  const handleDownloadDocument = (document) => {
+    console.log('Download document:', document);
+  };
+
+  const handleDeleteDocument = (document) => {
+    console.log('Delete document:', document);
+  };
+
+  const handleUploadClick = () => {
+    console.log('Upload clicked');
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -60,20 +82,28 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({ property, onBack 
               <CardTitle>Utility Usage</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <UtilityChart property={property} />
+              <UtilityChart data={utilityData} />
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="bills" className="mt-6">
-          <UtilityBillDashboard property={property} />
+          <UtilityBillDashboard 
+            property={property}
+            utilityDocuments={documents}
+            documentsLoading={isLoadingDocuments}
+            onUploadClick={handleUploadClick}
+          />
         </TabsContent>
 
         <TabsContent value="documents" className="mt-6">
           <UtilityDocuments 
-            property={property} 
-            documents={documents} 
-            isLoading={isLoadingDocuments} 
+            utilityDocuments={documents}
+            documentsLoading={isLoadingDocuments}
+            documentType="utility"
+            onUploadClick={handleUploadClick}
+            onDownload={handleDownloadDocument}
+            onDelete={handleDeleteDocument}
           />
         </TabsContent>
       </Tabs>

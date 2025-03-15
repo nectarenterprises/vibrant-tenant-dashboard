@@ -183,14 +183,10 @@ const LeaseDialogs: React.FC<LeaseDialogsProps> = (props) => {
       <DocumentDialog 
         isOpen={showDocumentDialog}
         onOpenChange={setShowDocumentDialog}
-        selectedFile={selectedFile}
-        setSelectedFile={setSelectedFile}
-        documentType={documentType}
-        setDocumentType={setDocumentType}
-        documentName={documentName}
-        setDocumentName={setDocumentName}
         propertyId={propertyId}
-        onDocumentUploaded={onDocumentUploaded}
+        initialFile={selectedFile}
+        initialDocumentType={documentType}
+        onDocumentUploaded={onDocumentUploaded || (() => {})}
       />
       
       <PremisesScheduleDialog 

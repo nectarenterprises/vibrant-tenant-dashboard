@@ -2,10 +2,9 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { UtilityData } from '@/types/property';
 
 interface UtilityChartProps {
-  data: UtilityData[];
+  data: any[];
 }
 
 const UtilityChart: React.FC<UtilityChartProps> = ({ data }) => {

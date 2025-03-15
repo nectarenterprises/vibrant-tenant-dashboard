@@ -63,6 +63,6 @@ export const getPropertyDocuments = async (propertyId: string) => {
     throw new Error('Property ID is required');
   }
   
-  // Use the existing getDocuments function with just propertyId
+  // Use the existing getDocuments function with propertyId
   return getDocuments(propertyId);
 };

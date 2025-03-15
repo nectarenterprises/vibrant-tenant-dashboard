@@ -71,6 +71,7 @@ const DocumentDialog: React.FC<DocumentDialogProps> = ({
 
       await uploadDocument({
         file: selectedFile,
+        propertyId,
         name: documentName,
         type: documentType,
         description: documentDescription
@@ -116,8 +117,8 @@ const DocumentDialog: React.FC<DocumentDialogProps> = ({
           />
 
           <DocumentDescriptionField
-            description={documentDescription}
-            setDescription={handleDescriptionChange}
+            documentDescription={documentDescription}
+            setDocumentDescription={handleDescriptionChange}
           />
 
           <DocumentTypeSelector

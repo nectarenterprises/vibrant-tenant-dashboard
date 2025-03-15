@@ -4,12 +4,12 @@ import { Textarea } from '@/components/ui/textarea';
 
 interface DocumentDescriptionFieldProps {
   documentDescription: string;
-  onDescriptionChange: (description: string) => void;
+  setDocumentDescription: (description: string) => void;
 }
 
 const DocumentDescriptionField: React.FC<DocumentDescriptionFieldProps> = ({
   documentDescription,
-  onDescriptionChange
+  setDocumentDescription
 }) => {
   return (
     <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -19,7 +19,7 @@ const DocumentDescriptionField: React.FC<DocumentDescriptionFieldProps> = ({
       <Textarea 
         id="document-description" 
         value={documentDescription} 
-        onChange={(e) => onDescriptionChange(e.target.value)}
+        onChange={(e) => setDocumentDescription(e.target.value)}
         placeholder="Enter document description"
         rows={3}
       />

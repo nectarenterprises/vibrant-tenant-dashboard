@@ -34,7 +34,7 @@ export const getProperties = async (): Promise<Property[]> => {
     incentives: parseIncentives(item.incentives),
     createdAt: item.created_at,
     updatedAt: item.updated_at,
-    serviceChargeAmount: item.service_charge_amount,
+    serviceChargeAmount: item.service_charge_amount ? parseFloat(item.service_charge_amount) : undefined,
     leaseStart: item.lease_start,
     leaseType: item.lease_type
   }));
@@ -73,7 +73,7 @@ export const getProperty = async (id: string): Promise<Property> => {
     incentives: parseIncentives(data.incentives),
     createdAt: data.created_at,
     updatedAt: data.updated_at,
-    serviceChargeAmount: data.service_charge_amount,
+    serviceChargeAmount: data.service_charge_amount ? parseFloat(data.service_charge_amount) : undefined,
     leaseStart: data.lease_start,
     leaseType: data.lease_type
   };
@@ -127,7 +127,7 @@ export const createProperty = async (property: Partial<Property>): Promise<Prope
     incentives: parseIncentives(data.incentives),
     createdAt: data.created_at,
     updatedAt: data.updated_at,
-    serviceChargeAmount: data.service_charge_amount,
+    serviceChargeAmount: data.service_charge_amount ? parseFloat(data.service_charge_amount) : undefined,
     leaseStart: data.lease_start,
     leaseType: data.lease_type
   };

@@ -36,7 +36,7 @@ export const useDocumentQueries = (propertyId?: string, folderType?: FolderType)
     queryKey: ['recent-documents', propertyId],
     queryFn: async () => {
       if (!propertyId) return [];
-      return getRecentDocuments(propertyId);
+      return getRecentDocuments();
     },
     enabled: !!propertyId
   });
@@ -49,7 +49,7 @@ export const useDocumentQueries = (propertyId?: string, folderType?: FolderType)
     queryKey: ['expiring-documents', propertyId],
     queryFn: async () => {
       if (!propertyId) return [];
-      return getExpiringDocuments(propertyId, 30); // Next 30 days
+      return getExpiringDocuments();
     },
     enabled: !!propertyId
   });
