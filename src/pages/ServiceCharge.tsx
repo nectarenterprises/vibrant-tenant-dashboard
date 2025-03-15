@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Sidebar from '@/components/layout/Sidebar';
-import PropertyCard from '@/components/dashboard/PropertyCard';
 import { Property } from '@/types/property';
 import { cn } from '@/lib/utils';
-import { Search, BarChart3, PieChart, AlertTriangle, MessageSquare } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ServiceChargeDetails from '@/components/service-charge/ServiceChargeDetails';
 import ServiceChargeComparisonDashboard from '@/components/service-charge/ServiceChargeComparisonDashboard';
@@ -14,6 +12,8 @@ import ServiceChargeQueries from '@/components/service-charge/ServiceChargeQueri
 import ServiceChargeCategoryBreakdown from '@/components/service-charge/ServiceChargeCategoryBreakdown';
 import { useAuth } from '@/contexts/AuthContext';
 import { fetchUserProperties } from '@/services/property';
+import PropertySearch from '@/components/utilities/PropertySearch';
+import PropertyGrid from '@/components/utilities/PropertyGrid';
 
 const ServiceCharge = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -98,18 +98,10 @@ const ServiceCharge = () => {
           <h1 className="text-3xl font-bold mb-6">Service Charge</h1>
           
           {!selectedProperty && (
-            <div className="relative mb-6">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <Search className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <Input
-                type="text"
-                placeholder="Search properties..."
-                className="pl-10 bg-background"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
+            <PropertySearch
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+            />
           )}
 
           {selectedProperty ? (
@@ -124,30 +116,12 @@ const ServiceCharge = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {propertiesLoading ? (
-                <div className="col-span-full flex flex-col items-center justify-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-                  <p className="mt-4 text-muted-foreground">Loading properties...</p>
-                </div>
-              ) : filteredProperties.length > 0 ? (
-                filteredProperties.map((property, index) => (
-                  <div 
-                    key={property.id} 
-                    className="cursor-pointer transition-transform hover:scale-[1.02]"
-                    onClick={() => setSelectedProperty(property)}
-                  >
-                    <PropertyCard 
-                      property={property} 
-                      delay={index} 
-                    />
-                  </div>
-                ))
-              ) : (
-                <div className="col-span-full flex flex-col items-center justify-center py-12 text-muted-foreground">
-                  <Search className="h-12 w-12 mb-4 opacity-50" />
-                  <p>No properties found matching "{searchQuery}"</p>
-                </div>
-              )}
+              <PropertyGrid
+                filteredProperties={filteredProperties}
+                propertiesLoading={propertiesLoading}
+                searchQuery={searchQuery}
+                onPropertySelect={setSelectedProperty}
+              />
             </div>
           )}
         </div>
