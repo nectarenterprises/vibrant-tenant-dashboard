@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { PropertyDocument, DocumentType, DocumentTag } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
@@ -15,7 +14,7 @@ type PropertyDocumentResponse = {
   document_type: string;
   upload_date: string;
   tags: string | null;
-  is_favorite: boolean;
+  is_favorite: boolean | null;
   version: number;
   expiry_date: string | null;
   key_dates: string | null;
@@ -92,11 +91,11 @@ export const saveDocumentMetadata = async (
       filePath: data.file_path,
       documentType: data.document_type as DocumentType,
       uploadDate: data.upload_date,
-      tags: data.tags ? JSON.parse(data.tags) : undefined,
+      tags: data.tags ? JSON.parse(data.tags as string) : undefined,
       isFavorite: data.is_favorite || false,
       version: data.version || 1,
       expiryDate: data.expiry_date,
-      keyDates: data.key_dates ? JSON.parse(data.key_dates) : undefined,
+      keyDates: data.key_dates ? JSON.parse(data.key_dates as string) : undefined,
       notificationPeriod: data.notification_period
     };
 
@@ -281,9 +280,9 @@ export const deleteDocumentMetadata = async (documentId: string): Promise<boolea
   } catch (error: any) {
     toast({
       variant: "destructive",
-        title: "Delete failed",
-        description: error.message || "An error occurred while deleting the document metadata",
-      });
+      title: "Delete failed",
+      description: error.message || "An error occurred while deleting the document metadata",
+    });
     return false;
   }
 };
