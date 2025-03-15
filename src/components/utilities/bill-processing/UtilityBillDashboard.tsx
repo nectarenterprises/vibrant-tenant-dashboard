@@ -50,8 +50,8 @@ const UtilityBillDashboard: React.FC<UtilityBillDashboardProps> = ({
 }) => {
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const {
-    utilityBills,
-    isLoadingBills,
+    bills: utilityBills,
+    isLoading: isLoadingBills,
     selectedUtilityType,
     setSelectedUtilityType,
     getUtilityUsageData,

@@ -4,22 +4,21 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { UtilityBill, UtilityType } from '@/types/utility';
 
-export const useUtilityBills = (propertyId: string, utilityType?: UtilityType) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+type UtilityFilterType = UtilityType | 'all';
+
+export const useUtilityBills = (propertyId: string) => {
+  const [selectedUtilityType, setSelectedUtilityType] = useState<UtilityFilterType>('all');
 
   const fetchUtilityBills = async (): Promise<UtilityBill[]> => {
     try {
-      setIsLoading(true);
-      
       let query = supabase
         .from('utility_bills')
         .select('*')
         .eq('property_id', propertyId)
         .order('bill_date', { ascending: false });
       
-      if (utilityType) {
-        query = query.eq('utility_type', utilityType);
+      if (selectedUtilityType !== 'all') {
+        query = query.eq('utility_type', selectedUtilityType);
       }
       
       const { data, error } = await query;
@@ -49,22 +48,110 @@ export const useUtilityBills = (propertyId: string, utilityType?: UtilityType) =
       
       return bills;
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('An unknown error occurred'));
-      return [];
-    } finally {
-      setIsLoading(false);
+      console.error('Error fetching utility bills:', err);
+      throw err;
     }
   };
 
   const { data: bills = [], ...queryResult } = useQuery({
-    queryKey: ['utilityBills', propertyId, utilityType],
+    queryKey: ['utilityBills', propertyId, selectedUtilityType],
     queryFn: fetchUtilityBills
   });
 
+  // Function to get utility usage data for charts
+  const getUtilityUsageData = (utilityType: UtilityType) => {
+    return bills
+      .filter(bill => bill.utilityType === utilityType)
+      .map(bill => ({
+        period: `${new Date(bill.periodStart).toLocaleDateString('default', { month: 'short' })} - ${new Date(bill.periodEnd).toLocaleDateString('default', { month: 'short' })}`,
+        usage: bill.usageQuantity || 0,
+        cost: bill.totalAmount
+      }))
+      .slice(0, 6)
+      .reverse();
+  };
+
+  // Function to get utility cost data for charts
+  const getUtilityCostData = () => {
+    const costMap = new Map();
+    
+    bills.forEach(bill => {
+      const month = new Date(bill.billDate).toLocaleDateString('default', { month: 'short', year: 'numeric' });
+      
+      if (!costMap.has(month)) {
+        costMap.set(month, {
+          month,
+          electricity: 0,
+          gas: 0,
+          water: 0,
+          other: 0
+        });
+      }
+      
+      const entry = costMap.get(month);
+      entry[bill.utilityType] += bill.totalAmount;
+    });
+    
+    return Array.from(costMap.values())
+      .sort((a, b) => {
+        const dateA = new Date(a.month);
+        const dateB = new Date(b.month);
+        return dateA.getTime() - dateB.getTime();
+      })
+      .slice(-6);
+  };
+
+  // Function to detect anomalies in utility bills
+  const detectAnomalies = () => {
+    const anomalies = [];
+    const utilityTypes: UtilityType[] = ['electricity', 'gas', 'water'];
+    
+    for (const type of utilityTypes) {
+      const typeData = bills
+        .filter(bill => bill.utilityType === type)
+        .sort((a, b) => new Date(a.billDate).getTime() - new Date(b.billDate).getTime());
+      
+      if (typeData.length >= 2) {
+        const latest = typeData[typeData.length - 1];
+        const previous = typeData[typeData.length - 2];
+        
+        // Check for significant increases in cost
+        if (latest.totalAmount > previous.totalAmount * 1.3) {
+          anomalies.push({
+            id: latest.id,
+            utilityBillId: latest.id,
+            anomalyType: 'cost_increase',
+            severity: 'medium',
+            description: `${type.charAt(0).toUpperCase() + type.slice(1)} bill increased by ${Math.round((latest.totalAmount / previous.totalAmount - 1) * 100)}%`,
+            detectedAt: new Date().toISOString()
+          });
+        }
+        
+        // Check for significant increases in usage
+        if (latest.usageQuantity && previous.usageQuantity && latest.usageQuantity > previous.usageQuantity * 1.3) {
+          anomalies.push({
+            id: latest.id + '_usage',
+            utilityBillId: latest.id,
+            anomalyType: 'usage_increase',
+            severity: 'high',
+            description: `${type.charAt(0).toUpperCase() + type.slice(1)} usage increased by ${Math.round((latest.usageQuantity / previous.usageQuantity - 1) * 100)}%`,
+            detectedAt: new Date().toISOString()
+          });
+        }
+      }
+    }
+    
+    return anomalies;
+  };
+
   return {
     bills,
-    isLoading: queryResult.isLoading || isLoading,
-    error: queryResult.error || error,
+    isLoadingBills: queryResult.isLoading,
+    selectedUtilityType,
+    setSelectedUtilityType,
+    getUtilityUsageData,
+    getUtilityCostData,
+    detectAnomalies,
     ...queryResult
   };
 };
