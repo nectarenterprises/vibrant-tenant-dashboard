@@ -1,10 +1,8 @@
 
 import React from 'react';
 import { Property } from '@/types/property';
-import ServiceChargeSummaryCard from './ServiceChargeSummaryCard';
-import ChargeBreakdownCard from './ChargeBreakdownCard';
-import BillingHistoryCard from './BillingHistoryCard';
-import ServiceDetailsCard from './ServiceDetailsCard';
+import ServiceChargeOverview from './content/ServiceChargeOverview';
+import ServiceChargeDetails from './content/ServiceChargeDetails';
 
 interface ServiceChargeContentProps {
   property: Property;
@@ -23,19 +21,12 @@ const ServiceChargeContent: React.FC<ServiceChargeContentProps> = ({
 }) => {
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <ServiceChargeSummaryCard 
-          totalServiceCharge={totalServiceCharge}
-          rentalFee={property.rentalFee}
-          serviceChargesLength={serviceCharges.length}
-        />
-        <ChargeBreakdownCard serviceCharges={serviceCharges} />
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        <BillingHistoryCard totalServiceCharge={totalServiceCharge} />
-        <ServiceDetailsCard />
-      </div>
+      <ServiceChargeOverview 
+        property={property}
+        serviceCharges={serviceCharges}
+        totalServiceCharge={totalServiceCharge}
+      />
+      <ServiceChargeDetails totalServiceCharge={totalServiceCharge} />
     </>
   );
 };
