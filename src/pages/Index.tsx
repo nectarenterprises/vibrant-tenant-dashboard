@@ -4,9 +4,7 @@ import WelcomeHeader from '@/components/dashboard/WelcomeHeader';
 import PropertyCard from '@/components/dashboard/PropertyCard';
 import CalendarWidget from '@/components/dashboard/CalendarWidget';
 import UtilityChart from '@/components/dashboard/UtilityChart';
-import Sidebar from '@/components/layout/Sidebar';
 import { Property, UtilityData } from '@/types/property';
-import { cn } from '@/lib/utils';
 import { fetchUserProperties, fetchPropertyEvents } from '@/services/property';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -50,7 +48,6 @@ const mockUtilityData: UtilityData[] = [
 ];
 
 const Index = () => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { user } = useAuth();
   
   const { data: properties = [], isLoading: propertiesLoading } = useQuery({
@@ -87,53 +84,44 @@ const Index = () => {
   }
   
   return (
-    <div className="min-h-screen bg-background flex">
-      <Sidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
-      
-      <main 
-        className={cn(
-          "flex-1 transition-all duration-300 ease-in-out",
-          sidebarCollapsed ? "ml-20" : "ml-64"
-        )}
-      >
-        <div className="container mx-auto p-6">
-          <WelcomeHeader userName={user.email?.split('@')[0] || 'User'} />
-          
-          <h2 className="text-xl font-semibold mb-4">Your Properties</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div className="lg:col-span-2">
-              {propertiesLoading ? (
-                <div className="flex items-center justify-center h-40">
-                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-                </div>
-              ) : uniqueProperties.length === 0 ? (
-                <div className="text-center py-10 bg-muted rounded-lg">
-                  <h3 className="text-lg font-medium mb-2">No properties found</h3>
-                  <p className="text-muted-foreground">Add your first property to get started.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {uniqueProperties.map((property, index) => (
-                    <PropertyCard 
-                      key={property.id} 
-                      property={property} 
-                      delay={index}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            <div>
-              <CalendarWidget events={events} properties={uniqueProperties} />
-            </div>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto p-6">
+        <WelcomeHeader userName={user.email?.split('@')[0] || 'User'} />
+        
+        <h2 className="text-xl font-semibold mb-4">Your Properties</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="lg:col-span-2">
+            {propertiesLoading ? (
+              <div className="flex items-center justify-center h-40">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+              </div>
+            ) : uniqueProperties.length === 0 ? (
+              <div className="text-center py-10 bg-muted rounded-lg">
+                <h3 className="text-lg font-medium mb-2">No properties found</h3>
+                <p className="text-muted-foreground">Add your first property to get started.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {uniqueProperties.map((property, index) => (
+                  <PropertyCard 
+                    key={property.id} 
+                    property={property} 
+                    delay={index}
+                  />
+                ))}
+              </div>
+            )}
           </div>
           
-          <div className="mt-8">
-            <UtilityChart data={mockUtilityData} properties={uniqueProperties} />
+          <div>
+            <CalendarWidget events={events} properties={uniqueProperties} />
           </div>
         </div>
-      </main>
+        
+        <div className="mt-8">
+          <UtilityChart data={mockUtilityData} properties={uniqueProperties} />
+        </div>
+      </div>
     </div>
   );
 };

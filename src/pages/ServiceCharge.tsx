@@ -1,9 +1,7 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import Sidebar from '@/components/layout/Sidebar';
 import { Property } from '@/types/property';
-import { cn } from '@/lib/utils';
 import { BarChart3, PieChart, AlertTriangle, MessageSquare, Calculator } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ServiceChargeDetails from '@/components/service-charge/ServiceChargeDetails';
@@ -18,7 +16,6 @@ import PropertySearch from '@/components/utilities/PropertySearch';
 import PropertyGrid from '@/components/utilities/PropertyGrid';
 
 const ServiceCharge = () => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [activeTab, setActiveTab] = useState('details');
@@ -95,47 +92,38 @@ const ServiceCharge = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
-      <Sidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
-      
-      <main 
-        className={cn(
-          "flex-1 transition-all duration-300 ease-in-out",
-          sidebarCollapsed ? "ml-20" : "ml-64"
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto p-6">
+        <h1 className="text-3xl font-bold mb-6">Service Charge</h1>
+        
+        {!selectedProperty && (
+          <PropertySearch
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+          />
         )}
-      >
-        <div className="container mx-auto p-6">
-          <h1 className="text-3xl font-bold mb-6">Service Charge</h1>
-          
-          {!selectedProperty && (
-            <PropertySearch
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-            />
-          )}
 
-          {selectedProperty ? (
-            <div>
-              <button 
-                onClick={() => setSelectedProperty(null)}
-                className="mb-4 text-sm flex items-center gap-1 text-tenant-green hover:text-tenant-darkGreen transition-colors"
-              >
-                ← Back to all properties
-              </button>
-              {renderTabContent()}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <PropertyGrid
-                filteredProperties={filteredProperties}
-                propertiesLoading={propertiesLoading}
-                searchQuery={searchQuery}
-                onPropertySelect={setSelectedProperty}
-              />
-            </div>
-          )}
-        </div>
-      </main>
+        {selectedProperty ? (
+          <div>
+            <button 
+              onClick={() => setSelectedProperty(null)}
+              className="mb-4 text-sm flex items-center gap-1 text-tenant-green hover:text-tenant-darkGreen transition-colors"
+            >
+              ← Back to all properties
+            </button>
+            {renderTabContent()}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <PropertyGrid
+              filteredProperties={filteredProperties}
+              propertiesLoading={propertiesLoading}
+              searchQuery={searchQuery}
+              onPropertySelect={setSelectedProperty}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
