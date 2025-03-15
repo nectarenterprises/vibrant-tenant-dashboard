@@ -1,12 +1,37 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { PropertyDocument } from '@/types/property';
+import { updateDocumentAccessTimestamp } from './metadata';
+
+/**
+ * Get a download URL for a file in Supabase storage
+ * @param path Path to the file
+ * @returns Download URL or error
+ */
+export const getFileDownloadUrl = async (path: string) => {
+  try {
+    const { data, error } = await supabase.storage
+      .from('documents')
+      .createSignedUrl(path, 60); // URL valid for 60 seconds
+
+    if (error) {
+      throw error;
+    }
+
+    return data?.signedUrl;
+  } catch (error) {
+    console.error('Error getting download URL:', error);
+    throw error;
+  }
+};
 
 /**
  * Download a file from Supabase storage
- * @param path Path of the file to download
- * @returns Download result with data or error
+ * @param path Path to the file
+ * @param filename Filename to save as
+ * @returns Download result or error
  */
-export const downloadFile = async (path: string) => {
+export const downloadFile = async (path: string, filename: string) => {
   try {
     const { data, error } = await supabase.storage
       .from('documents')
@@ -16,7 +41,16 @@ export const downloadFile = async (path: string) => {
       throw error;
     }
 
-    return { data };
+    // Create a download link
+    const url = window.URL.createObjectURL(data);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    return { success: true };
   } catch (error) {
     console.error('Error downloading file:', error);
     throw error;
@@ -24,24 +58,22 @@ export const downloadFile = async (path: string) => {
 };
 
 /**
- * Get a signed URL for a file in Supabase storage
- * @param path Path of the file
- * @param expiresIn Expiration time in seconds (default: 60)
- * @returns Signed URL for the file
+ * Download a document and update access timestamp
  */
-export const getFileDownloadUrl = async (path: string, expiresIn: number = 60) => {
+export const downloadDocument = async (document: PropertyDocument) => {
   try {
-    const { data, error } = await supabase.storage
-      .from('documents')
-      .createSignedUrl(path, expiresIn);
-
-    if (error) {
-      throw error;
-    }
-
-    return data.signedUrl;
+    // First update the access timestamp
+    await updateDocumentAccessTimestamp(document.id);
+    
+    // Then download the file
+    return await downloadFile(document.filePath, document.name);
   } catch (error) {
-    console.error('Error getting download URL:', error);
+    console.error('Error downloading document:', error);
     throw error;
   }
 };
+
+/**
+ * Export compatibility aliases
+ */
+export { downloadFile, getFileDownloadUrl, downloadDocument };

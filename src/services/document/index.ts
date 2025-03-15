@@ -1,11 +1,12 @@
 
-// Import from the correct services instead of non-existent functions
-import { uploadFile } from './fileUpload';
+// Import from the correct services
+import { uploadFile, uploadPropertyDocument, uploadDocument } from './fileUpload';
 import { 
   downloadFile, 
-  getFileDownloadUrl 
+  getFileDownloadUrl,
+  downloadDocument
 } from './fileDownload';
-import { deleteFile } from './fileDelete';
+import { deleteFile, deleteDocument } from './fileDelete';
 import {
   updateFileMetadata,
   replaceFile
@@ -14,19 +15,29 @@ import {
   getDocuments, 
   searchDocuments, 
   getDocumentById,
-  getDocumentsByFolderId
+  getDocumentsByFolderId,
+  getRecentDocuments,
+  getExpiringDocuments
 } from './fileQuery';
+import { recordDocumentAccess } from './access';
 
 // Export all functions
 export {
   uploadFile,
+  uploadPropertyDocument,
+  uploadDocument,
   downloadFile,
   getFileDownloadUrl,
+  downloadDocument,
   deleteFile,
+  deleteDocument,
   updateFileMetadata,
   replaceFile,
   getDocuments,
   searchDocuments,
   getDocumentById,
-  getDocumentsByFolderId
+  getDocumentsByFolderId,
+  getRecentDocuments,
+  getExpiringDocuments,
+  recordDocumentAccess
 };
