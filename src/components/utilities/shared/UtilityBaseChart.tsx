@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { StyledLineChart, TENANT_COLORS } from '@/components/ui/styled-chart';
+import { StyledLineChart, TENANT_COLORS } from '@/components/ui/charts';
 
 export interface UtilityBaseChartProps {
   data: Array<{ month: string; usage: number; cost: number }>;

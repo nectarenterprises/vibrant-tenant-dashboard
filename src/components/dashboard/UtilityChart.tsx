@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { UtilityData, Property } from '@/types/property';
 import UtilityToggleButtons from './charts/UtilityToggleButtons';
 import PropertySelector from './charts/PropertySelector';
-import { StyledAreaChart, TENANT_COLORS } from '@/components/ui/styled-chart';
+import { StyledAreaChart, TENANT_COLORS } from '@/components/ui/charts';
 
 interface UtilityChartProps {
   data: UtilityData[];

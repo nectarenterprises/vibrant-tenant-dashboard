@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { CategoryData } from '../types';
-import { StyledBarChart } from '@/components/ui/styled-chart';
+import { StyledBarChart } from '@/components/ui/charts';
 
 interface BarChartViewProps {
   data: CategoryData[];

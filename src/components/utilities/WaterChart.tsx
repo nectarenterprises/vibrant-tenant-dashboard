@@ -2,7 +2,7 @@
 import React from 'react';
 import { Droplets } from 'lucide-react';
 import UtilityBaseChart from './shared/UtilityBaseChart';
-import { TENANT_COLORS } from '@/components/ui/styled-chart';
+import { TENANT_COLORS } from '@/components/ui/charts';
 
 // Mock data for water usage
 const mockWaterData = [

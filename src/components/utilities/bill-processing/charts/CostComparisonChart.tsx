@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Upload } from 'lucide-react';
-import { StyledBarChart, TENANT_COLORS } from '@/components/ui/styled-chart';
+import { StyledBarChart, TENANT_COLORS } from '@/components/ui/charts';
 
 interface CostComparisonChartProps {
   data: any[];

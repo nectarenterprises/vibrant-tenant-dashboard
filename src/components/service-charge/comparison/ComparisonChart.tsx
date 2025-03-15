@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ServiceChargeComparisonItem } from './types';
-import { StyledBarChart, TENANT_COLORS } from '@/components/ui/styled-chart';
+import { StyledBarChart, TENANT_COLORS } from '@/components/ui/charts';
 
 interface ComparisonChartProps {
   data: ServiceChargeComparisonItem[];

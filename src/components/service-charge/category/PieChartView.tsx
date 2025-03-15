@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { CategoryData } from '../types';
-import { StyledPieChart } from '@/components/ui/styled-chart';
+import { StyledPieChart } from '@/components/ui/charts';
 
 interface PieChartViewProps {
   data: CategoryData[];
