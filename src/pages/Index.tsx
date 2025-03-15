@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import WelcomeHeader from '@/components/dashboard/WelcomeHeader';
@@ -10,7 +9,6 @@ import { Property, UtilityData } from '@/types/property';
 import { cn } from '@/lib/utils';
 import { fetchUserProperties, fetchPropertyEvents } from '@/services/property';
 import { useAuth } from '@/contexts/AuthContext';
-import { BentoHero } from '@/components/ui/bento-demo';
 
 const mockUtilityData: UtilityData[] = [
   { 
@@ -94,7 +92,7 @@ const Index = () => {
       
       <main 
         className={cn(
-          "flex-1 transition-all duration-300 ease-in-out overflow-auto",
+          "flex-1 transition-all duration-300 ease-in-out",
           sidebarCollapsed ? "ml-20" : "ml-64"
         )}
       >
@@ -130,8 +128,6 @@ const Index = () => {
               <CalendarWidget events={events} properties={uniqueProperties} />
             </div>
           </div>
-          
-          <BentoHero />
           
           <div className="mt-8">
             <UtilityChart data={mockUtilityData} properties={uniqueProperties} />

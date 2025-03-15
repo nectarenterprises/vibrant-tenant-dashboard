@@ -29,16 +29,6 @@
     --sidebar-foreground: 0 0% 100%;
     --sidebar-accent: 130 40% 30%;
     --sidebar-border: 120 30% 35%;
-    
-    /* Aurora variables */
-    --white: rgb(255 255 255);
-    --black: rgb(0 0 0);
-    --transparent: transparent;
-    --blue-300: rgb(147 197 253);
-    --blue-400: rgb(96 165 250);
-    --blue-500: rgb(59 130 246);
-    --indigo-300: rgb(165 180 252);
-    --violet-200: rgb(221 214 254);
   }
 
   .dark {
@@ -109,34 +99,4 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  
-  @keyframes aurora {
-    0% {
-      background-position: 0% 0%, 0% 0%;
-    }
-    50% {
-      background-position: 100% 100%, 0% 100%;
-    }
-    100% {
-      background-position: 0% 0%, 0% 0%;
-    }
-  }
-  
-  .animate-aurora {
-    animation: aurora 15s linear infinite;
-  }
-  
-  /* Bento grid animations */
-  .bento-hover {
-    @apply transition-all duration-300 hover:translate-y-[-5px] hover:shadow-lg;
-  }
-  
-  .bento-gradient {
-    @apply bg-gradient-to-br from-white/50 to-transparent dark:from-white/10 dark:to-transparent;
-  }
-}
-
-/* Add dark mode transition for all elements */
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
