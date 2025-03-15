@@ -2,36 +2,68 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, File } from 'lucide-react';
+import { Download, File, Upload } from 'lucide-react';
 import { PropertyDocument } from '@/types/property';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 interface DocumentsListProps {
   title: string;
   documents: PropertyDocument[];
   isLoading: boolean;
   onDownload: (document: PropertyDocument) => void;
+  onUpload?: () => void;
 }
 
 const DocumentsList: React.FC<DocumentsListProps> = ({
   title,
   documents,
   isLoading,
-  onDownload
+  onDownload,
+  onUpload
 }) => {
+  const renderSkeletonItems = () => (
+    Array(3).fill(0).map((_, index) => (
+      <div key={index} className="flex items-center justify-between p-3 border rounded-md">
+        <div className="space-y-2">
+          <Skeleton className="h-5 w-52" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <Skeleton className="h-9 w-28" />
+      </div>
+    ))
+  );
+
   return (
     <Card>
-      <CardHeader className="pb-2">
+      <CardHeader className={cn("pb-2", onUpload && "flex flex-row items-center justify-between")}>
         <CardTitle className="text-lg">{title} Invoices</CardTitle>
+        {onUpload && (
+          <Button size="sm" onClick={onUpload}>
+            <Upload className="h-4 w-4 mr-2" />
+            Upload
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="flex items-center justify-center h-24">
-            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
+          <div className="space-y-3">
+            {renderSkeletonItems()}
           </div>
         ) : documents.length === 0 ? (
           <div className="text-center py-8 border rounded-md border-dashed">
             <File className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-            <p className="text-muted-foreground">No invoices found</p>
+            <p className="text-muted-foreground mb-2">No invoices found</p>
+            {onUpload && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={onUpload}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Upload Invoice
+              </Button>
+            )}
           </div>
         ) : (
           <div className="space-y-3">

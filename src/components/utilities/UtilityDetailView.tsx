@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { PropertyDocument } from '@/types/property';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, Upload } from 'lucide-react';
 import UtilityBaseChart from './shared/UtilityBaseChart';
 import { getPropertyDocuments } from '@/services/FileStorageService';
 import { toast } from '@/components/ui/use-toast';
@@ -24,6 +24,8 @@ interface UtilityDetailViewProps {
   onBack: () => void;
   propertyId: string;
   utilityType: 'electricity' | 'water' | 'gas';
+  isLoading?: boolean;
+  onUploadBill?: () => void;
 }
 
 const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
@@ -37,28 +39,30 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
   usageUnit,
   onBack,
   propertyId,
-  utilityType
+  utilityType,
+  isLoading = false,
+  onUploadBill
 }) => {
   const [utilityDocuments, setUtilityDocuments] = useState<PropertyDocument[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isDocumentsLoading, setIsDocumentsLoading] = useState(true);
 
   // Calculate stats
   const totalUsage = data.reduce((acc, item) => acc + item.usage, 0);
   const totalCost = data.reduce((acc, item) => acc + item.cost, 0);
-  const averageUsage = totalUsage / data.length || 0;
-  const averageCost = totalCost / data.length || 0;
+  const averageUsage = totalUsage / (data.length || 1);
+  const averageCost = totalCost / (data.length || 1);
 
   useEffect(() => {
     const fetchUtilityDocuments = async () => {
       if (!propertyId) return;
       
-      setIsLoading(true);
+      setIsDocumentsLoading(true);
       try {
         // Fetch documents of type 'utility'
         const documents = await getPropertyDocuments(propertyId, 'utility');
         // Filter documents based on utility type
         const filteredDocs = documents.filter(doc => {
-          const searchText = `${doc.name.toLowerCase()} ${doc.description?.toLowerCase() || ''}`;
+          const searchText = `${doc.name?.toLowerCase() || ''} ${doc.description?.toLowerCase() || ''}`;
           return searchText.includes(utilityType.toLowerCase());
         });
         
@@ -66,7 +70,7 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
       } catch (error) {
         console.error('Error fetching utility documents:', error);
       } finally {
-        setIsLoading(false);
+        setIsDocumentsLoading(false);
       }
     };
 
@@ -110,6 +114,7 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
         primaryColor={primaryColor}
         secondaryColor={secondaryColor}
         usageUnit={usageUnit}
+        isLoading={isLoading}
       />
       
       <StatsCards
@@ -118,15 +123,21 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
         averageUsage={averageUsage}
         averageCost={averageCost}
         usageUnit={usageUnit}
+        isLoading={isLoading}
       />
 
-      <UtilityDataTable data={data} usageUnit={usageUnit} />
+      <UtilityDataTable 
+        data={data} 
+        usageUnit={usageUnit}
+        isLoading={isLoading} 
+      />
 
       <DocumentsList
         title={title}
         documents={utilityDocuments}
-        isLoading={isLoading}
+        isLoading={isDocumentsLoading}
         onDownload={handleDownloadDocument}
+        onUpload={onUploadBill}
       />
     </div>
   );

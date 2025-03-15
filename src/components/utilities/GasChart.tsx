@@ -4,10 +4,18 @@ import { Flame } from 'lucide-react';
 import UtilityBaseChart from './shared/UtilityBaseChart';
 import { TENANT_COLORS } from '@/components/ui/charts';
 
-const GasChart: React.FC = () => {
+interface GasChartProps {
+  data?: Array<{ month: string; usage: number; cost: number }>;
+  isLoading?: boolean;
+}
+
+const GasChart: React.FC<GasChartProps> = ({ 
+  data = [],
+  isLoading = false
+}) => {
   return (
     <UtilityBaseChart
-      data={[]}
+      data={data}
       title="Gas Usage & Cost"
       Icon={Flame}
       iconColor="text-tenant-orange"
@@ -15,6 +23,7 @@ const GasChart: React.FC = () => {
       primaryColor={TENANT_COLORS.chartGreen}
       secondaryColor="#C2410C"
       usageUnit="m³"
+      isLoading={isLoading}
     />
   );
 };

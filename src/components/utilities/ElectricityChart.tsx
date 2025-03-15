@@ -4,10 +4,18 @@ import { Zap } from 'lucide-react';
 import UtilityBaseChart from './shared/UtilityBaseChart';
 import { TENANT_COLORS } from '@/components/ui/charts';
 
-const ElectricityChart: React.FC = () => {
+interface ElectricityChartProps {
+  data?: Array<{ month: string; usage: number; cost: number }>;
+  isLoading?: boolean;
+}
+
+const ElectricityChart: React.FC<ElectricityChartProps> = ({ 
+  data = [],
+  isLoading = false
+}) => {
   return (
     <UtilityBaseChart
-      data={[]}
+      data={data}
       title="Electricity Usage & Cost"
       Icon={Zap}
       iconColor="text-tenant-purple"
@@ -15,6 +23,7 @@ const ElectricityChart: React.FC = () => {
       primaryColor={TENANT_COLORS.chartGreen}
       secondaryColor="#4C1D95"
       usageUnit="kWh"
+      isLoading={isLoading}
     />
   );
 };

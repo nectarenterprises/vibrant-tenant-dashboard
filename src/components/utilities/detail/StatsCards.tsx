@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface StatsData {
   totalUsage: number;
@@ -8,6 +9,7 @@ interface StatsData {
   averageUsage: number;
   averageCost: number;
   usageUnit: string;
+  isLoading?: boolean;
 }
 
 const StatsCards: React.FC<StatsData> = ({
@@ -15,7 +17,8 @@ const StatsCards: React.FC<StatsData> = ({
   totalCost,
   averageUsage,
   averageCost,
-  usageUnit
+  usageUnit,
+  isLoading = false
 }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -24,7 +27,13 @@ const StatsCards: React.FC<StatsData> = ({
           <CardTitle className="text-sm text-muted-foreground">Total Usage</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold">{totalUsage.toLocaleString()} {usageUnit}</p>
+          {isLoading ? (
+            <Skeleton className="h-8 w-28" />
+          ) : (
+            <p className="text-2xl font-bold" data-test-id="total-usage">
+              {totalUsage ? totalUsage.toLocaleString() : "0"} {usageUnit}
+            </p>
+          )}
         </CardContent>
       </Card>
       <Card>
@@ -32,7 +41,13 @@ const StatsCards: React.FC<StatsData> = ({
           <CardTitle className="text-sm text-muted-foreground">Total Cost</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold">£{totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+          {isLoading ? (
+            <Skeleton className="h-8 w-28" />
+          ) : (
+            <p className="text-2xl font-bold" data-test-id="total-cost">
+              £{totalCost ? totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}
+            </p>
+          )}
         </CardContent>
       </Card>
       <Card>
@@ -40,7 +55,13 @@ const StatsCards: React.FC<StatsData> = ({
           <CardTitle className="text-sm text-muted-foreground">Avg. Monthly Usage</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold">{averageUsage.toLocaleString(undefined, { maximumFractionDigits: 0 })} {usageUnit}</p>
+          {isLoading ? (
+            <Skeleton className="h-8 w-28" />
+          ) : (
+            <p className="text-2xl font-bold" data-test-id="avg-usage">
+              {averageUsage ? averageUsage.toLocaleString(undefined, { maximumFractionDigits: 0 }) : "0"} {usageUnit}
+            </p>
+          )}
         </CardContent>
       </Card>
       <Card>
@@ -48,7 +69,13 @@ const StatsCards: React.FC<StatsData> = ({
           <CardTitle className="text-sm text-muted-foreground">Avg. Monthly Cost</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold">£{averageCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+          {isLoading ? (
+            <Skeleton className="h-8 w-28" />
+          ) : (
+            <p className="text-2xl font-bold" data-test-id="avg-cost">
+              £{averageCost ? averageCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>
