@@ -4,6 +4,7 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster"
 
 import { useAuth } from './contexts/AuthContext';
+import { RoleProvider } from './contexts/RoleContext';
 
 import Index from './pages/Index';
 import Auth from './pages/Auth';
@@ -16,7 +17,10 @@ import Compliance from './pages/Compliance';
 import Utilities from './pages/Utilities';
 import Calendar from './pages/Calendar';
 import Reports from './pages/Reports';
+import UserManagement from './pages/UserManagement';
 import Sidebar from './components/layout/Sidebar';
+import RoleProtectedRoute from './components/auth/RoleProtectedRoute';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 function App() {
   const { session, user, loading: authLoading } = useAuth();
@@ -36,14 +40,6 @@ function App() {
     }
   }, [loading, session, navigate, location]);
 
-  const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-    if (!loading && !session) {
-      return null;
-    }
-
-    return <>{children}</>;
-  };
-
   if (loading || authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -54,27 +50,30 @@ function App() {
 
   // We're removing the sidebar from individual pages and adding it globally here
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {session && <Sidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />}
-      
-      <div className={`transition-all duration-300 ease-in-out ${session ? (sidebarCollapsed ? "ml-20" : "ml-64") : ""}`}>
-        <Routes>
-          <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-          <Route path="/leases" element={<ProtectedRoute><Leases /></ProtectedRoute>} />
-          <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
-          <Route path="/documents/category/:category" element={<ProtectedRoute><DocumentCategory /></ProtectedRoute>} />
-          <Route path="/service-charge" element={<ProtectedRoute><ServiceCharge /></ProtectedRoute>} />
-          <Route path="/compliance" element={<ProtectedRoute><Compliance /></ProtectedRoute>} />
-          <Route path="/utilities" element={<ProtectedRoute><Utilities /></ProtectedRoute>} />
-          <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
-          <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
+    <RoleProvider>
+      <div className="min-h-screen bg-background text-foreground">
+        {session && <Sidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />}
+        
+        <div className={`transition-all duration-300 ease-in-out ${session ? (sidebarCollapsed ? "ml-20" : "ml-64") : ""}`}>
+          <Routes>
+            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/leases" element={<ProtectedRoute><Leases /></ProtectedRoute>} />
+            <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
+            <Route path="/documents/category/:category" element={<ProtectedRoute><DocumentCategory /></ProtectedRoute>} />
+            <Route path="/service-charge" element={<ProtectedRoute><ServiceCharge /></ProtectedRoute>} />
+            <Route path="/compliance" element={<ProtectedRoute><Compliance /></ProtectedRoute>} />
+            <Route path="/utilities" element={<ProtectedRoute><Utilities /></ProtectedRoute>} />
+            <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+            <Route path="/reports" element={<RoleProtectedRoute requiredRole="admin"><Reports /></RoleProtectedRoute>} />
+            <Route path="/users" element={<RoleProtectedRoute requiredRole="admin"><UserManagement /></RoleProtectedRoute>} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
 
-      <Toaster />
-    </div>
+        <Toaster />
+      </div>
+    </RoleProvider>
   );
 }
 
