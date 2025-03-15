@@ -4,7 +4,7 @@ import { Property, Incentive, DocumentType } from '@/types/property';
 import { Card, CardContent } from '@/components/ui/card';
 import LeaseContent from './LeaseContent';
 import LeaseDialogs, { LeaseDialogsProps } from './dialogs';
-import PropertyPhotoHeader from './PropertyPhotoHeader';
+import PropertyPhotoHeader from './photo-header/PropertyPhotoHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { getPropertyImageUrl } from '@/services/property/PropertyImageService';
 
