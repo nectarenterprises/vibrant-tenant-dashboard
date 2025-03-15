@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import WelcomeHeader from '@/components/dashboard/WelcomeHeader';
@@ -83,10 +84,13 @@ const Index = () => {
     );
   }
   
+  // Get the user's first name from the user metadata
+  const userName = user.user_metadata?.first_name || user.email?.split('@')[0] || 'User';
+  
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6">
-        <WelcomeHeader userName={user.email?.split('@')[0] || 'User'} />
+        <WelcomeHeader userName={userName} />
         
         <h2 className="text-xl font-semibold mb-4">Your Properties</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
