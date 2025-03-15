@@ -1,50 +1,92 @@
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { Toaster } from "@/components/ui/toaster"
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { ThemeProvider } from "next-themes";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import Index from "./pages/Index";
-import Documents from "./pages/Documents";
-import DocumentCategory from "./pages/DocumentCategory";
-import Leases from "./pages/Leases";
-import Calendar from "./pages/Calendar";
-import Utilities from "./pages/Utilities";
-import Compliance from "./pages/Compliance";
-import ServiceCharge from "./pages/ServiceCharge";
-import Auth from "./pages/Auth";
-import NotFound from "./pages/NotFound";
+import { supabase } from './integrations/supabase/client';
+import { useAuth } from './contexts/AuthContext';
 
-const queryClient = new QueryClient();
+import Index from './pages';
+import Auth from './pages/Auth';
+import NotFound from './pages/NotFound';
+import Leases from './pages/Leases';
+import Documents from './pages/Documents';
+import DocumentCategory from './pages/DocumentCategory';
+import ServiceCharge from './pages/ServiceCharge';
+import Compliance from './pages/Compliance';
+import Utilities from './pages/Utilities';
+import Calendar from './pages/Calendar';
+import Reports from './pages/Reports';
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange={false}>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-              <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
-              <Route path="/documents/:propertyId/:category" element={<ProtectedRoute><DocumentCategory /></ProtectedRoute>} />
-              <Route path="/leases" element={<ProtectedRoute><Leases /></ProtectedRoute>} />
-              <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
-              <Route path="/utilities" element={<ProtectedRoute><Utilities /></ProtectedRoute>} />
-              <Route path="/compliance" element={<ProtectedRoute><Compliance /></ProtectedRoute>} />
-              <Route path="/service-charge" element={<ProtectedRoute><ServiceCharge /></ProtectedRoute>} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+function App() {
+  const { authState, setAuthState } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+
+      setAuthState({
+        ...authState,
+        session: session
+      })
+
+      setLoading(false)
+    }
+
+    getSession()
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setAuthState({
+        ...authState,
+        session: session
+      })
+    })
+  }, [])
+
+  useEffect(() => {
+    if (!loading && !authState?.session && location.pathname !== '/auth') {
+      navigate('/auth');
+    }
+  }, [loading, authState?.session, navigate, location]);
+
+  const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+    if (!loading && !authState?.session) {
+      return null;
+    }
+
+    return <>{children}</>;
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="loading loading-ring loading-lg"></span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      
+      <Routes>
+        <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+        <Route path="/leases" element={<ProtectedRoute><Leases /></ProtectedRoute>} />
+        <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
+        <Route path="/documents/category/:category" element={<ProtectedRoute><DocumentCategory /></ProtectedRoute>} />
+        <Route path="/service-charge" element={<ProtectedRoute><ServiceCharge /></ProtectedRoute>} />
+        <Route path="/compliance" element={<ProtectedRoute><Compliance /></ProtectedRoute>} />
+        <Route path="/utilities" element={<ProtectedRoute><Utilities /></ProtectedRoute>} />
+        <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+        <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+
+      <Toaster />
+    </div>
+  );
+}
 
 export default App;

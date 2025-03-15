@@ -1,133 +1,112 @@
-
 import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { cn } from '@/lib/utils';
-import { ThemeToggle } from '@/components/theme/ThemeToggle';
-import { useAuth } from '@/contexts/AuthContext';
 import { 
-  LayoutDashboard, 
-  FileText, 
-  Key, 
-  Calendar, 
-  Zap, 
-  CheckSquare,
-  ChevronLeft,
-  PoundSterling,
-  LogOut
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { Separator } from "@/components/ui/separator"
+import { 
+  Home, FileClock, FileText, FileSpreadsheet, PieChart, CalendarDays, 
+  LayoutDashboard, Zap, BarChart2
 } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/use-auth';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface SidebarProps {
-  collapsed: boolean;
-  setCollapsed: (collapsed: boolean) => void;
+  isMobile: boolean;
+  closeMobileMenu: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
-  const location = useLocation();
+const Sidebar = ({ isMobile, closeMobileMenu }: SidebarProps) => {
   const { signOut, user } = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  
-  const menuItems = [
-    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
-    { name: 'Documents', path: '/documents', icon: FileText },
-    { name: 'Leases', path: '/leases', icon: Key },
-    { name: 'Service Charge', path: '/service-charge', icon: PoundSterling },
-    { name: 'Calendar', path: '/calendar', icon: Calendar },
-    { name: 'Utilities', path: '/utilities', icon: Zap },
-    { name: 'Compliance', path: '/compliance', icon: CheckSquare },
-  ];
 
-  const handleSignOut = async () => {
-    await signOut();
-    toast({
-      title: "Signed out",
-      description: "You have been successfully signed out.",
-    });
-    navigate('/auth');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const isLinkActive = (path: string) => {
+    return location.pathname === path;
   };
 
+  const links = [
+    { name: 'Dashboard', href: '/', icon: <Home className="h-5 w-5" /> },
+    { name: 'Leases', href: '/leases', icon: <FileClock className="h-5 w-5" /> },
+    { name: 'Documents', href: '/documents', icon: <FileText className="h-5 w-5" /> },
+    { name: 'Service Charge', href: '/service-charge', icon: <LayoutDashboard className="h-5 w-5" /> },
+    { name: 'Compliance', href: '/compliance', icon: <FileSpreadsheet className="h-5 w-5" /> },
+    { name: 'Utilities', href: '/utilities', icon: <Zap className="h-5 w-5" /> },
+    { name: 'Calendar', href: '/calendar', icon: <CalendarDays className="h-5 w-5" /> },
+    { name: 'Reports', href: '/reports', icon: <BarChart2 className="h-5 w-5" /> }
+  ];
+
   return (
-    <div className={cn(
-      "fixed left-0 top-0 z-40 h-full bg-sidebar transition-all duration-300 ease-in-out",
-      collapsed ? "w-20" : "w-64"
-    )}>
-      <div className="flex h-full flex-col justify-between p-4">
-        <div>
-          <div className="flex items-center justify-between mb-8 mt-2">
-            {!collapsed && (
-              <h1 className="text-sidebar-foreground text-2xl font-bold">SweetLease</h1>
-            )}
-            <button
-              onClick={() => setCollapsed(!collapsed)}
-              className="rounded-full p-2 bg-sidebar-accent text-sidebar-foreground hover:bg-sidebar-border transition-colors"
+    <Sheet open={isMobile} onOpenChange={closeMobileMenu}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="sm" className="md:hidden">
+          Open
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-64">
+        <SheetHeader className="text-left">
+          <SheetTitle>Sweetlease</SheetTitle>
+          <SheetDescription>
+            Manage your properties with ease.
+          </SheetDescription>
+        </SheetHeader>
+        <Separator className="my-4" />
+        <div className="flex flex-col space-y-2.5">
+          {links.map((link) => (
+            <NavLink
+              key={link.name}
+              to={link.href}
+              className={({ isActive }) =>
+                `flex items-center space-x-2 rounded-md p-2 text-sm font-medium hover:bg-secondary hover:text-foreground ${
+                  isActive ? 'bg-secondary text-foreground' : 'text-muted-foreground'
+                }`
+              }
+              onClick={closeMobileMenu}
             >
-              <ChevronLeft className={`h-5 w-5 transition-transform duration-300 ${collapsed ? 'rotate-180' : ''}`} />
-            </button>
-          </div>
-          
-          <nav className="space-y-2">
-            {menuItems.map((item) => {
-              const isActive = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className={cn(
-                    "flex items-center gap-2 rounded-lg p-3 text-sidebar-foreground transition-all duration-200 hover:bg-sidebar-accent",
-                    isActive && "bg-sidebar-accent font-medium"
-                  )}
-                >
-                  <item.icon className="h-5 w-5" />
-                  {!collapsed && <span>{item.name}</span>}
-                </Link>
-              );
-            })}
-          </nav>
+              {link.icon}
+              <span>{link.name}</span>
+            </NavLink>
+          ))}
         </div>
-        
-        <div className="space-y-4">
-          <ThemeToggle />
-          
-          {/* Sign out button */}
-          <button
-            onClick={handleSignOut}
-            className="flex items-center gap-2 w-full rounded-lg p-3 text-sidebar-foreground transition-all duration-200 hover:bg-sidebar-accent"
-          >
-            <LogOut className="h-5 w-5" />
-            {!collapsed && <span>Sign Out</span>}
-          </button>
-          
-          <div className="rounded-lg bg-sidebar-accent p-4 text-center text-sidebar-foreground">
-            {!collapsed ? (
-              <div className="space-y-2">
-                <p className="text-sm">Need help?</p>
-                <button className="w-full rounded-md bg-white text-sidebar py-2 font-medium transition-colors hover:bg-opacity-90">
-                  Contact Support
-                </button>
+        <Separator className="my-4" />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="ml-auto justify-start gap-2">
+              <Avatar className="mr-2 h-8 w-8">
+                <AvatarImage src={user?.user_metadata?.avatar_url} alt={user?.email} />
+                <AvatarFallback>{user?.email?.charAt(0).toUpperCase()}</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col text-left">
+                <span className="font-semibold">{user?.user_metadata?.full_name}</span>
+                <span className="text-muted-foreground text-sm">{user?.email}</span>
               </div>
-            ) : (
-              <div className="flex justify-center">
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" forceMount>
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate('/profile')}>Profile</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => signOut()}>Log out</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SheetContent>
+    </Sheet>
   );
 };
 
