@@ -21,8 +21,8 @@ export const getBarColor = (percentChange: number): string => {
 };
 
 export const getChangeIcon = (percentChange: number): React.ReactElement => {
-  if (percentChange < 0) return <ArrowDown className="h-3 w-3" />;
-  return <ArrowUp className="h-3 w-3" />;
+  if (percentChange < 0) return React.createElement(ArrowDown, { className: "h-3 w-3" });
+  return React.createElement(ArrowUp, { className: "h-3 w-3" });
 };
 
 export const formatCurrency = (value: number): string => {
