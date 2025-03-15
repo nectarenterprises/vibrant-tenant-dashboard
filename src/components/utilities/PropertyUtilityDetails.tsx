@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Property, PropertyDocument } from '@/types/property';
+import { Property } from '@/types/property';
 import UtilityDashboard from './UtilityDashboard';
 
 interface PropertyUtilityDetailsProps {

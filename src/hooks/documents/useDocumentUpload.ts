@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
-import { DocumentType, FolderType } from '@/types/property';
+import { DocumentType } from '@/types/property';
 
 /**
  * Hook for managing document upload state and functionality
