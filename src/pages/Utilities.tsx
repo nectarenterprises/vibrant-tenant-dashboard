@@ -128,6 +128,13 @@ const Utilities = () => {
     setDocumentDescription('');
   };
 
+  // Add a refetchDocuments function that calls fetchUtilityDocuments with the selected property ID
+  const refetchDocuments = () => {
+    if (selectedProperty) {
+      fetchUtilityDocuments(selectedProperty.id);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex">
       <Sidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
@@ -158,6 +165,7 @@ const Utilities = () => {
               onUploadClick={() => setUploadDialogOpen(true)}
               onDownload={handleDownload}
               onDelete={handleDelete}
+              refetchDocuments={refetchDocuments}
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
