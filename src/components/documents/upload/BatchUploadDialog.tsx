@@ -45,10 +45,12 @@ const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({ open, setOpen, pr
     setDescriptions(acceptedFiles.map(() => '')); // Initialize descriptions
   }, []);
 
+  // Modified for react-dropzone 11.7.1 compatibility
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
     onDrop, 
     accept: {
-      'image/*': ['.jpeg', '.jpg', '.png'],
+      'image/jpeg': ['.jpeg', '.jpg'],
+      'image/png': ['.png'],
       'application/pdf': ['.pdf']
     }
   });
