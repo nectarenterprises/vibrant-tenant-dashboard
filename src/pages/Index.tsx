@@ -1,9 +1,10 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
-import PropertyCard from '@/components/properties/PropertyCard';
+import PropertyCard from '@/components/dashboard/PropertyCard';
 import UtilityChart from '@/components/utilities/UtilityChart';
 import CalendarWidget from '@/components/calendar/CalendarWidget';
 import ComplianceWidget from '@/components/compliance/ComplianceWidget';
@@ -25,6 +26,7 @@ const Index = () => {
   const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const hasProperties = properties && properties.length > 0;
+  const userName = user?.email?.split('@')[0];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,7 +60,7 @@ const Index = () => {
   if (isLoading) {
     return (
       <div className="container mx-auto p-4 animate-pulse">
-        <WelcomeHeader />
+        <WelcomeHeader userName={userName} />
         <div className="dashboard-grid mb-8">
           <Skeleton className="h-64 w-full rounded-xl" />
           <Skeleton className="h-64 w-full rounded-xl" />
@@ -76,7 +78,7 @@ const Index = () => {
   if (!hasProperties && !isLoading) {
     return (
       <div className="container mx-auto p-6">
-        <WelcomeHeader />
+        <WelcomeHeader userName={userName} />
         <div className="text-center mt-8">
           <p className="text-lg text-gray-600 mb-4">
             Looks like you haven't added any properties yet.
@@ -94,7 +96,7 @@ const Index = () => {
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <WelcomeHeader />
+          <WelcomeHeader userName={userName} />
           <p className="text-slate-500">
             Here's a summary of your SweetLease activity.
           </p>

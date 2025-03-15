@@ -1,27 +1,26 @@
 
 import React from 'react';
-import { format } from 'date-fns';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface WelcomeHeaderProps {
-  userName: string;
+  userName?: string;
 }
 
 const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ userName }) => {
-  const today = new Date();
-  const formattedDate = format(today, 'd MMMM yyyy');
+  const { user } = useAuth();
+  const displayName = userName || user?.email?.split('@')[0] || 'there';
   
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
+
   return (
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 animate-fade-in">
-      <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-tenant-darkGreen to-tenant-green bg-clip-text text-transparent">
-          Welcome, {userName}
-        </h1>
-        <p className="text-muted-foreground mt-1">{formattedDate}</p>
-      </div>
-      <div className="mt-4 md:mt-0 bg-tenant-mint/30 rounded-lg px-4 py-2 border border-tenant-sage/30">
-        <p className="text-sm text-tenant-forestGreen font-medium">Your dashboard is up to date</p>
-      </div>
-    </div>
+    <h1 className="text-2xl font-bold tracking-tight">
+      {getGreeting()}, <span className="text-primary">{displayName}</span>!
+    </h1>
   );
 };
 
