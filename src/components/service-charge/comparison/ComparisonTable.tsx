@@ -50,16 +50,18 @@ const ComparisonTable: React.FC<ComparisonTableProps> = ({
               <td className="text-right p-2 border-b font-medium">{formatCurrency(item.currentYear)}</td>
               <td className="text-right p-2 border-b text-muted-foreground">{formatCurrency(item.previousYear)}</td>
               <td className="text-right p-2 border-b">
-                <Badge 
-                  variant="outline" 
-                  className={cn(
-                    "flex items-center gap-1 w-24 h-7 justify-center",
-                    getChangeBadgeColor(item.percentChange)
-                  )}
-                >
-                  {getChangeIcon(item.percentChange)}
-                  {Math.abs(item.percentChange).toFixed(1)}%
-                </Badge>
+                <div className="flex justify-end">
+                  <Badge 
+                    variant="outline" 
+                    className={cn(
+                      "flex items-center gap-1 w-24 h-7 justify-center",
+                      getChangeBadgeColor(item.percentChange)
+                    )}
+                  >
+                    {getChangeIcon(item.percentChange)}
+                    {Math.abs(item.percentChange).toFixed(1)}%
+                  </Badge>
+                </div>
               </td>
             </tr>
           ))}
@@ -72,16 +74,18 @@ const ComparisonTable: React.FC<ComparisonTableProps> = ({
               {formatCurrency(totalPrevious)}
             </td>
             <td className="text-right p-2 border-b">
-              <Badge 
-                variant="outline" 
-                className={cn(
-                  "flex items-center gap-1 w-24 h-7 justify-center",
-                  getChangeBadgeColor(totalPercentChange)
-                )}
-              >
-                {getChangeIcon(totalPercentChange)}
-                {Math.abs(totalPercentChange).toFixed(1)}%
-              </Badge>
+              <div className="flex justify-end">
+                <Badge 
+                  variant="outline" 
+                  className={cn(
+                    "flex items-center gap-1 w-24 h-7 justify-center",
+                    getChangeBadgeColor(totalPercentChange)
+                  )}
+                >
+                  {getChangeIcon(totalPercentChange)}
+                  {Math.abs(totalPercentChange).toFixed(1)}%
+                </Badge>
+              </div>
             </td>
           </tr>
         </tbody>
