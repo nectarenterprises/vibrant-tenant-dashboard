@@ -30,6 +30,17 @@ const UtilityBaseChart: React.FC<UtilityBaseChartProps> = ({
   // Format usage values with units
   const formatUsage = (value: number) => `${value} ${usageUnit}`;
 
+  // Custom formatter function that handles both types of data
+  const customTooltipFormatter = (value: number, name?: string) => {
+    if (name && name.includes('Usage')) {
+      return formatUsage(value);
+    }
+    if (name && name.includes('Cost')) {
+      return formatCurrency(value);
+    }
+    return value;
+  };
+
   return (
     <div className="utility-chart-container animate-fade-in">
       <div className="flex justify-between items-center mb-6">
@@ -57,12 +68,7 @@ const UtilityBaseChart: React.FC<UtilityBaseChartProps> = ({
         ]}
         xAxisDataKey="month"
         height={260}
-        tooltipFormatter={(value, name) => {
-          if (name.includes('Usage')) {
-            return formatUsage(value);
-          }
-          return formatCurrency(value);
-        }}
+        tooltipFormatter={customTooltipFormatter}
         showGrid={true}
       />
     </div>

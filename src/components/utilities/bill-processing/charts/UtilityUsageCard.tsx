@@ -39,7 +39,7 @@ const UtilityUsageCard: React.FC<UtilityUsageCardProps> = ({
   const formatUsage = (value: number) => `${value} ${usageUnit}`;
 
   // Custom formatter for tooltip based on data type
-  const customFormatter = (value: number, name: string) => {
+  const customFormatter = (value: number, name?: string) => {
     if (name === 'Usage') return formatUsage(value);
     if (name === 'Cost') return formatCurrency(value);
     return value;

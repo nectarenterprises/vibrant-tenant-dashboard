@@ -79,7 +79,7 @@ export const GlassTooltip = ({ active, payload, label, formatter }: any) => {
               style={{ backgroundColor: entry.color }}
             />
             <p style={{ color: entry.color }}>
-              {entry.name}: {formatter ? formatter(entry.value) : entry.value}
+              {entry.name}: {formatter ? formatter(entry.value, entry.name, entry) : entry.value}
             </p>
           </div>
         ))}
@@ -98,7 +98,7 @@ interface StyledAreaChartProps {
   fill?: string;
   gradientId?: string;
   height?: number | string;
-  tooltipFormatter?: (value: any) => any;
+  tooltipFormatter?: (value: any, name?: string, entry?: any) => any;
   xAxisTickFormatter?: (value: any) => any;
   yAxisTickFormatter?: (value: any) => any;
   className?: string;
@@ -234,7 +234,7 @@ interface StyledLineChartProps {
   }[];
   xAxisDataKey?: string;
   height?: number | string;
-  tooltipFormatter?: (value: any) => any;
+  tooltipFormatter?: (value: any, name?: string, entry?: any) => any;
   xAxisTickFormatter?: (value: any) => any;
   yAxisTickFormatter?: (value: any) => any;
   className?: string;
@@ -317,7 +317,7 @@ interface StyledBarChartProps {
   }[];
   xAxisDataKey?: string;
   height?: number | string;
-  tooltipFormatter?: (value: any) => any;
+  tooltipFormatter?: (value: any, name?: string, entry?: any) => any;
   xAxisTickFormatter?: (value: any) => any;
   yAxisTickFormatter?: (value: any) => any;
   className?: string;
@@ -407,7 +407,7 @@ interface StyledPieChartProps {
   nameKey?: string;
   colorKey?: string;
   height?: number | string;
-  tooltipFormatter?: (value: any) => any;
+  tooltipFormatter?: (value: any, name?: string, entry?: any) => any;
   className?: string;
   innerRadius?: number;
   outerRadius?: number;
