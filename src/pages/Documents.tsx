@@ -14,11 +14,12 @@ import SidebarSelectors from '@/components/documents/SidebarSelectors';
 import { getPropertyFolderStructure } from '@/services/document/types';
 import { toast } from '@/components/ui/use-toast';
 import { downloadDocument } from '@/services/document';
-import { Sidebar } from '@/components/layout/Sidebar';
+import Sidebar from '@/components/layout/Sidebar';
 
 const Documents = () => {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
+  const [collapsed, setCollapsed] = useState(false);
   
   // Document selection state
   const {
@@ -121,8 +122,8 @@ const Documents = () => {
   
   return (
     <div className="flex h-screen bg-background">
-      <Sidebar />
-      <div className="flex-1 flex">
+      <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+      <div className="flex-1 flex ml-20 md:ml-64 transition-all duration-300" style={{ marginLeft: collapsed ? "5rem" : "16rem" }}>
         <div className="w-64 border-r border-border bg-background overflow-auto">
           <SidebarSelectors
             properties={properties}
