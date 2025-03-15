@@ -27,15 +27,18 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 interface SidebarProps {
-  isMobile: boolean;
-  closeMobileMenu: () => void;
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
 }
 
-const Sidebar = ({ isMobile, closeMobileMenu }: SidebarProps) => {
+const Sidebar = ({ collapsed, setCollapsed }: SidebarProps) => {
   const { signOut, user } = useAuth();
-
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Convert collapsed state to isMobile for Sheet component
+  const isMobile = false; // Sheets only shown on mobile
+  const closeMobileMenu = () => setCollapsed(true);
 
   const isLinkActive = (path: string) => {
     return location.pathname === path;
