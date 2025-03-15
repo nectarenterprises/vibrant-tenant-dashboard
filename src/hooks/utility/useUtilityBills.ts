@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -144,11 +143,16 @@ export const useUtilityBills = (propertyId: string) => {
     return anomalies;
   };
 
+  // We create a wrapper function to handle the string input
+  const handleSetSelectedUtilityType = (value: string) => {
+    setSelectedUtilityType(value as UtilityFilterType);
+  };
+
   return {
     bills,
     isLoadingBills: queryResult.isLoading,
     selectedUtilityType,
-    setSelectedUtilityType,
+    setSelectedUtilityType: handleSetSelectedUtilityType,
     getUtilityUsageData,
     getUtilityCostData,
     detectAnomalies,
