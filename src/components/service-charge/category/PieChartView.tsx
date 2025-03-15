@@ -35,7 +35,7 @@ const PieChartView: React.FC<PieChartViewProps> = ({
           fill="#8884d8"
           dataKey="value"
           nameKey="category"
-          label={({ category, percent }) => `${category}: ${(percent * 100).toFixed(1)}%`}
+          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
           onClick={(data) => onCategoryClick(data.category)}
         >
           {data.map((entry, index) => (
