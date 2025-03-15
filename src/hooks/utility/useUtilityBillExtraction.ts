@@ -5,6 +5,8 @@ import { ProcessingResult } from '@/types/utility';
 export const useUtilityBillExtraction = () => {
   const processDocument = async (documentId: string, propertyId: string): Promise<ProcessingResult> => {
     try {
+      console.log('Processing document:', documentId, 'for property:', propertyId);
+      
       // Call the processing edge function
       const { data: processingData, error: processingError } = await supabase.functions
         .invoke('process-utility-bill', {
@@ -16,15 +18,18 @@ export const useUtilityBillExtraction = () => {
         });
       
       if (processingError) {
+        console.error('Edge function error:', processingError);
         throw new Error('Error processing document: ' + processingError.message);
       }
       
       console.log('Processing result:', processingData);
       
+      // Return result from the edge function
       const result: ProcessingResult = {
         extractedData: processingData.extractedData,
         confidenceScores: processingData.confidenceScores,
-        documentId
+        documentId,
+        fallback: processingData.fallback || false
       };
       
       return result;

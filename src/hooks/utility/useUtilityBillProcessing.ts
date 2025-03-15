@@ -46,8 +46,8 @@ export const useUtilityBillProcessing = (propertyId: string) => {
       if (processingResult.fallback) {
         setIsFallbackData(true);
         toast({
-          title: "Simulated data being used",
-          description: "AI processing couldn't extract data accurately. Please carefully review all fields.",
+          title: "Using simulated data",
+          description: "We're using simulated data until Document AI integration is complete. Please review all fields carefully.",
           variant: "destructive"
         });
       } else {
