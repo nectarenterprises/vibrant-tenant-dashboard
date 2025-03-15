@@ -21,14 +21,12 @@ export const useDocumentMutations = (
       name,
       description,
       documentType,
-      metadata = {},
       additionalMetadata = {}
     }: {
       file: File;
       name: string;
       description: string;
       documentType: DocumentType;
-      metadata?: any;
       additionalMetadata?: Record<string, any>;
     }) => {
       if (!propertyId) throw new Error('Property ID is required');
@@ -39,10 +37,6 @@ export const useDocumentMutations = (
         documentType,
         name,
         description,
-        metadata.tags,
-        metadata.expiryDate,
-        metadata.keyDates,
-        metadata.notificationPeriod,
         additionalMetadata
       );
     },

@@ -9,11 +9,11 @@ import { FolderType } from './types';
  * Uploads a document for a property
  */
 export const uploadPropertyDocument = async (
-  file: File,
   propertyId: string,
+  file: File,
+  documentType: DocumentType,
   name: string,
   description: string,
-  documentType: DocumentType,
   additionalMetadata: Record<string, any> = {}
 ): Promise<PropertyDocument | null> => {
   try {
