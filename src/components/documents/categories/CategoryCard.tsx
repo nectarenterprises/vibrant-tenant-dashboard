@@ -20,21 +20,19 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
 }) => {
   return (
     <Card 
-      className="cursor-pointer hover:shadow-md transition-all overflow-hidden border-0 rounded-lg"
+      className="cursor-pointer hover:shadow-md transition-all overflow-hidden border-0"
       onClick={onClick}
     >
-      <div className={`${bgColor} p-5 text-white`}>
-        <div className="flex items-center gap-3">
-          {icon}
-          <h3 className="text-xl font-medium text-white">{title}</h3>
-        </div>
+      <div className={`${bgColor} p-4 flex items-center gap-3`}>
+        {icon}
+        <h3 className="text-lg font-medium text-white">{title}</h3>
       </div>
       <CardContent className="p-4 bg-white dark:bg-gray-800 flex justify-between items-center">
-        <p className="text-gray-600 dark:text-gray-300 font-medium">
+        <p className="text-gray-600 dark:text-gray-300">
           {count} document{count !== 1 ? 's' : ''}
         </p>
         <div className="flex items-center text-tenant-green">
-          <span className="mr-1 font-medium">View Details</span>
+          <span className="mr-1">View Details</span>
           <ArrowRight className="h-4 w-4" />
         </div>
       </CardContent>
