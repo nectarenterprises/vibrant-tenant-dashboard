@@ -50,18 +50,16 @@ const ComparisonTable: React.FC<ComparisonTableProps> = ({
               <td className="text-right p-2 border-b font-medium">{formatCurrency(item.currentYear)}</td>
               <td className="text-right p-2 border-b text-muted-foreground">{formatCurrency(item.previousYear)}</td>
               <td className="text-right p-2 border-b">
-                <div className="flex items-center justify-end gap-1">
-                  <Badge 
-                    variant="outline" 
-                    className={cn(
-                      "flex items-center gap-1 w-24 h-7 justify-center",
-                      getChangeBadgeColor(item.percentChange)
-                    )}
-                  >
-                    {getChangeIcon(item.percentChange)}
-                    {Math.abs(item.percentChange).toFixed(1)}%
-                  </Badge>
-                </div>
+                <Badge 
+                  variant="outline" 
+                  className={cn(
+                    "flex items-center gap-1 w-24 h-7 justify-center",
+                    getChangeBadgeColor(item.percentChange)
+                  )}
+                >
+                  {getChangeIcon(item.percentChange)}
+                  {Math.abs(item.percentChange).toFixed(1)}%
+                </Badge>
               </td>
             </tr>
           ))}
