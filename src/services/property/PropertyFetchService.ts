@@ -36,7 +36,7 @@ export const getProperty = async (id: string): Promise<Property> => {
     incentives: parseIncentives(data.incentives) || [],
     createdAt: data.created_at,
     updatedAt: data.updated_at,
-    serviceChargeAmount: data.incentives && typeof data.incentives === 'object' ? 
+    serviceChargeAmount: typeof data.incentives === 'object' && data.incentives !== null && !Array.isArray(data.incentives) ? 
       parseFloat(String(data.incentives.service_charge_amount || 0)) : undefined,
     leaseStart: data.lease_start,
     leaseType: data.lease_type
@@ -124,7 +124,7 @@ export const fetchUserProperties = async (): Promise<Property[]> => {
       incentives: parseIncentives(item.incentives),
       createdAt: item.created_at,
       updatedAt: item.updated_at,
-      serviceChargeAmount: item.incentives && typeof item.incentives === 'object' ? 
+      serviceChargeAmount: typeof item.incentives === 'object' && item.incentives !== null && !Array.isArray(item.incentives) ? 
         parseFloat(String(item.incentives.service_charge_amount || 0)) : undefined,
       leaseStart: item.lease_start,
       leaseType: item.lease_type
