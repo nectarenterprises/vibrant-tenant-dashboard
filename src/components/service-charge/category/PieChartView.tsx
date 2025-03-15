@@ -40,13 +40,12 @@ const PieChartView: React.FC<PieChartViewProps> = ({
           data={dataWithCorrectPercentages}
           cx="50%"
           cy="50%"
-          labelLine={true}
+          labelLine={false}
           outerRadius={130}
           fill="#8884d8"
           dataKey="value"
           nameKey="category"
-          // Use the pre-calculated percentage directly (will be multiplied by 100 by Recharts)
-          label={({ category, percent }) => `${category}: ${(percent * 100).toFixed(1)}%`}
+          label={false}
           onClick={(data) => onCategoryClick(data.category)}
         >
           {dataWithCorrectPercentages.map((entry, index) => (
