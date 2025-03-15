@@ -11,7 +11,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { 
   Home, FileClock, FileText, FileSpreadsheet, PieChart, CalendarDays, 
-  LayoutDashboard, Zap, BarChart2, Menu
+  LayoutDashboard, Zap, BarChart2, Hexagon
 } from 'lucide-react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -73,9 +73,13 @@ const Sidebar = ({ collapsed, setCollapsed }: SidebarProps) => {
           variant="ghost" 
           size="icon" 
           onClick={() => setCollapsed(!collapsed)}
-          className="ml-auto"
+          className={cn(
+            "ml-auto",
+            collapsed ? "rotate-0" : "rotate-180",
+            "transition-transform duration-300"
+          )}
         >
-          <Menu className="h-5 w-5" />
+          <Hexagon className="h-5 w-5" />
         </Button>
       </div>
       
@@ -138,7 +142,7 @@ const Sidebar = ({ collapsed, setCollapsed }: SidebarProps) => {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="md:hidden fixed top-4 left-4 z-50 bg-background">
-          <Menu className="h-5 w-5" />
+          <Hexagon className="h-5 w-5" />
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-64 p-0">
