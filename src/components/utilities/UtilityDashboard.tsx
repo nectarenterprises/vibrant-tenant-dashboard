@@ -58,6 +58,8 @@ const UtilityDashboard: React.FC<UtilityDashboardProps> = ({ property }) => {
         secondaryColor="#4C1D95"
         usageUnit="kWh"
         onBack={() => setSelectedUtility(null)}
+        propertyId={property.id}
+        utilityType="electricity"
       />
     );
   }
@@ -74,6 +76,8 @@ const UtilityDashboard: React.FC<UtilityDashboardProps> = ({ property }) => {
         secondaryColor="#0369A1"
         usageUnit="m³"
         onBack={() => setSelectedUtility(null)}
+        propertyId={property.id}
+        utilityType="water"
       />
     );
   }
@@ -90,6 +94,8 @@ const UtilityDashboard: React.FC<UtilityDashboardProps> = ({ property }) => {
         secondaryColor="#C2410C"
         usageUnit="m³"
         onBack={() => setSelectedUtility(null)}
+        propertyId={property.id}
+        utilityType="gas"
       />
     );
   }

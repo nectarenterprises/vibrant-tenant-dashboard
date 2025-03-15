@@ -1,10 +1,14 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { UtilityData } from '@/types/property';
-import { LucideIcon } from 'lucide-react';
+import { PropertyDocument } from '@/types/property';
+import { LucideIcon, Download, File } from 'lucide-react';
 import UtilityBaseChart from './shared/UtilityBaseChart';
+import { getPropertyDocuments } from '@/services/FileStorageService';
+import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/use-toast';
+import { downloadDocument } from '@/services/document';
 
 interface UtilityDetailViewProps {
   title: string;
@@ -16,6 +20,8 @@ interface UtilityDetailViewProps {
   secondaryColor: string;
   usageUnit: string;
   onBack: () => void;
+  propertyId: string;
+  utilityType: 'electricity' | 'water' | 'gas';
 }
 
 const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
@@ -27,12 +33,59 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
   primaryColor,
   secondaryColor,
   usageUnit,
-  onBack
+  onBack,
+  propertyId,
+  utilityType
 }) => {
+  const [utilityDocuments, setUtilityDocuments] = useState<PropertyDocument[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const totalUsage = data.reduce((acc, item) => acc + item.usage, 0);
   const totalCost = data.reduce((acc, item) => acc + item.cost, 0);
   const averageUsage = totalUsage / data.length || 0;
   const averageCost = totalCost / data.length || 0;
+
+  useEffect(() => {
+    const fetchUtilityDocuments = async () => {
+      if (!propertyId) return;
+      
+      setIsLoading(true);
+      try {
+        // Fetch documents of type 'utility'
+        const documents = await getPropertyDocuments(propertyId, 'utility');
+        // Filter documents based on utility type (looking for keywords in name/description)
+        const filteredDocs = documents.filter(doc => {
+          const searchText = `${doc.name.toLowerCase()} ${doc.description?.toLowerCase() || ''}`;
+          return searchText.includes(utilityType.toLowerCase());
+        });
+        
+        setUtilityDocuments(filteredDocs);
+      } catch (error) {
+        console.error('Error fetching utility documents:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUtilityDocuments();
+  }, [propertyId, utilityType]);
+
+  const handleDownloadDocument = async (document: PropertyDocument) => {
+    try {
+      await downloadDocument(document.filePath, document.name);
+      toast({
+        title: "Document downloaded",
+        description: `${document.name} has been downloaded successfully.`
+      });
+    } catch (error) {
+      console.error('Error downloading document:', error);
+      toast({
+        variant: "destructive",
+        title: "Download failed",
+        description: "There was an error downloading the document."
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -123,6 +176,46 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
               ))}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg">{title} Invoices</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="flex items-center justify-center h-24">
+              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
+            </div>
+          ) : utilityDocuments.length === 0 ? (
+            <div className="text-center py-8 border rounded-md border-dashed">
+              <File className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+              <p className="text-muted-foreground">No {utilityType} invoices found</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {utilityDocuments.map((document) => (
+                <div key={document.id} className="flex items-center justify-between p-3 border rounded-md hover:bg-muted/50 transition-colors">
+                  <div>
+                    <p className="font-medium">{document.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(document.uploadDate).toLocaleDateString()} • {document.description}
+                    </p>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="flex items-center gap-1"
+                    onClick={() => handleDownloadDocument(document)}
+                  >
+                    <Download className="h-4 w-4" />
+                    Download
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
