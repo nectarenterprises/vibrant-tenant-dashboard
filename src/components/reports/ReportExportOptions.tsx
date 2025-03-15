@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DialogFooter } from '@/components/ui/dialog';
-import { FilePdf, FileSpreadsheet, FileText } from 'lucide-react';
+import { FileIcon, FileSpreadsheetIcon, FileTextIcon } from 'lucide-react';
 import { ReportType } from '@/types/report';
 
 interface ReportExportOptionsProps {
@@ -60,9 +60,9 @@ const ReportExportOptions: React.FC<ReportExportOptionsProps> = ({ reportType, o
   };
 
   const formatOptions = [
-    { value: 'pdf', label: 'PDF Document', icon: <FilePdf className="mr-2 h-4 w-4" /> },
-    { value: 'excel', label: 'Excel Spreadsheet', icon: <FileSpreadsheet className="mr-2 h-4 w-4" /> },
-    { value: 'csv', label: 'CSV File', icon: <FileText className="mr-2 h-4 w-4" /> }
+    { value: 'pdf', label: 'PDF Document', icon: <FileIcon className="mr-2 h-4 w-4" /> },
+    { value: 'excel', label: 'Excel Spreadsheet', icon: <FileSpreadsheetIcon className="mr-2 h-4 w-4" /> },
+    { value: 'csv', label: 'CSV File', icon: <FileTextIcon className="mr-2 h-4 w-4" /> }
   ];
 
   return (

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster"
@@ -5,7 +6,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { supabase } from './integrations/supabase/client';
 import { useAuth } from './contexts/AuthContext';
 
-import Index from './pages';
+import Index from './pages/Index';
 import Auth from './pages/Auth';
 import NotFound from './pages/NotFound';
 import Leases from './pages/Leases';
@@ -18,48 +19,31 @@ import Calendar from './pages/Calendar';
 import Reports from './pages/Reports';
 
 function App() {
-  const { authState, setAuthState } = useAuth();
+  const { session, user, loading: authLoading, signOut } = useAuth();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-
-      setAuthState({
-        ...authState,
-        session: session
-      })
-
-      setLoading(false)
-    }
-
-    getSession()
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setAuthState({
-        ...authState,
-        session: session
-      })
-    })
-  }, [])
+    // We don't need this effect anymore since useAuth already handles the session
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    if (!loading && !authState?.session && location.pathname !== '/auth') {
+    if (!loading && !session && location.pathname !== '/auth') {
       navigate('/auth');
     }
-  }, [loading, authState?.session, navigate, location]);
+  }, [loading, session, navigate, location]);
 
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-    if (!loading && !authState?.session) {
+    if (!loading && !session) {
       return null;
     }
 
     return <>{children}</>;
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <span className="loading loading-ring loading-lg"></span>
