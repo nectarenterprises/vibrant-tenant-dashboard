@@ -1,11 +1,14 @@
+
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { downloadDocument } from '@/services/FileStorageService';
+import { downloadDocument } from '@/services/document';
+import { updateDocumentAccessTimestamp } from '@/services/FileStorageService';
 import { DocumentVersion } from '@/services/document/types';
 import { format } from 'date-fns';
 import { Download, Check } from 'lucide-react';
 import { PropertyDocument } from '@/types/property';
+import { toast } from '@/components/ui/use-toast';
 
 interface DocumentVersionHistoryProps {
   isOpen: boolean;
@@ -22,11 +25,13 @@ const DocumentVersionHistory: React.FC<DocumentVersionHistoryProps> = ({
   versions,
   isLoading
 }) => {
-  const handleDownload = async (filePath: string) => {
-    await downloadDocument(filePath);
+  const handleDownload = async (filePath: string, fileName: string) => {
+    await downloadDocument(filePath, fileName);
   };
 
   const handleVersionDownload = async (version: any) => {
+    if (!document) return;
+    
     try {
       await downloadDocument(version.filePath, document.name);
       await updateDocumentAccessTimestamp(document.id);

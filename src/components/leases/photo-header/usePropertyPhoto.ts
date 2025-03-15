@@ -1,40 +1,21 @@
+
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { uploadDocument } from '@/services/document';
 import { toast } from '@/components/ui/use-toast';
 
-interface UsePropertyPhotoProps {
+export interface UsePropertyPhotoProps {
   propertyId: string | undefined;
 }
 
 export const usePropertyPhoto = ({ propertyId }: UsePropertyPhotoProps) => {
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const queryClient = useQueryClient();
   
-  const uploadMutation = useMutation({
-    mutationFn: uploadPhoto,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['documents', propertyId] });
-      toast({
-        title: "Photo uploaded",
-        description: "The property photo has been uploaded successfully."
-      });
-    },
-    onError: (error) => {
-      console.error('Photo upload error:', error);
-      toast({
-        variant: "destructive",
-        title: "Upload failed",
-        description: "There was an error uploading the property photo."
-      });
-    },
-    onSettled: () => {
-      setIsUploading(false);
-    }
-  });
-
-  // Update the uploadDocument call to match the correct signature
-  const uploadPhoto = async (file: File) => {
+  // Define upload function that will be used by the mutation
+  const uploadPhotoFn = async (file: File) => {
     if (!propertyId) return null;
     
     try {
@@ -66,10 +47,45 @@ export const usePropertyPhoto = ({ propertyId }: UsePropertyPhotoProps) => {
       setIsUploading(false);
     }
   };
+  
+  const uploadMutation = useMutation({
+    mutationFn: uploadPhotoFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents', propertyId] });
+      toast({
+        title: "Photo uploaded",
+        description: "The property photo has been uploaded successfully."
+      });
+      setUploadDialogOpen(false);
+      setSelectedFile(null);
+    },
+    onError: (error) => {
+      console.error('Photo upload error:', error);
+      toast({
+        variant: "destructive",
+        title: "Upload failed",
+        description: "There was an error uploading the property photo."
+      });
+    },
+    onSettled: () => {
+      setIsUploading(false);
+    }
+  });
+
+  const handleUpload = async () => {
+    if (selectedFile) {
+      uploadMutation.mutate(selectedFile);
+    }
+  };
 
   return {
     isUploading,
-    uploadPhoto,
-    uploadMutation
+    uploadDialogOpen,
+    setUploadDialogOpen,
+    selectedFile,
+    setSelectedFile,
+    uploadPhoto: uploadPhotoFn,
+    uploadMutation,
+    handleUpload
   };
 };

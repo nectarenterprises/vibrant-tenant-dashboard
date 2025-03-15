@@ -8,9 +8,10 @@ import { CalendarIcon, HomeIcon } from 'lucide-react';
 
 interface PropertyCardProps {
   property: Property;
+  delay?: number;
 }
 
-const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
+const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay }) => {
   const navigate = useNavigate();
   
   const handleClick = () => {

@@ -1,7 +1,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { FolderType } from '@/services/document/types';
-import { getPropertyDocuments, getRecentDocuments, getExpiringDocuments } from '@/services/document';
+import { getDocuments, getRecentDocuments, getExpiringDocuments } from '@/services/document';
 
 /**
  * Custom hook to fetch documents based on property and folder
@@ -16,7 +16,7 @@ export const useDocumentQueries = (propertyId?: string, folderType?: FolderType)
     queryKey: ['documents', propertyId, folderType],
     queryFn: async () => {
       if (!propertyId) return [];
-      const docs = await getPropertyDocuments(propertyId);
+      const docs = await getDocuments(propertyId);
       
       // Filter by folder type if provided
       if (folderType) {

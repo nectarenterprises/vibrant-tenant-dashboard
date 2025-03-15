@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { UtilityData } from '@/types/property';
+import { getMockUtilityData, getMockPropertyUtilityData } from './utility-data-mock';
 
 /**
  * Get utilities data for all properties
@@ -12,17 +13,8 @@ export const getUtilities = async (): Promise<UtilityData[]> => {
     throw new Error('User not authenticated');
   }
   
-  const { data, error } = await supabase
-    .from('utility_data')
-    .select('*, properties!inner(user_id)')
-    .eq('properties.user_id', user.user.id);
-    
-  if (error) {
-    console.error('Error fetching utilities:', error);
-    throw new Error('Failed to fetch utility data');
-  }
-  
-  return data || [];
+  // Since the actual utility_data table doesn't exist yet, use mock data
+  return getMockUtilityData();
 };
 
 /**
@@ -31,33 +23,22 @@ export const getUtilities = async (): Promise<UtilityData[]> => {
 export const getPropertyUtilities = async (propertyId: string): Promise<UtilityData[]> => {
   if (!propertyId) throw new Error('Property ID is required');
   
-  const { data, error } = await supabase
-    .from('utility_data')
-    .select('*')
-    .eq('property_id', propertyId);
-    
-  if (error) {
-    console.error('Error fetching property utilities:', error);
-    throw new Error('Failed to fetch property utility data');
-  }
-  
-  return data || [];
+  // Since the actual utility_data table doesn't exist yet, use mock data
+  return getMockPropertyUtilityData(propertyId);
 };
 
 /**
  * Add new utility data
  */
 export const addUtilityData = async (utilityData: Partial<UtilityData>): Promise<UtilityData> => {
-  const { data, error } = await supabase
-    .from('utility_data')
-    .insert([utilityData])
-    .select()
-    .single();
-    
-  if (error) {
-    console.error('Error adding utility data:', error);
-    throw new Error('Failed to add utility data');
-  }
-  
-  return data;
+  // Since the actual utility_data table doesn't exist yet, return a mock response
+  return {
+    month: utilityData.month || new Date().toISOString().slice(0, 7),
+    gasUsage: utilityData.gasUsage,
+    gasCost: utilityData.gasCost,
+    waterUsage: utilityData.waterUsage,
+    waterCost: utilityData.waterCost,
+    electricityUsage: utilityData.electricityUsage,
+    electricityCost: utilityData.electricityCost
+  };
 };

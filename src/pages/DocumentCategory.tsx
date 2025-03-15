@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -11,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { FolderType } from '@/services/document/types';
 import { toast } from '@/components/ui/use-toast';
 import { downloadDocument } from '@/services/document';
+import { updateDocumentAccessTimestamp } from '@/services/FileStorageService';
 import DocumentList from '@/components/documents/DocumentList';
 import UploadDialog from '@/components/documents/UploadDialog';
 import { getFolderTypeMap } from '@/services/document/folders';
@@ -89,7 +91,10 @@ const DocumentCategory = () => {
     if (uploadData) {
       // Use our enhanced upload mutation with additional metadata
       uploadMutation.mutate({
-        ...uploadData,
+        file: uploadData.file,
+        name: uploadData.name,
+        type: uploadData.documentType,
+        description: uploadData.description,
         additionalMetadata
       });
     }

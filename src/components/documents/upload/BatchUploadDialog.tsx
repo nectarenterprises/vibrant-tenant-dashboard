@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import {
   Dialog,
@@ -52,7 +51,7 @@ const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({ open, setOpen, pr
       'image/jpeg': ['.jpeg', '.jpg'],
       'image/png': ['.png'],
       'application/pdf': ['.pdf']
-    }
+    } as any
   });
 
   const handleFilenameChange = (index: number, value: string) => {
@@ -192,6 +191,6 @@ const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({ open, setOpen, pr
       </DialogContent>
     </Dialog>
   )
-}
+};
 
 export default BatchUploadDialog;

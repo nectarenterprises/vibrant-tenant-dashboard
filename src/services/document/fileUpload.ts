@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 import { PropertyDocument, DocumentType } from '@/types/property';
@@ -118,11 +119,21 @@ export const uploadDocument = async (
   additionalMetadata?: any
 ) => {
   try {
-    // Upload the file
-    const filePath = await uploadFile(`properties/${propertyId}/${Date.now()}_${file.name}`, file);
+    // Create a path for the file
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${uuidv4()}.${fileExt}`;
+    const filePath = `properties/${propertyId}/${Date.now()}_${file.name}`;
     
-    if (!filePath) {
-      throw new Error('File upload failed');
+    // Upload the file
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('documents')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+    
+    if (uploadError) {
+      throw uploadError;
     }
     
     // Create document metadata in the database
@@ -151,8 +162,3 @@ export const uploadDocument = async (
     throw error;
   }
 };
-
-/**
- * Export for compatibility
- */
-export { uploadPropertyDocument as uploadDocument };

@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { ComplianceItem } from '@/types/compliance';
+import { getMockComplianceItems, getMockPropertyComplianceItems } from './compliance-items-mock';
 
 /**
  * Get all compliance items for the current user
@@ -12,17 +13,8 @@ export const getComplianceItems = async (): Promise<ComplianceItem[]> => {
     throw new Error('User not authenticated');
   }
   
-  const { data, error } = await supabase
-    .from('compliance_items')
-    .select('*, properties!inner(user_id)')
-    .eq('properties.user_id', user.user.id);
-    
-  if (error) {
-    console.error('Error fetching compliance items:', error);
-    throw new Error('Failed to fetch compliance items');
-  }
-  
-  return data || [];
+  // Since the actual compliance_items table doesn't exist yet, use mock data
+  return getMockComplianceItems(user.user.id);
 };
 
 /**
@@ -31,17 +23,8 @@ export const getComplianceItems = async (): Promise<ComplianceItem[]> => {
 export const getPropertyComplianceItems = async (propertyId: string): Promise<ComplianceItem[]> => {
   if (!propertyId) throw new Error('Property ID is required');
   
-  const { data, error } = await supabase
-    .from('compliance_items')
-    .select('*')
-    .eq('property_id', propertyId);
-    
-  if (error) {
-    console.error('Error fetching property compliance items:', error);
-    throw new Error('Failed to fetch property compliance items');
-  }
-  
-  return data || [];
+  // Since the actual compliance_items table doesn't exist yet, use mock data
+  return getMockPropertyComplianceItems(propertyId);
 };
 
 /**
@@ -54,21 +37,16 @@ export const updateComplianceStatus = async (
 ): Promise<ComplianceItem> => {
   if (!itemId) throw new Error('Compliance item ID is required');
   
-  const { data, error } = await supabase
-    .from('compliance_items')
-    .update({
-      last_completed: lastCompleted,
-      next_due: nextDue,
-      status: new Date(nextDue) < new Date() ? 'overdue' : 'upcoming'
-    })
-    .eq('id', itemId)
-    .select()
-    .single();
-    
-  if (error) {
-    console.error('Error updating compliance status:', error);
-    throw new Error('Failed to update compliance status');
-  }
+  // Since the actual compliance_items table doesn't exist yet, return a mock response
+  const status = new Date(nextDue) < new Date() ? 'overdue' : 'upcoming';
   
-  return data;
+  return {
+    id: itemId,
+    name: 'Updated Compliance Item',
+    icon: () => null, // This will be replaced with the actual icon in the UI
+    lastCompleted,
+    nextDue,
+    status: status as 'completed' | 'upcoming' | 'overdue',
+    certificates: []
+  };
 };
