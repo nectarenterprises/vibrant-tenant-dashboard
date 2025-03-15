@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { useAuth } from './contexts/AuthContext';
 import { RoleProvider } from './contexts/RoleContext';
 
+import Landing from './pages/Landing';
 import Index from './pages/Index';
 import Auth from './pages/Auth';
 import NotFound from './pages/NotFound';
@@ -36,7 +37,10 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!loading && !session && location.pathname !== '/auth') {
+    // Only redirect to auth if the user is not on the landing or auth page
+    if (!loading && !session && 
+        location.pathname !== '/auth' && 
+        location.pathname !== '/') {
       navigate('/auth');
     }
   }, [loading, session, navigate, location]);
@@ -57,7 +61,7 @@ function App() {
         
         <div className={`transition-all duration-300 ease-in-out ${session ? (sidebarCollapsed ? "ml-20" : "ml-64") : ""}`}>
           <Routes>
-            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/" element={session ? <ProtectedRoute><Index /></ProtectedRoute> : <Landing />} />
             <Route path="/leases" element={<ProtectedRoute><Leases /></ProtectedRoute>} />
             <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
             <Route path="/documents/category/:category" element={<ProtectedRoute><DocumentCategory /></ProtectedRoute>} />

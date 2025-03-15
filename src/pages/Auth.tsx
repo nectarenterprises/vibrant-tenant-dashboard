@@ -1,13 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
-import { Mail, Lock, User } from 'lucide-react';
+import { Mail, Lock, User, ArrowLeft } from 'lucide-react';
+import { logActivity } from '@/services/ActivityLogService';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -15,10 +16,19 @@ const Auth = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('login');
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
   useEffect(() => {
+    // Check URL for tab parameter
+    const params = new URLSearchParams(location.search);
+    const tabParam = params.get('tab');
+    if (tabParam === 'register') {
+      setActiveTab('register');
+    }
+    
     // Check if user is already logged in
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
@@ -28,7 +38,7 @@ const Auth = () => {
     };
     
     checkSession();
-  }, [navigate]);
+  }, [navigate, location]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +57,13 @@ const Auth = () => {
         description: "You've successfully signed in.",
       });
       
+      // Log this activity
+      await logActivity({
+        action: 'user_login',
+        entityType: 'auth',
+        details: { email }
+      });
+      
       navigate('/');
     } catch (error: any) {
       toast({
@@ -62,11 +79,20 @@ const Auth = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!firstName || !lastName) {
+      toast({
+        variant: "destructive",
+        title: "Missing information",
+        description: "Please provide your first and last name",
+      });
+      return;
+    }
+    
     try {
       setLoading(true);
       
       // Register the user
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -79,10 +105,30 @@ const Auth = () => {
 
       if (error) throw error;
       
-      toast({
-        title: "Account created!",
-        description: "Your account has been successfully created. You can now sign in.",
-      });
+      if (data.user) {
+        if (data.session) {
+          // User is automatically signed in - Supabase email confirmation is disabled
+          toast({
+            title: "Account created!",
+            description: "Your account has been successfully created and you're now signed in.",
+          });
+          
+          // Log this activity
+          await logActivity({
+            action: 'user_signup',
+            entityType: 'auth',
+            details: { email }
+          });
+          
+          navigate('/');
+        } else {
+          // Email confirmation is enabled
+          toast({
+            title: "Account created!",
+            description: "Please check your email to confirm your account before signing in.",
+          });
+        }
+      }
       
     } catch (error: any) {
       toast({
@@ -97,15 +143,25 @@ const Auth = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
+      <Card className="w-full max-w-md relative">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={() => navigate('/')} 
+          className="absolute top-4 left-4"
+          aria-label="Back to home"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        
+        <CardHeader className="space-y-1 text-center pt-10">
           <CardTitle className="text-2xl font-bold">SweetLease</CardTitle>
           <CardDescription>
             Manage your properties efficiently
           </CardDescription>
         </CardHeader>
         
-        <Tabs defaultValue="login" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid grid-cols-2 mb-4 mx-4">
             <TabsTrigger value="login">Sign In</TabsTrigger>
             <TabsTrigger value="register">Sign Up</TabsTrigger>
@@ -200,6 +256,7 @@ const Auth = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
+                      minLength={6}
                       className="pl-10"
                     />
                   </div>

@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { User, UserCog, Edit2, Save, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { logActivity } from '@/services/ActivityLogService';
 
 const UserProfile = () => {
   const { user } = useAuth();
@@ -46,19 +46,58 @@ const UserProfile = () => {
         .eq('id', user?.id)
         .single();
 
-      if (error) throw error;
+      if (error && error.code !== 'PGRST116') {
+        // PGRST116 means "No rows returned", which we handle below
+        throw error;
+      }
 
-      setProfile({
-        id: data.id,
-        firstName: data.first_name || '',
-        lastName: data.last_name || '',
-        email: user?.email || '',
-      });
+      // If we got data, use it
+      if (data) {
+        setProfile({
+          id: data.id,
+          firstName: data.first_name || '',
+          lastName: data.last_name || '',
+          email: user?.email || '',
+        });
 
-      setFormData({
-        firstName: data.first_name || '',
-        lastName: data.last_name || '',
-      });
+        setFormData({
+          firstName: data.first_name || '',
+          lastName: data.last_name || '',
+        });
+      } else {
+        // If no profile found, create one with user metadata
+        const firstName = user?.user_metadata?.first_name || '';
+        const lastName = user?.user_metadata?.last_name || '';
+        
+        // Try to insert profile
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: user?.id,
+            first_name: firstName,
+            last_name: lastName
+          });
+          
+        if (insertError) throw insertError;
+        
+        // Set local state
+        setProfile({
+          id: user?.id || '',
+          firstName,
+          lastName,
+          email: user?.email || '',
+        });
+        
+        setFormData({
+          firstName,
+          lastName,
+        });
+        
+        toast({
+          title: 'Profile created',
+          description: 'Your profile has been created successfully.',
+        });
+      }
     } catch (error) {
       console.error('Error loading profile:', error);
       toast({
@@ -68,11 +107,19 @@ const UserProfile = () => {
       });
       // Fallback to at least showing email if profile can't be loaded
       if (user) {
+        const firstName = user?.user_metadata?.first_name || '';
+        const lastName = user?.user_metadata?.last_name || '';
+        
         setProfile({
           id: user.id,
-          firstName: '',
-          lastName: '',
+          firstName,
+          lastName,
           email: user.email || '',
+        });
+        
+        setFormData({
+          firstName,
+          lastName,
         });
       }
     } finally {
@@ -107,6 +154,14 @@ const UserProfile = () => {
         firstName: formData.firstName,
         lastName: formData.lastName,
       }));
+
+      // Log this activity
+      await logActivity({
+        action: 'profile_update',
+        entityType: 'user',
+        entityId: user?.id,
+        details: { updatedFields: ['first_name', 'last_name'] }
+      });
 
       setIsEditing(false);
       toast({

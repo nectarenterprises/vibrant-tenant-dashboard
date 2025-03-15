@@ -39,12 +39,19 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // In production, this would come from Supabase user_roles table
         const storedRoles = localStorage.getItem(`user_roles_${user.id}`);
         
-        // If there are no stored roles, default to 'standard'
-        // For testing purposes, let's make the current user an admin
+        // If there are no stored roles, default to 'standard' for new users
         let userRoles: UserRole[];
         if (!storedRoles) {
-          // For demo, set first user as admin
-          userRoles = ['admin', 'standard'];
+          // Set all new users to standard role by default
+          userRoles = ['standard'];
+          
+          // For demo, set the first user as admin
+          const isFirstUser = !localStorage.getItem('has_admin_user');
+          if (isFirstUser) {
+            userRoles = ['admin', 'standard'];
+            localStorage.setItem('has_admin_user', 'true');
+          }
+          
           localStorage.setItem(`user_roles_${user.id}`, JSON.stringify(userRoles));
         } else {
           const parsedRoles = JSON.parse(storedRoles);
