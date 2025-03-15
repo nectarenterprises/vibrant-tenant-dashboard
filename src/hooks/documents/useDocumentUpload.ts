@@ -12,6 +12,7 @@ export const useDocumentUpload = () => {
   const [documentDescription, setDocumentDescription] = useState('');
   const [documentType, setDocumentType] = useState<FolderType>('lease');
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Reset form values
   const resetUploadForm = () => {
@@ -20,6 +21,7 @@ export const useDocumentUpload = () => {
     setDocumentDescription('');
     setDocumentType('lease');
     setUploadDialogOpen(false);
+    setIsUploading(false);
   };
 
   // Handle file selection
@@ -41,6 +43,15 @@ export const useDocumentUpload = () => {
       return null;
     }
     
+    if (!documentName.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Missing document name",
+        description: "Please enter a name for the document.",
+      });
+      return null;
+    }
+    
     return {
       file: fileUpload,
       name: documentName,
@@ -55,11 +66,13 @@ export const useDocumentUpload = () => {
     documentDescription,
     documentType,
     uploadDialogOpen,
+    isUploading,
     setFileUpload,
     setDocumentName,
     setDocumentDescription,
     setDocumentType,
     setUploadDialogOpen,
+    setIsUploading,
     resetUploadForm,
     handleFileSelect,
     prepareUpload

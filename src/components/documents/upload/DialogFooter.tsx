@@ -19,7 +19,11 @@ const UploadDialogFooter: React.FC<UploadDialogFooterProps> = ({
 }) => {
   return (
     <DialogFooter>
-      <Button variant="outline" onClick={onClose}>
+      <Button 
+        variant="outline" 
+        onClick={onClose} 
+        disabled={isUploading}
+      >
         Cancel
       </Button>
       <Button 

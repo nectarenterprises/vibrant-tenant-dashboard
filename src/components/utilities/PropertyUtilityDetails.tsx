@@ -1,9 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Property, PropertyDocument } from '@/types/property';
 import UtilityDashboard from './UtilityDashboard';
 import UtilityDocuments from './UtilityDocuments';
 import { FolderType } from '@/services/document/types';
+import { toast } from '@/components/ui/use-toast';
+import { useDocumentUpload } from '@/hooks/documents/useDocumentUpload';
+import { uploadPropertyDocument } from '@/services/document/fileUpload';
+import { downloadDocument, deleteDocument } from '@/services/FileStorageService';
+import UploadDialog from '@/components/documents/UploadDialog';
 
 interface PropertyUtilityDetailsProps {
   property: Property;
@@ -14,6 +19,7 @@ interface PropertyUtilityDetailsProps {
   onUploadClick: () => void;
   onDownload: (document: PropertyDocument) => void;
   onDelete: (document: PropertyDocument) => void;
+  refetchDocuments: () => void;
 }
 
 const PropertyUtilityDetails: React.FC<PropertyUtilityDetailsProps> = ({
@@ -24,8 +30,65 @@ const PropertyUtilityDetails: React.FC<PropertyUtilityDetailsProps> = ({
   onBack,
   onUploadClick,
   onDownload,
-  onDelete
+  onDelete,
+  refetchDocuments
 }) => {
+  const {
+    fileUpload,
+    documentName,
+    documentDescription,
+    documentType: selectedDocType,
+    uploadDialogOpen,
+    isUploading,
+    setFileUpload,
+    setDocumentName,
+    setDocumentDescription,
+    setDocumentType,
+    setUploadDialogOpen,
+    setIsUploading,
+    resetUploadForm,
+    handleFileSelect,
+    prepareUpload
+  } = useDocumentUpload();
+
+  const handleUpload = async () => {
+    const uploadData = prepareUpload();
+    
+    if (!uploadData) return;
+    
+    setIsUploading(true);
+    
+    try {
+      const result = await uploadPropertyDocument(
+        property.id,
+        uploadData.file,
+        uploadData.documentType,
+        uploadData.name,
+        uploadData.description
+      );
+      
+      if (result) {
+        toast({
+          title: "Document uploaded",
+          description: "Your utility document has been uploaded successfully.",
+        });
+        resetUploadForm();
+        refetchDocuments();
+      } else {
+        throw new Error("Upload failed");
+      }
+    } catch (error) {
+      console.error("Error uploading document:", error);
+      toast({
+        variant: "destructive",
+        title: "Upload failed",
+        description: "There was an error uploading your document. Please try again.",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <div>
       <button 
@@ -45,12 +108,27 @@ const PropertyUtilityDetails: React.FC<PropertyUtilityDetailsProps> = ({
             utilityDocuments={utilityDocuments}
             documentsLoading={documentsLoading}
             documentType={documentType}
-            onUploadClick={onUploadClick}
+            onUploadClick={() => setUploadDialogOpen(true)}
             onDownload={onDownload}
             onDelete={onDelete}
           />
         </div>
       </div>
+      
+      <UploadDialog
+        isOpen={uploadDialogOpen}
+        setIsOpen={setUploadDialogOpen}
+        fileUpload={fileUpload}
+        documentName={documentName}
+        documentDescription={documentDescription}
+        documentType={selectedDocType}
+        isUploading={isUploading}
+        onFileSelect={handleFileSelect}
+        onNameChange={setDocumentName}
+        onDescriptionChange={setDocumentDescription}
+        onTypeChange={setDocumentType}
+        onUpload={handleUpload}
+      />
     </div>
   );
 };

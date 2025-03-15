@@ -16,10 +16,39 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
   setFile,
   onFileChange
 }) => {
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      setFile(e.dataTransfer.files[0]);
+      
+      // Create a synthetic event to pass to onFileChange
+      const fileInputEl = document.getElementById('documentFile') as HTMLInputElement;
+      if (fileInputEl) {
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(e.dataTransfer.files[0]);
+        fileInputEl.files = dataTransfer.files;
+        
+        const event = { target: { files: dataTransfer.files } } as React.ChangeEvent<HTMLInputElement>;
+        onFileChange(event);
+      }
+    }
+  };
+
   return (
     <div className="grid gap-2">
       <Label htmlFor="documentFile">File</Label>
-      <div className="border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center">
+      <div 
+        className="border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center"
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+      >
         {file ? (
           <div className="text-center">
             <p className="text-sm font-medium mb-1">{file.name}</p>

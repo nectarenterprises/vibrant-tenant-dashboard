@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { FolderType } from '@/services/document/types';
 
-// Import the new refactored components
+// Import the refactored components
 import FileSelectField from './upload/FileSelectField';
 import DocumentTypeField from './upload/DocumentTypeField';
 import DocumentNameField from './upload/DocumentNameField';
@@ -45,10 +45,14 @@ const UploadDialog = ({
   onTypeChange,
   onUpload
 }: UploadDialogProps) => {
-  const handleClose = () => setIsOpen(false);
+  const handleClose = () => {
+    if (!isUploading) {
+      setIsOpen(false);
+    }
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Upload Document</DialogTitle>
