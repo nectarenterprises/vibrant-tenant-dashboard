@@ -1,8 +1,10 @@
 
 import React, { useState } from 'react';
-import { Property, PropertyDocument, DocumentType } from '@/types/property';
+import { Property, PropertyDocument } from '@/types/property';
 import UtilityDashboard from './UtilityDashboard';
 import UtilityDocuments from './UtilityDocuments';
+import UtilityBillDashboard from './bill-processing/UtilityBillDashboard';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FolderType } from '@/services/document/types';
 import { toast } from '@/components/ui/use-toast';
 import { useDocumentUpload } from '@/hooks/documents/useDocumentUpload';
@@ -33,6 +35,7 @@ const PropertyUtilityDetails: React.FC<PropertyUtilityDetailsProps> = ({
   onDelete,
   refetchDocuments
 }) => {
+  const [activeTab, setActiveTab] = useState<string>("dashboard");
   const {
     fileUpload,
     documentName,
@@ -62,7 +65,7 @@ const PropertyUtilityDetails: React.FC<PropertyUtilityDetailsProps> = ({
       const result = await uploadPropertyDocument(
         property.id,
         uploadData.file,
-        uploadData.documentType as DocumentType,
+        uploadData.documentType as any,
         uploadData.name,
         uploadData.description
       );
@@ -98,22 +101,41 @@ const PropertyUtilityDetails: React.FC<PropertyUtilityDetailsProps> = ({
         ← Back to all properties
       </button>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          <UtilityDashboard property={property} />
-        </div>
+      <Tabs defaultValue="dashboard" value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="mb-6">
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="bills">Bill Processing</TabsTrigger>
+          <TabsTrigger value="documents">Documents</TabsTrigger>
+        </TabsList>
         
-        <div>
-          <UtilityDocuments 
+        <TabsContent value="dashboard" className="mt-0">
+          <UtilityDashboard property={property} />
+        </TabsContent>
+        
+        <TabsContent value="bills" className="mt-0">
+          <UtilityBillDashboard 
+            property={property}
             utilityDocuments={utilityDocuments}
             documentsLoading={documentsLoading}
-            documentType={documentType}
             onUploadClick={() => setUploadDialogOpen(true)}
-            onDownload={onDownload}
-            onDelete={onDelete}
           />
-        </div>
-      </div>
+        </TabsContent>
+        
+        <TabsContent value="documents" className="mt-0">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-3">
+              <UtilityDocuments 
+                utilityDocuments={utilityDocuments}
+                documentsLoading={documentsLoading}
+                documentType={documentType}
+                onUploadClick={() => setUploadDialogOpen(true)}
+                onDownload={onDownload}
+                onDelete={onDelete}
+              />
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
       
       <UploadDialog
         isOpen={uploadDialogOpen}
