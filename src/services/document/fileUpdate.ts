@@ -1,90 +1,56 @@
-
-import { toast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
-import { uploadFile } from './storage';
-import { updateDocumentMetadata, toggleDocumentFavorite, addDocumentVersion, fetchDocumentMetadata } from './metadata';
-import { PropertyDocument, DocumentTag } from '@/types/property';
-
-const STORAGE_BUCKET = 'documents';
 
 /**
- * Updates document details
+ * Update file metadata in Supabase storage
+ * @param fileId ID of the file to update
+ * @param metadata Updated metadata
+ * @returns Update result with data or error
  */
-export const updateDocument = async (
-  documentId: string,
-  updates: {
-    name?: string;
-    description?: string;
-    tags?: DocumentTag[];
-    isFavorite?: boolean;
-    expiryDate?: string;
-    keyDates?: PropertyDocument['keyDates'];
-    notificationPeriod?: number;
-  }
-): Promise<boolean> => {
-  return updateDocumentMetadata(documentId, updates);
-};
-
-/**
- * Toggle document favorite status
- */
-export const toggleFavorite = async (
-  documentId: string,
-  isFavorite: boolean
-): Promise<boolean> => {
-  return toggleDocumentFavorite(documentId, isFavorite);
-};
-
-/**
- * Uploads a new version of an existing document
- */
-export const uploadNewDocumentVersion = async (
-  documentId: string,
-  file: File,
-  versionNotes?: string
-): Promise<boolean> => {
+export const updateFileMetadata = async (fileId: string, metadata: any) => {
   try {
-    console.log(`Uploading new version for document: ${documentId}`);
-    
-    // Get document info to determine path
-    const documents = await fetchDocumentMetadata('', undefined);
-    const document = documents.find(doc => doc.id === documentId);
-    
-    if (!document) {
-      console.error('Document not found');
-      toast({
-        variant: "destructive",
-        title: "Document not found",
-        description: "Could not find the document to update.",
-      });
-      return false;
+    const { data, error } = await supabase
+      .from('documents')
+      .update(metadata)
+      .eq('id', fileId);
+
+    if (error) {
+      throw error;
     }
-    
-    // Generate a unique file path for the new version
-    const fileExtension = file.name.split('.').pop() || '';
-    const filePath = `${document.propertyId}/${document.documentType}/${uuidv4()}_v${(document.version || 1) + 1}.${fileExtension}`;
-    
-    console.log(`Generated new version path: ${filePath}`);
-    
-    // Upload the new file version
-    const uploadSuccess = await uploadFile(STORAGE_BUCKET, filePath, file);
-    
-    if (!uploadSuccess) {
-      console.error('Failed to upload new version');
-      return false;
-    }
-    
-    console.log('New version uploaded, updating metadata');
-    
-    // Update document metadata with version info
-    return addDocumentVersion(documentId, filePath, versionNotes);
+
+    return { data };
   } catch (error) {
-    console.error('Error uploading document version:', error);
-    toast({
-      variant: "destructive",
-      title: "Version upload failed",
-      description: "There was an error uploading the new document version.",
-    });
-    return false;
+    console.error('Error updating file metadata:', error);
+    throw error;
+  }
+};
+
+/**
+ * Replace a file in Supabase storage
+ * @param path Path of the file to replace
+ * @param file New file to upload
+ * @returns Upload result with data or error
+ */
+export const replaceFile = async (path: string, file: File) => {
+  try {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${uuidv4()}.${fileExt}`;
+    const filePath = `${path}/${fileName}`;
+
+    const { data, error } = await supabase.storage
+      .from('documents')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: true
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    return { data, filePath };
+  } catch (error) {
+    console.error('Error replacing file:', error);
+    throw error;
   }
 };

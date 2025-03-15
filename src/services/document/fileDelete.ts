@@ -1,42 +1,24 @@
 
-import { toast } from '@/components/ui/use-toast';
-import { deleteFile } from './storage';
-import { deleteDocumentMetadata } from './metadata';
-
-const STORAGE_BUCKET = 'documents';
+import { supabase } from '@/integrations/supabase/client';
 
 /**
- * Deletes a document and its metadata
+ * Delete a file from Supabase storage
+ * @param path Path of the file to delete
+ * @returns Delete result with data or error
  */
-export const deleteDocument = async (
-  documentId: string,
-  filePath: string
-): Promise<boolean> => {
+export const deleteFile = async (path: string) => {
   try {
-    console.log(`Deleting document: ${documentId}, filePath: ${filePath}`);
-    
-    // Delete the file from storage
-    const deleteFileSuccess = await deleteFile(STORAGE_BUCKET, filePath);
-    
-    if (!deleteFileSuccess) {
-      console.error('Failed to delete file from storage');
-      return false;
+    const { data, error } = await supabase.storage
+      .from('documents')
+      .remove([path]);
+
+    if (error) {
+      throw error;
     }
-    
-    console.log('File deleted from storage, now deleting metadata');
-    
-    // Delete document metadata
-    const deleteMetadataSuccess = await deleteDocumentMetadata(documentId);
-    
-    console.log('Document deletion complete:', deleteMetadataSuccess);
-    return deleteMetadataSuccess;
+
+    return { data };
   } catch (error) {
-    console.error('Error deleting document:', error);
-    toast({
-      variant: "destructive",
-      title: "Delete failed",
-      description: "There was an error deleting the document.",
-    });
-    return false;
+    console.error('Error deleting file:', error);
+    throw error;
   }
 };

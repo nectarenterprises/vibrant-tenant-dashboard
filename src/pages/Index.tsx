@@ -1,10 +1,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
-import { WelcomeHeader } from '@/components/dashboard/WelcomeHeader';
-import { PropertyCard } from '@/components/dashboard/PropertyCard';
-import { UtilityChart } from '@/components/dashboard/UtilityChart';
-import { CalendarWidget } from '@/components/dashboard/CalendarWidget';
+import WelcomeHeader from '@/components/dashboard/WelcomeHeader';
+import PropertyCard from '@/components/dashboard/PropertyCard';
+import UtilityChart from '@/components/dashboard/UtilityChart';
+import CalendarWidget from '@/components/dashboard/CalendarWidget';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
