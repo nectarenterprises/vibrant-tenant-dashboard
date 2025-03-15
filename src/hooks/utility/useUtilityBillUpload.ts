@@ -3,12 +3,12 @@ import { useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
-import { UtilityBillUpload, ProcessingResult } from '@/types/utility';
+import { UtilityBillUpload } from '@/types/utility';
 
 export const useUtilityBillUpload = (propertyId: string) => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const uploadDocument = async (fileUpload: UtilityBillUpload): Promise<ProcessingResult> => {
+  const uploadDocument = async (fileUpload: UtilityBillUpload): Promise<string> => {
     try {
       setUploadProgress(0);
       
@@ -21,10 +21,10 @@ export const useUtilityBillUpload = (propertyId: string) => {
         .from('documents')
         .upload(filePath, fileUpload.file, {
           upsert: true,
-          // Use onUploadProgress from the Supabase JS client
-          onUploadProgress: (progress) => {
-            if (progress.total) {
-              setUploadProgress(Math.round((progress.loaded / progress.total) * 100));
+          // Using onUploadProgress from custom event handler
+          onUploadProgress: ({ loaded, total }) => {
+            if (total) {
+              setUploadProgress(Math.round((loaded / total) * 100));
             }
           }
         });
