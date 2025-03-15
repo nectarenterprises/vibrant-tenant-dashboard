@@ -4,6 +4,7 @@ export * from './PropertyFetchService';
 export * from './PropertyCreateService';
 export * from './PropertyImageService';
 
-// Export fetchProperty as an alias to getProperty from PropertyFetchService
-import { getProperty } from './PropertyFetchService';
+// Export aliases for backward compatibility
+import { getProperty, fetchUserProperties } from './PropertyFetchService';
+export { getProperty, fetchUserProperties };
 export const fetchProperty = getProperty;
