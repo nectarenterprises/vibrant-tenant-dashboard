@@ -58,22 +58,37 @@ export const fetchDocumentMetadata = async (
     const { data, error } = await query.order(sortField, { ascending: sortDirection === 'asc' });
     
     if (error) {
-      toast({
-        variant: "destructive",
-        title: "Failed to fetch documents",
-        description: error.message,
-      });
-      return [];
+      console.error('Supabase query error:', error);
+      throw new Error(error.message);
+    }
+    
+    if (!data || !Array.isArray(data)) {
+      console.error('Invalid data response format:', data);
+      throw new Error('Server returned an invalid response format');
     }
     
     // Transform to frontend model
     return (data as PropertyDocumentResponse[]).map(transformToPropertyDocument);
   } catch (error: any) {
+    // Improved error logging for JSON parse errors
+    console.error('Error in fetchDocumentMetadata:', error);
+    
+    // Special handling for JSON parse errors
+    const errorMessage = error.message || "An error occurred while fetching documents";
+    const isJsonError = errorMessage.includes('JSON');
+    
+    if (isJsonError) {
+      console.error('JSON parsing error detected in response');
+    }
+    
     toast({
       variant: "destructive",
       title: "Failed to fetch documents",
-      description: error.message || "An error occurred while fetching documents",
+      description: isJsonError 
+        ? "Invalid data received from server. Please try again." 
+        : errorMessage,
     });
+    
     return [];
   }
 };
@@ -97,21 +112,31 @@ export const fetchRecentDocuments = async (limit: number = 5): Promise<PropertyD
       .limit(limit);
     
     if (error) {
-      toast({
-        variant: "destructive",
-        title: "Failed to fetch recent documents",
-        description: error.message,
-      });
-      return [];
+      console.error('Supabase query error:', error);
+      throw new Error(error.message);
+    }
+    
+    if (!data || !Array.isArray(data)) {
+      console.error('Invalid data response format:', data);
+      throw new Error('Server returned an invalid response format');
     }
     
     return (data as PropertyDocumentResponse[]).map(transformToPropertyDocument);
   } catch (error: any) {
+    console.error('Error in fetchRecentDocuments:', error);
+    
+    // Special handling for JSON parse errors
+    const errorMessage = error.message || "An error occurred while fetching recent documents";
+    const isJsonError = errorMessage.includes('JSON');
+    
     toast({
       variant: "destructive",
       title: "Failed to fetch recent documents",
-      description: error.message || "An error occurred while fetching recent documents",
+      description: isJsonError 
+        ? "Invalid data received from server. Please try again." 
+        : errorMessage,
     });
+    
     return [];
   }
 };
@@ -132,21 +157,31 @@ export const fetchExpiringDocuments = async (daysThreshold: number = 90): Promis
       .order('expiry_date', { ascending: true });
     
     if (error) {
-      toast({
-        variant: "destructive",
-        title: "Failed to fetch expiring documents",
-        description: error.message,
-      });
-      return [];
+      console.error('Supabase query error:', error);
+      throw new Error(error.message);
+    }
+    
+    if (!data || !Array.isArray(data)) {
+      console.error('Invalid data response format:', data);
+      throw new Error('Server returned an invalid response format');
     }
     
     return (data as PropertyDocumentResponse[]).map(transformToPropertyDocument);
   } catch (error: any) {
+    console.error('Error in fetchExpiringDocuments:', error);
+    
+    // Special handling for JSON parse errors
+    const errorMessage = error.message || "An error occurred while fetching expiring documents";
+    const isJsonError = errorMessage.includes('JSON');
+    
     toast({
       variant: "destructive",
       title: "Failed to fetch expiring documents",
-      description: error.message || "An error occurred while fetching expiring documents",
+      description: isJsonError 
+        ? "Invalid data received from server. Please try again." 
+        : errorMessage,
     });
+    
     return [];
   }
 };

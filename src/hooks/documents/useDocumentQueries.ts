@@ -34,10 +34,18 @@ export const useDocumentQueries = (
         setDocuments(docs);
       } catch (error) {
         console.error('Error fetching documents:', error);
+        
+        // Improved error handling for JSON parse errors
+        const errorMessage = error instanceof Error 
+          ? (error.message.includes('JSON') 
+              ? 'Invalid response format from server. Please try again.' 
+              : error.message)
+          : 'There was an error loading your documents.';
+        
         toast({
           variant: "destructive",
           title: "Failed to fetch documents",
-          description: "There was an error loading your documents.",
+          description: errorMessage,
         });
       } finally {
         setDocumentsLoading(false);
@@ -59,10 +67,18 @@ export const useDocumentQueries = (
       setDocuments(docs);
     } catch (error) {
       console.error('Error refreshing documents:', error);
+      
+      // Improved error handling for JSON parse errors
+      const errorMessage = error instanceof Error 
+        ? (error.message.includes('JSON') 
+            ? 'Invalid response format from server. Please try again.' 
+            : error.message)
+        : 'There was an error reloading your documents.';
+      
       toast({
         variant: "destructive",
         title: "Failed to refresh documents",
-        description: "There was an error reloading your documents.",
+        description: errorMessage,
       });
     } finally {
       setDocumentsLoading(false);
@@ -77,7 +93,20 @@ export const useDocumentQueries = (
   } = useQuery({
     queryKey: ['recent-documents'],
     queryFn: () => getRecentDocuments(5),
-    enabled: true
+    enabled: true,
+    retry: 1,
+    onError: (error: Error) => {
+      console.error('Error fetching recent documents:', error);
+      const errorMessage = error.message.includes('JSON') 
+        ? 'Invalid response format from server. Please try again.' 
+        : error.message;
+      
+      toast({
+        variant: "destructive",
+        title: "Failed to fetch recent documents",
+        description: errorMessage,
+      });
+    }
   });
 
   // Expiring documents query
@@ -88,7 +117,20 @@ export const useDocumentQueries = (
   } = useQuery({
     queryKey: ['expiring-documents'],
     queryFn: () => getExpiringDocuments(30), // Documents expiring in next 30 days
-    enabled: true
+    enabled: true,
+    retry: 1,
+    onError: (error: Error) => {
+      console.error('Error fetching expiring documents:', error);
+      const errorMessage = error.message.includes('JSON') 
+        ? 'Invalid response format from server. Please try again.' 
+        : error.message;
+      
+      toast({
+        variant: "destructive",
+        title: "Failed to fetch expiring documents",
+        description: errorMessage,
+      });
+    }
   });
 
   // Get documents by type for a specific property
@@ -99,6 +141,18 @@ export const useDocumentQueries = (
       return await getPropertyDocuments(propertyId, docType as DocumentType);
     } catch (error) {
       console.error('Error fetching documents by type:', error);
+      
+      // Improved error handling for JSON parse errors
+      const errorMessage = error instanceof Error && error.message.includes('JSON')
+        ? 'Invalid response format from server. Please try again.'
+        : 'Error fetching documents';
+      
+      toast({
+        variant: "destructive",
+        title: "Failed to fetch documents",
+        description: errorMessage,
+      });
+      
       return [];
     }
   };
