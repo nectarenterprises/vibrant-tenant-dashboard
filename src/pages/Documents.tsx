@@ -37,12 +37,15 @@ const Documents = () => {
     handleDelete,
     setSearchQuery,
     setDocumentType,
-    getFilteredDocuments,
+    getFilteredDocuments: getFilteredDocumentsFn,
     setDocumentName,
     setDocumentDescription,
     refetchDocuments,
     fetchProperties
   } = usePropertyDocuments();
+
+  // Create a wrapper function that doesn't require arguments
+  const getDocumentsWrapper = () => getFilteredDocumentsFn();
 
   // Query to fetch properties
   const { data: properties = [], isLoading: propertiesLoading } = useQuery({
@@ -105,7 +108,7 @@ const Documents = () => {
                 setDocumentName={setDocumentName}
                 setDocumentDescription={setDocumentDescription}
                 setDocumentType={setDocumentType}
-                getFilteredDocuments={getFilteredDocuments}
+                getFilteredDocuments={getDocumentsWrapper}
               />
             </div>
           </div>

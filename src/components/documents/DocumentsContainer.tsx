@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Property, PropertyDocument } from '@/types/property';
-import { DocumentFolder } from '@/services/document/types';
+import { DocumentFolder, FolderType } from '@/services/document/types';
 import DocumentSearch from './DocumentSearch';
 import DocumentList from './DocumentList';
 import UploadDialog from './UploadDialog';
@@ -18,7 +18,7 @@ interface DocumentsContainerProps {
   fileUpload: File | null;
   documentName: string;
   documentDescription: string;
-  documentType: string;
+  documentType: FolderType;
   uploadMutation: any;
   setSearchQuery: (query: string) => void;
   setUploadDialogOpen: (open: boolean) => void;
@@ -29,7 +29,7 @@ interface DocumentsContainerProps {
   refetchDocuments: () => void;
   setDocumentName: (name: string) => void;
   setDocumentDescription: (description: string) => void;
-  setDocumentType: (type: any) => void;
+  setDocumentType: (type: FolderType) => void;
   getFilteredDocuments: () => PropertyDocument[];
 }
 

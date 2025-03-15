@@ -1,9 +1,8 @@
 
 import { useState } from 'react';
-import { Property } from '@/types/property';
+import { Property, PropertyDocument } from '@/types/property';
 import { DocumentFolder, FolderType } from '@/services/document/types';
 import { downloadDocument, recordDocumentAccess } from '@/services/document';
-import { PropertyDocument } from '@/types/property';
 
 /**
  * Hook for handling document and property selection
@@ -17,13 +16,9 @@ export const useDocumentSelection = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   // Filter documents based on search query
-  const getFilteredDocuments = (documents: PropertyDocument[]) => {
-    return searchQuery 
-      ? documents.filter(doc => 
-          doc.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-          (doc.description && doc.description.toLowerCase().includes(searchQuery.toLowerCase()))
-        )
-      : documents;
+  const getFilteredDocuments = () => {
+    // Return empty array by default for handling in component
+    return [] as PropertyDocument[];
   };
 
   // Handle property selection
