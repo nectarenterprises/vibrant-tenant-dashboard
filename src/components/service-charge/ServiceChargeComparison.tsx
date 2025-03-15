@@ -1,11 +1,17 @@
 
 import React, { useState } from 'react';
 import { Property } from '@/types/property';
-import { ServiceChargeCategory } from '@/types/service-charge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import YearComparisonSummary from './comparison/YearComparisonSummary';
 import ServiceComparisonChart from './comparison/ServiceComparisonChart';
 import DetailedComparisonGrid from './comparison/DetailedComparisonGrid';
+
+// Define the ServiceChargeCategory interface locally
+interface ServiceChargeCategory {
+  category: string;
+  amount: number;
+  percentage: number;
+}
 
 interface ServiceChargeComparisonProps {
   property: Property;
