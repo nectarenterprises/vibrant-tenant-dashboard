@@ -40,6 +40,7 @@ Deno.serve(async (req) => {
       .insert({
         document_id: documentId,
         extraction_status: 'processing',
+        extraction_date: new Date().toISOString()
       });
 
     if (updateError) {
@@ -120,7 +121,7 @@ Deno.serve(async (req) => {
 // Mock function to simulate extraction - in production, replace with actual OCR/AI service
 function simulateExtractionForDemo(documentName: string) {
   // Generate random but plausible utility bill data
-  const utilityTypes = ['electricity', 'gas', 'water'];
+  const utilityTypes = ['electricity', 'gas', 'water', 'other'] as const;
   const utilityType = utilityTypes[Math.floor(Math.random() * utilityTypes.length)];
   
   const today = new Date();

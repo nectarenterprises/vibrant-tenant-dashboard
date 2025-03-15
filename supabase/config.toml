@@ -52,3 +52,12 @@ enable_confirmations = true
 enabled = false
 client_id = ""
 secret = ""
+
+[storage]
+enabled = true
+
+[storage.buckets.documents]
+enabled = true
+public = false
+file_size_limit = "10MB"
+allowed_mime_types = ["application/pdf", "image/png", "image/jpeg"]

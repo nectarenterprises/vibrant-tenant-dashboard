@@ -7,7 +7,8 @@ import {
   UtilityBill, 
   UtilityBillUpload, 
   ProcessingResult,
-  ExtractedUtilityData
+  ExtractedUtilityData,
+  UtilityType
 } from '@/types/utility';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -32,8 +33,11 @@ export const useUtilityBillProcessing = (propertyId: string) => {
         .from('documents')
         .upload(filePath, fileUpload.file, {
           upsert: true,
-          onUploadProgress: (progress) => {
-            setUploadProgress(Math.round((progress.loaded / progress.total) * 100));
+          // Use progress callback that's compatible with the current API
+          onUploadProgress: (event) => {
+            if (event.total) {
+              setUploadProgress(Math.round((event.loaded / event.total) * 100));
+            }
           }
         });
       
@@ -94,7 +98,7 @@ export const useUtilityBillProcessing = (propertyId: string) => {
       setProcessingStatus('verifying');
       
       const result = {
-        extractedData: processingData.extractedData,
+        extractedData: processingData.extractedData as ExtractedUtilityData,
         confidenceScores: processingData.confidenceScores,
         documentId: documentData.id
       };
@@ -173,7 +177,7 @@ export const useUtilityBillProcessing = (propertyId: string) => {
         id: billData.id,
         propertyId: billData.property_id,
         userId: billData.user_id,
-        utilityType: billData.utility_type,
+        utilityType: billData.utility_type as UtilityType,
         billDate: billData.bill_date,
         periodStart: billData.period_start,
         periodEnd: billData.period_end,
@@ -181,7 +185,7 @@ export const useUtilityBillProcessing = (propertyId: string) => {
         usageQuantity: billData.usage_quantity,
         usageUnit: billData.usage_unit,
         meterReference: billData.meter_reference,
-        rateInformation: billData.rate_information,
+        rateInformation: billData.rate_information as UtilityBill['rateInformation'],
         notes: billData.notes,
         createdAt: billData.created_at,
         updatedAt: billData.updated_at
