@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Property } from '@/types/property';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,7 +5,6 @@ import YearComparisonSummary from './comparison/YearComparisonSummary';
 import ServiceComparisonChart from './comparison/ServiceComparisonChart';
 import DetailedComparisonGrid from './comparison/DetailedComparisonGrid';
 
-// Define the ServiceChargeCategory interface locally
 interface ServiceChargeCategory {
   category: string;
   amount: number;
@@ -27,7 +25,6 @@ const ServiceChargeComparison: React.FC<ServiceChargeComparisonProps> = ({
   const [selectedYear, setSelectedYear] = useState('2022');
   const currentYear = new Date().getFullYear().toString();
   
-  // Generate mock previous year data with some variations
   const generatePreviousYearData = (year: string) => {
     const yearVariationFactor = year === '2022' ? 0.85 : year === '2021' ? 0.75 : 0.65;
     
@@ -39,14 +36,12 @@ const ServiceChargeComparison: React.FC<ServiceChargeComparisonProps> = ({
   
   const comparisonData = generatePreviousYearData(selectedYear);
   
-  // Prepare data for the chart
   const chartData = comparisonData.map(item => ({
     category: item.category,
     [currentYear]: Math.round(item.amount),
     [selectedYear]: Math.round(item.previousAmount),
   }));
   
-  // Calculate total for current and selected year
   const currentYearTotal = currentYearCharges.reduce((sum, charge) => sum + charge.amount, 0);
   const previousYearTotal = comparisonData.reduce((sum, charge) => sum + charge.previousAmount, 0);
   const percentageChange = ((currentYearTotal - previousYearTotal) / previousYearTotal) * 100;

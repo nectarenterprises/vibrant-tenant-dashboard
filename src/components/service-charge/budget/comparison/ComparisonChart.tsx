@@ -11,7 +11,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import { ServiceChargeComparison } from '@/types/service-charge';
-import { formatCurrency } from '../../comparison/utils';
+import { formatCurrency } from '../../comparison/utils.tsx';
 
 interface ComparisonChartProps {
   comparisonData: ServiceChargeComparison[];

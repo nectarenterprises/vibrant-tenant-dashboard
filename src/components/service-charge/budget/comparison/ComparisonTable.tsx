@@ -3,7 +3,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { ServiceChargeComparison } from '@/types/service-charge';
-import { getChangeBadgeColor, getChangeIcon, formatCurrency } from '../../comparison/utils';
+import { getChangeBadgeColor, getChangeIcon, formatCurrency } from '../../comparison/utils.tsx';
 
 interface ComparisonTableProps {
   comparisonData: ServiceChargeComparison[];
