@@ -60,37 +60,7 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
         secondaryColor={secondaryColor}
         usageUnit={usageUnit}
       />
-
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Monthly Breakdown</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Period</TableHead>
-                <TableHead>Usage ({usageUnit})</TableHead>
-                <TableHead>Cost (£)</TableHead>
-                <TableHead>Unit Rate (£/{usageUnit})</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell>{item.month}</TableCell>
-                  <TableCell>{item.usage.toLocaleString()}</TableCell>
-                  <TableCell>£{item.cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
-                  <TableCell>
-                    £{(item.cost / item.usage).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
+      
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
@@ -125,6 +95,36 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg">Monthly Breakdown</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Period</TableHead>
+                <TableHead>Usage ({usageUnit})</TableHead>
+                <TableHead>Cost (£)</TableHead>
+                <TableHead>Unit Rate (£/{usageUnit})</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.month}</TableCell>
+                  <TableCell>{item.usage.toLocaleString()}</TableCell>
+                  <TableCell>£{item.cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                  <TableCell>
+                    £{(item.cost / item.usage).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 };
