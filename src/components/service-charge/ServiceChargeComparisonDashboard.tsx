@@ -8,7 +8,7 @@ import {
   CardTitle 
 } from '@/components/ui/card';
 import { Property } from '@/types/property';
-import { ComparisonPeriod, ViewMode } from './comparison/types';
+import { ComparisonPeriod } from './comparison/types';
 import { 
   formatCurrency, 
   getChangeColor, 
@@ -16,7 +16,6 @@ import {
   getChangeIcon 
 } from './comparison/utils.tsx';
 import PeriodSelector from './comparison/PeriodSelector';
-import ViewModeSelector from './comparison/ViewModeSelector';
 import ComparisonChart from './comparison/ComparisonChart';
 import ComparisonTable from './comparison/ComparisonTable';
 import ComparisonSummary from './comparison/ComparisonSummary';
@@ -27,7 +26,6 @@ interface ServiceChargeComparisonDashboardProps {
 
 const ServiceChargeComparisonDashboard: React.FC<ServiceChargeComparisonDashboardProps> = ({ property }) => {
   const [comparisonPeriod, setComparisonPeriod] = useState<ComparisonPeriod>('annual');
-  const [viewMode, setViewMode] = useState<ViewMode>('chart');
   
   // Mock data - would be replaced with real data from API
   const currentYearData = [
@@ -54,21 +52,18 @@ const ServiceChargeComparisonDashboard: React.FC<ServiceChargeComparisonDashboar
                 comparisonPeriod={comparisonPeriod} 
                 onPeriodChange={setComparisonPeriod} 
               />
-              
-              <ViewModeSelector 
-                viewMode={viewMode} 
-                onViewModeChange={setViewMode} 
-              />
             </div>
           </div>
         </CardHeader>
         
-        <CardContent>
-          {viewMode === 'chart' && (
+        <CardContent className="space-y-6">
+          {/* Chart View */}
+          <div>
             <ComparisonChart data={currentYearData} formatCurrency={formatCurrency} />
-          )}
+          </div>
           
-          {viewMode === 'table' && (
+          {/* Table View */}
+          <div>
             <ComparisonTable 
               data={currentYearData} 
               formatCurrency={formatCurrency}
@@ -76,7 +71,7 @@ const ServiceChargeComparisonDashboard: React.FC<ServiceChargeComparisonDashboar
               getChangeBadgeColor={getChangeBadgeColor}
               getChangeIcon={getChangeIcon}
             />
-          )}
+          </div>
           
           <ComparisonSummary 
             data={currentYearData} 
