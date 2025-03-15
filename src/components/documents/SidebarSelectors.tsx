@@ -11,7 +11,7 @@ interface SidebarSelectorsProps {
   folderStructure: DocumentFolder[];
   selectedFolder: DocumentFolder | null;
   propertiesLoading: boolean;
-  handlePropertySelect: (propertyId: string, properties: Property[]) => void;
+  handlePropertySelect: (propertyId: string) => void;
   handleFolderSelect: (folder: DocumentFolder) => void;
 }
 
@@ -25,13 +25,13 @@ const SidebarSelectors = ({
   handleFolderSelect
 }: SidebarSelectorsProps) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       {/* Property Selector */}
       <PropertySelector
         properties={properties}
         selectedProperty={selectedProperty}
         isLoading={propertiesLoading}
-        onSelectProperty={(propertyId) => handlePropertySelect(propertyId, properties)}
+        onSelectProperty={handlePropertySelect}
       />
       
       {/* Folder Selector (only show if property is selected) */}

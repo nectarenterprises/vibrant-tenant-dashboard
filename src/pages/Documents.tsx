@@ -3,14 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Property } from '@/types/property';
 import { DocumentFolder } from '@/services/document/types';
-import { fetchProperties } from '@/services/property';
+import { fetchUserProperties } from '@/services/property';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDocumentSelection } from '@/hooks/documents/useDocumentSelection';
 import { useDocumentQueries } from '@/hooks/documents/useDocumentQueries';
 import { useDocumentMutations } from '@/hooks/documents/useDocumentMutations';
+import { useDocumentUpload } from '@/hooks/documents/useDocumentUpload';
 import DocumentsContainer from '@/components/documents/DocumentsContainer';
 import SidebarSelectors from '@/components/documents/SidebarSelectors';
+import { getPropertyFolderStructure } from '@/services/document/types';
 import { toast } from '@/components/ui/use-toast';
+import { downloadDocument } from '@/services/document';
 
 const Documents = () => {
   const { user } = useAuth();
@@ -20,8 +23,13 @@ const Documents = () => {
   const {
     selectedProperty,
     selectedFolder,
-    selectProperty,
-    selectFolder,
+    setSelectedProperty,
+    setSelectedFolder,
+    getFilteredDocuments,
+    handlePropertySelect,
+    handleFolderSelect,
+    handleDownload,
+    recordDocumentAccess
   } = useDocumentSelection();
   
   // Fetch properties
@@ -30,42 +38,75 @@ const Documents = () => {
     isLoading: propertiesLoading 
   } = useQuery({
     queryKey: ['properties'],
-    queryFn: fetchProperties,
+    queryFn: fetchUserProperties,
     enabled: !!user
   });
+  
+  // Get folder structure for selected property
+  const folderStructure = selectedProperty 
+    ? getPropertyFolderStructure(selectedProperty.id) 
+    : [];
   
   // Document queries - fetch documents based on selected property and folder
   const {
     documents,
     documentsLoading,
     refetchDocuments
-  } = useDocumentQueries(selectedProperty?.id, selectedFolder);
+  } = useDocumentQueries(
+    selectedProperty?.id, 
+    selectedFolder?.type
+  );
+
+  // Document upload state
+  const {
+    fileUpload,
+    documentName,
+    documentDescription,
+    documentType,
+    uploadDialogOpen,
+    setFileUpload,
+    setDocumentName,
+    setDocumentDescription,
+    setDocumentType,
+    setUploadDialogOpen,
+    resetUploadForm,
+    handleFileSelect,
+    prepareUpload
+  } = useDocumentUpload();
   
   // Document mutations - handle document uploads, downloads, and deletes
   const {
-    uploadDocument,
-    downloadDocument,
-    deleteDocument,
-    isUploading
-  } = useDocumentMutations(selectedProperty?.id, refetchDocuments);
-  
-  // Filter documents based on search query
-  const filteredDocuments = documents.filter(doc => 
-    doc.name.toLowerCase().includes(searchQuery.toLowerCase())
+    uploadMutation,
+    deleteMutation
+  } = useDocumentMutations(
+    selectedProperty?.id,
+    resetUploadForm
   );
   
-  // Handle property selection
-  const handlePropertySelect = (propertyId: string) => {
-    const selected = properties.find(p => p.id === propertyId) || null;
-    selectProperty(selected);
+  // Handle document upload
+  const handleUpload = () => {
+    const uploadData = prepareUpload();
+    if (uploadData) {
+      uploadMutation.mutate(uploadData);
+    }
+  };
+  
+  // Handle document deletion
+  const handleDelete = (document: any) => {
+    if (confirm(`Are you sure you want to delete "${document.name}"?`)) {
+      deleteMutation.mutate({ 
+        id: document.id, 
+        filePath: document.filePath 
+      });
+    }
   };
   
   // Reset selection if properties change
   useEffect(() => {
     if (properties.length > 0 && !selectedProperty) {
-      selectProperty(properties[0]);
+      setSelectedProperty(properties[0]);
     }
-  }, [properties, selectedProperty, selectProperty]);
+  }, [properties, selectedProperty, setSelectedProperty]);
   
   // If not logged in, show login message
   if (!user) {
@@ -82,27 +123,40 @@ const Documents = () => {
       <div className="fixed top-0 left-0 bottom-0 w-64 border-r border-border bg-background z-10 overflow-auto">
         <SidebarSelectors
           properties={properties}
-          propertiesLoading={propertiesLoading}
           selectedProperty={selectedProperty}
+          folderStructure={folderStructure}
           selectedFolder={selectedFolder}
-          handlePropertySelect={handlePropertySelect}
-          handleFolderSelect={selectFolder}
+          propertiesLoading={propertiesLoading}
+          handlePropertySelect={(propertyId) => handlePropertySelect(propertyId, properties)}
+          handleFolderSelect={handleFolderSelect}
         />
       </div>
       
       <div className="flex-1 ml-64">
         <div className="container mx-auto p-6">
           <DocumentsContainer
-            documents={filteredDocuments}
-            documentsLoading={documentsLoading}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
             selectedProperty={selectedProperty}
             selectedFolder={selectedFolder}
-            uploadDocument={uploadDocument}
-            downloadDocument={downloadDocument}
-            deleteDocument={deleteDocument}
-            isUploading={isUploading}
+            searchQuery={searchQuery}
+            documents={documents}
+            documentsLoading={documentsLoading}
+            uploadDialogOpen={uploadDialogOpen}
+            fileUpload={fileUpload}
+            documentName={documentName}
+            documentDescription={documentDescription}
+            documentType={selectedFolder?.type || 'lease'}
+            uploadMutation={uploadMutation}
+            setSearchQuery={setSearchQuery}
+            setUploadDialogOpen={setUploadDialogOpen}
+            handleFileSelect={handleFileSelect}
+            handleUpload={handleUpload}
+            handleDownload={handleDownload}
+            handleDelete={handleDelete}
+            refetchDocuments={refetchDocuments}
+            setDocumentName={setDocumentName}
+            setDocumentDescription={setDocumentDescription}
+            setDocumentType={setDocumentType}
+            getFilteredDocuments={() => getFilteredDocuments(documents)}
           />
         </div>
       </div>

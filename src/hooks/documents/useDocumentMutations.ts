@@ -1,6 +1,5 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { PropertyDocument } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
 import { 
   uploadPropertyDocument,
@@ -13,7 +12,6 @@ import { FolderType } from '@/services/document/types';
  */
 export const useDocumentMutations = (
   propertyId: string | undefined,
-  folderType: FolderType | undefined,
   resetForm: () => void
 ) => {
   const queryClient = useQueryClient();
@@ -36,8 +34,8 @@ export const useDocumentMutations = (
         data.description
       );
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['property-documents', propertyId, folderType] });
+    onSuccess: (result, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['property-documents', propertyId, variables.documentType] });
       queryClient.invalidateQueries({ queryKey: ['recent-documents'] });
       queryClient.invalidateQueries({ queryKey: ['expiring-documents'] });
       resetForm();
@@ -45,6 +43,14 @@ export const useDocumentMutations = (
       toast({
         title: "Document uploaded",
         description: "Your document has been uploaded successfully.",
+      });
+    },
+    onError: (error) => {
+      console.error('Upload error:', error);
+      toast({
+        variant: "destructive",
+        title: "Upload failed",
+        description: "There was an error uploading your document."
       });
     }
   });
@@ -55,13 +61,22 @@ export const useDocumentMutations = (
       return deleteDocument(id, filePath);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['property-documents', propertyId, folderType] });
+      // Since we don't know the document type here, we invalidate all document queries
+      queryClient.invalidateQueries({ queryKey: ['property-documents'] });
       queryClient.invalidateQueries({ queryKey: ['recent-documents'] });
       queryClient.invalidateQueries({ queryKey: ['expiring-documents'] });
       
       toast({
         title: "Document deleted",
         description: "The document has been deleted successfully.",
+      });
+    },
+    onError: (error) => {
+      console.error('Delete error:', error);
+      toast({
+        variant: "destructive",
+        title: "Delete failed",
+        description: "There was an error deleting the document."
       });
     }
   });

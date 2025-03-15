@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Property, PropertyDocument } from '@/types/property';
+import { PropertyDocument } from '@/types/property';
 import { 
   getPropertyDocuments,
   getRecentDocuments,
@@ -14,8 +14,8 @@ import { toast } from '@/components/ui/use-toast';
  * Hook for document-related queries
  */
 export const useDocumentQueries = (
-  selectedProperty: Property | null,
-  selectedFolder: { type: FolderType } | null
+  propertyId: string | undefined,
+  folderType: FolderType | undefined
 ) => {
   const [documents, setDocuments] = useState<PropertyDocument[]>([]);
   const [documentsLoading, setDocumentsLoading] = useState(false);
@@ -23,14 +23,14 @@ export const useDocumentQueries = (
   // Fetch documents when property or folder changes
   useEffect(() => {
     const fetchDocuments = async () => {
-      if (!selectedProperty?.id || !selectedFolder?.type) {
+      if (!propertyId || !folderType) {
         setDocuments([]);
         return;
       }
 
       setDocumentsLoading(true);
       try {
-        const docs = await getPropertyDocuments(selectedProperty.id, selectedFolder.type);
+        const docs = await getPropertyDocuments(propertyId, folderType);
         setDocuments(docs);
       } catch (error) {
         console.error('Error fetching documents:', error);
@@ -45,17 +45,17 @@ export const useDocumentQueries = (
     };
 
     fetchDocuments();
-  }, [selectedProperty?.id, selectedFolder?.type]);
+  }, [propertyId, folderType]);
 
   // Function to manually trigger a document refresh
   const refetchDocuments = async () => {
-    if (!selectedProperty?.id || !selectedFolder?.type) {
+    if (!propertyId || !folderType) {
       return;
     }
 
     setDocumentsLoading(true);
     try {
-      const docs = await getPropertyDocuments(selectedProperty.id, selectedFolder.type);
+      const docs = await getPropertyDocuments(propertyId, folderType);
       setDocuments(docs);
     } catch (error) {
       console.error('Error refreshing documents:', error);

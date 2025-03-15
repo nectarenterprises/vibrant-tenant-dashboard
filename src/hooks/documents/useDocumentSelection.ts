@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Property, PropertyDocument } from '@/types/property';
 import { DocumentFolder, FolderType } from '@/services/document/types';
 import { downloadDocument, recordDocumentAccess } from '@/services/document';
+import { toast } from '@/components/ui/use-toast';
 
 /**
  * Hook for handling document and property selection
@@ -42,13 +43,23 @@ export const useDocumentSelection = () => {
   // Handle document download
   const handleDownload = async (document: PropertyDocument) => {
     try {
-      await downloadDocument(document.filePath, document.id);
+      await downloadDocument(document.filePath, document.name);
       // Record access after successful download
       if (document.id) {
         await recordDocumentAccess(document.id);
       }
+      
+      toast({
+        title: "Document downloaded",
+        description: `${document.name} has been downloaded successfully.`
+      });
     } catch (error) {
       console.error('Error downloading document:', error);
+      toast({
+        variant: "destructive",
+        title: "Download failed",
+        description: "There was an error downloading the document."
+      });
     }
   };
 

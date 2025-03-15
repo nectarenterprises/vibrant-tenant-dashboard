@@ -3,10 +3,10 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Property, PropertyDocument } from '@/types/property';
 import { DocumentFolder, FolderType } from '@/services/document/types';
-import DocumentSearch from './DocumentSearch';
 import DocumentList from './DocumentList';
 import UploadDialog from './UploadDialog';
 import EmptyState from './EmptyState';
+import { UseMutationResult } from '@tanstack/react-query';
 
 interface DocumentsContainerProps {
   selectedProperty: Property | null;
@@ -19,7 +19,7 @@ interface DocumentsContainerProps {
   documentName: string;
   documentDescription: string;
   documentType: FolderType;
-  uploadMutation: any;
+  uploadMutation: UseMutationResult<any, Error, any, unknown>;
   setSearchQuery: (query: string) => void;
   setUploadDialogOpen: (open: boolean) => void;
   handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
