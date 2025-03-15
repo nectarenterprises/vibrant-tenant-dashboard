@@ -12,42 +12,36 @@ export const getPropertyFolders = (propertyId: string): DocumentFolder[] => {
       id: `${propertyId}-lease`,
       name: 'Lease Documents',
       type: 'lease',
-      description: 'Store all lease-related documents',
       propertyId
     },
     {
       id: `${propertyId}-utility`,
       name: 'Utility Documents',
       type: 'utility',
-      description: 'Store utility bills and related documents',
       propertyId
     },
     {
       id: `${propertyId}-compliance`,
       name: 'Compliance Documents',
       type: 'compliance',
-      description: 'Store compliance certificates and related documents',
       propertyId
     },
     {
       id: `${propertyId}-service-charge`,
       name: 'Service Charge Documents',
       type: 'service-charge',
-      description: 'Store service charge statements and related documents',
       propertyId
     },
     {
       id: `${propertyId}-photo`,
       name: 'Property Photos',
       type: 'photo',
-      description: 'Store photos of the property',
       propertyId
     },
     {
       id: `${propertyId}-other`,
       name: 'Other Documents',
       type: 'other',
-      description: 'Store miscellaneous documents',
       propertyId
     }
   ];

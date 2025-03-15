@@ -15,8 +15,9 @@ export const DOCUMENT_TYPES: Record<FolderType, string> = {
 export interface DocumentFolder {
   id: string;
   name: string;
-  path: string;
+  path?: string;
   type: FolderType;
+  propertyId: string;
 }
 
 // Document metadata interface
@@ -69,37 +70,43 @@ export const getPropertyFolderStructure = (propertyId: string): DocumentFolder[]
       id: 'lease',
       name: DOCUMENT_TYPES['lease'],
       path: `${propertyId}/lease`,
-      type: 'lease'
+      type: 'lease',
+      propertyId
     },
     {
       id: 'utility',
       name: DOCUMENT_TYPES['utility'],
       path: `${propertyId}/utility`,
-      type: 'utility' 
+      type: 'utility',
+      propertyId
     },
     {
       id: 'compliance',
       name: DOCUMENT_TYPES['compliance'],
       path: `${propertyId}/compliance`,
-      type: 'compliance'
+      type: 'compliance',
+      propertyId
     },
     {
       id: 'service-charge',
       name: DOCUMENT_TYPES['service-charge'],
       path: `${propertyId}/service-charge`,
-      type: 'service-charge'
+      type: 'service-charge',
+      propertyId
     },
     {
       id: 'photo',
       name: DOCUMENT_TYPES['photo'],
       path: `${propertyId}/photo`,
-      type: 'photo'
+      type: 'photo',
+      propertyId
     },
     {
       id: 'other',
       name: DOCUMENT_TYPES['other'],
       path: `${propertyId}/other`,
-      type: 'other'
+      type: 'other',
+      propertyId
     }
   ];
 };

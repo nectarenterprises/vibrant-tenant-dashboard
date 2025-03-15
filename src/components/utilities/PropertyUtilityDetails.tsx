@@ -62,7 +62,7 @@ const PropertyUtilityDetails: React.FC<PropertyUtilityDetailsProps> = ({
       const result = await uploadPropertyDocument(
         property.id,
         uploadData.file,
-        uploadData.documentType,
+        uploadData.documentType as DocumentType,
         uploadData.name,
         uploadData.description
       );

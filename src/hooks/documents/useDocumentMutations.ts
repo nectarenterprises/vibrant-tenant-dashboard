@@ -1,4 +1,3 @@
-
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
 import { 
@@ -6,6 +5,7 @@ import {
   deleteDocument
 } from '@/services/document';
 import { FolderType } from '@/services/document/types';
+import { DocumentType } from '@/types/property';
 
 /**
  * Hook for document-related mutations
@@ -29,7 +29,7 @@ export const useDocumentMutations = (
       return uploadPropertyDocument(
         propertyId,
         data.file,
-        data.documentType,
+        data.documentType as DocumentType,
         data.name || data.file.name,
         data.description
       );
@@ -61,7 +61,6 @@ export const useDocumentMutations = (
       return deleteDocument(id, filePath);
     },
     onSuccess: () => {
-      // Since we don't know the document type here, we invalidate all document queries
       queryClient.invalidateQueries({ queryKey: ['property-documents'] });
       queryClient.invalidateQueries({ queryKey: ['recent-documents'] });
       queryClient.invalidateQueries({ queryKey: ['expiring-documents'] });

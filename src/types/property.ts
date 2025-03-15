@@ -1,4 +1,3 @@
-
 export interface Property {
   id: string;
   name: string;
@@ -42,7 +41,7 @@ export interface EventData {
   propertyName?: string;
 }
 
-export type DocumentType = 'lease' | 'utility' | 'compliance' | 'service-charge' | 'other';
+export type DocumentType = 'lease' | 'utility' | 'compliance' | 'service-charge' | 'photo' | 'other';
 
 export interface PropertyDocument {
   id: string;

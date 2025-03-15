@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Camera, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -54,25 +53,22 @@ const PropertyPhotoHeader: React.FC<PropertyPhotoHeaderProps> = ({
     setIsUploading(true);
 
     try {
-      // Upload the image to storage and get the path
       const imagePath = await uploadPropertyImage(selectedFile);
       
       if (!imagePath) {
         throw new Error("Failed to upload image");
       }
 
-      // Update the property record with the new image path
       const updated = await updatePropertyImage(propertyId, imagePath);
       
       if (!updated) {
         throw new Error("Failed to update property record");
       }
 
-      // Also save as a document for organization in the documents section
       await uploadPropertyDocument(
         propertyId,
         selectedFile,
-        'photo',
+        'photo' as DocumentType,
         `Property Photo - ${new Date().toLocaleDateString()}`,
         `Property photo for ${propertyName}`
       );

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Sidebar from '@/components/layout/Sidebar';
@@ -43,7 +42,7 @@ const Utilities = () => {
   const fetchUtilityDocuments = async (propertyId: string) => {
     setDocumentsLoading(true);
     try {
-      const documents = await getPropertyDocuments(propertyId, documentType);
+      const documents = await getPropertyDocuments(propertyId, documentType as DocumentType);
       setUtilityDocuments(documents);
     } catch (error) {
       console.error('Error fetching utility documents:', error);
@@ -96,7 +95,6 @@ const Utilities = () => {
     }
   };
 
-  // Add a refetchDocuments function that calls fetchUtilityDocuments with the selected property ID
   const refetchDocuments = () => {
     if (selectedProperty) {
       fetchUtilityDocuments(selectedProperty.id);

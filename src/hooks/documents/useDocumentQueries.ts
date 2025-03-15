@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { PropertyDocument } from '@/types/property';
+import { PropertyDocument, DocumentType } from '@/types/property';
 import { 
   getPropertyDocuments,
   getRecentDocuments,
@@ -30,7 +30,7 @@ export const useDocumentQueries = (
 
       setDocumentsLoading(true);
       try {
-        const docs = await getPropertyDocuments(propertyId, folderType);
+        const docs = await getPropertyDocuments(propertyId, folderType as DocumentType);
         setDocuments(docs);
       } catch (error) {
         console.error('Error fetching documents:', error);
@@ -55,7 +55,7 @@ export const useDocumentQueries = (
 
     setDocumentsLoading(true);
     try {
-      const docs = await getPropertyDocuments(propertyId, folderType);
+      const docs = await getPropertyDocuments(propertyId, folderType as DocumentType);
       setDocuments(docs);
     } catch (error) {
       console.error('Error refreshing documents:', error);
@@ -96,7 +96,7 @@ export const useDocumentQueries = (
     if (!propertyId) return [];
     
     try {
-      return await getPropertyDocuments(propertyId, docType);
+      return await getPropertyDocuments(propertyId, docType as DocumentType);
     } catch (error) {
       console.error('Error fetching documents by type:', error);
       return [];
