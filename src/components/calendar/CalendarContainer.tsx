@@ -9,6 +9,7 @@ import CalendarHeader from './CalendarHeader';
 import EventBadges from './EventBadges';
 import CalendarGrid from './CalendarGrid';
 import EventList from './EventList';
+import CalendarEventModal from './CalendarEventModal';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const CalendarContainer: React.FC = () => {
@@ -17,6 +18,8 @@ const CalendarContainer: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [view, setView] = useState<'month' | 'list'>('month');
   const [direction, setDirection] = useState<number>(0);
+  const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -48,6 +51,16 @@ const CalendarContainer: React.FC = () => {
     const now = new Date();
     setDirection(currentDate > now ? -1 : 1);
     setCurrentDate(now);
+  };
+
+  const handleEventClick = (event: EventData) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedEvent(null);
   };
 
   // Filter events for the current month
@@ -162,7 +175,8 @@ const CalendarContainer: React.FC = () => {
                       <CalendarGrid 
                         currentDate={currentDate} 
                         events={events} 
-                        getEventColor={getEventColor} 
+                        getEventColor={getEventColor}
+                        onEventClick={handleEventClick}
                       />
                     </motion.div>
                   </motion.div>
@@ -180,7 +194,10 @@ const CalendarContainer: React.FC = () => {
                       duration: 0.3 
                     }}
                   >
-                    <EventList events={events} />
+                    <EventList 
+                      events={events} 
+                      onEventClick={handleEventClick}
+                    />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -188,6 +205,13 @@ const CalendarContainer: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Event Modal */}
+      <CalendarEventModal 
+        event={selectedEvent} 
+        isOpen={isModalOpen} 
+        onClose={closeModal}
+      />
     </div>
   );
 };

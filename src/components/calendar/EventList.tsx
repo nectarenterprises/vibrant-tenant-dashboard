@@ -8,9 +8,10 @@ import { motion } from 'framer-motion';
 
 interface EventListProps {
   events: EventData[];
+  onEventClick: (event: EventData) => void;
 }
 
-const EventList: React.FC<EventListProps> = ({ events }) => {
+const EventList: React.FC<EventListProps> = ({ events, onEventClick }) => {
   // Sort events by date
   const sortedEvents = [...events].sort((a, b) => 
     new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -61,6 +62,9 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
             y: -5, 
             boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)" 
           }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => onEventClick(event)}
+          className="cursor-pointer"
         >
           <Card className="overflow-hidden">
             <div className={`h-2 ${event.type === 'rent' ? 'bg-green-500' : 

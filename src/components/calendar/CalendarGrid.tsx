@@ -8,9 +8,15 @@ interface CalendarGridProps {
   currentDate: Date;
   events: EventData[];
   getEventColor: (type: string) => string;
+  onEventClick: (event: EventData) => void;
 }
 
-const CalendarGrid: React.FC<CalendarGridProps> = ({ currentDate, events, getEventColor }) => {
+const CalendarGrid: React.FC<CalendarGridProps> = ({ 
+  currentDate, 
+  events, 
+  getEventColor,
+  onEventClick 
+}) => {
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   
@@ -115,8 +121,10 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ currentDate, events, getEve
                       transition: { delay: 0.1 + (idx * 0.1) }
                     }}
                     whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     className={`text-xs truncate p-1 rounded cursor-pointer ${getEventColor(event.type)}`}
                     title={event.title}
+                    onClick={() => onEventClick(event)}
                   >
                     {event.title}
                   </motion.div>
