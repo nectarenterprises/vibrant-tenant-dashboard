@@ -54,7 +54,7 @@ const ComparisonTable: React.FC<ComparisonTableProps> = ({
                   <Badge 
                     variant="outline" 
                     className={cn(
-                      "flex items-center gap-1",
+                      "flex items-center gap-1 min-w-[70px] h-7 justify-center",
                       getChangeBadgeColor(item.percentChange)
                     )}
                   >
@@ -77,7 +77,7 @@ const ComparisonTable: React.FC<ComparisonTableProps> = ({
               <Badge 
                 variant="outline" 
                 className={cn(
-                  "flex items-center gap-1",
+                  "flex items-center gap-1 min-w-[70px] h-7 justify-center",
                   getChangeBadgeColor(totalPercentChange)
                 )}
               >
