@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { ComplianceItem } from '@/types/compliance';
 import { getMockComplianceItems, getMockPropertyComplianceItems } from './compliance-items-mock';
+import { Shield } from 'lucide-react';
 
 /**
  * Get all compliance items for the current user
@@ -43,7 +44,7 @@ export const updateComplianceStatus = async (
   return {
     id: itemId,
     name: 'Updated Compliance Item',
-    icon: () => null, // This will be replaced with the actual icon in the UI
+    icon: Shield,
     lastCompleted,
     nextDue,
     status: status as 'completed' | 'upcoming' | 'overdue',

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -10,27 +11,29 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from '@/components/ui/button';
 import { Upload } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton"
-import { usePropertyPhoto } from './photo-header/usePropertyPhoto';
 
 const PropertyPhotoHeader: React.FC = () => {
   const { propertyId } = useParams<{ propertyId: string }>();
   const { user } = useAuth();
   const [fileUpload, setFileUpload] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-  
-  const { 
-    photoUrl, 
-    isLoading, 
-    isUploading,
-    setIsUploading,
-    uploadPhoto 
-  } = usePropertyPhoto(propertyId || '');
-  
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   const { data: property, isLoading: propertyLoading } = useQuery({
     queryKey: ['property', propertyId],
     queryFn: () => fetchProperty(propertyId || ''),
     enabled: !!propertyId
   });
+
+  useEffect(() => {
+    if (property && property.image) {
+      setPhotoUrl(property.image);
+      setIsLoading(false);
+    } else {
+      setIsLoading(false);
+    }
+  }, [property]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -38,7 +41,6 @@ const PropertyPhotoHeader: React.FC = () => {
     }
   };
 
-  // Update the uploadDocument call to match the correct signature
   const handleUpload = async () => {
     if (!fileUpload || !property) return;
     
@@ -60,7 +62,6 @@ const PropertyPhotoHeader: React.FC = () => {
       });
       
       // Refresh the property data to show the new photo
-      // queryClient.invalidateQueries(['property', propertyId]);
       window.location.reload(); // temp fix
     } catch (error) {
       console.error('Error uploading photo:', error);

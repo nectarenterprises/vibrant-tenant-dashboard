@@ -36,7 +36,7 @@ export const useDocumentQueries = (propertyId?: string, folderType?: FolderType)
     queryKey: ['recent-documents', propertyId],
     queryFn: async () => {
       if (!propertyId) return [];
-      return getRecentDocuments(propertyId, 5);
+      return getRecentDocuments(propertyId);
     },
     enabled: !!propertyId
   });

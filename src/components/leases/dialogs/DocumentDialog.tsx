@@ -1,157 +1,134 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+
+import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { FilePlus } from 'lucide-react';
-import { Property } from '@/types/property';
+import { DocumentType } from '@/types/property';
+import DocumentTypeSelector from './document/DocumentTypeSelector';
+import DocumentNameField from './document/DocumentNameField';
+import DocumentDescriptionField from './document/DocumentDescriptionField';
+import FileUploadArea from './document/FileUploadArea';
+import DocumentDialogFooter from './document/DocumentDialogFooter';
 import { uploadDocument } from '@/services/document';
 import { toast } from '@/components/ui/use-toast';
-import { FolderType, DOCUMENT_TYPES } from '@/services/document/types';
 
-interface DocumentDialogProps {
+export interface DocumentDialogProps {
   isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
-  property: Property | null;
+  onOpenChange: (open: boolean) => void;
+  selectedFile: File | null;
+  setSelectedFile: (file: File | null) => void;
+  documentType: DocumentType;
+  setDocumentType: (type: DocumentType) => void;
+  documentName: string;
+  setDocumentName: (name: string) => void;
+  propertyId: string;
   onDocumentUploaded?: () => void;
 }
 
-const DocumentDialog: React.FC<DocumentDialogProps> = ({ isOpen, setIsOpen, property, onDocumentUploaded }) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [documentName, setDocumentName] = useState('');
+const DocumentDialog: React.FC<DocumentDialogProps> = ({
+  isOpen,
+  onOpenChange,
+  selectedFile,
+  setSelectedFile,
+  documentType,
+  setDocumentType,
+  documentName,
+  setDocumentName,
+  propertyId,
+  onDocumentUploaded
+}) => {
   const [documentDescription, setDocumentDescription] = useState('');
-  const [documentType, setDocumentType] = useState<FolderType>('lease');
-  const [uploading, setUploading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
-  useEffect(() => {
-    if (!isOpen) {
-      setSelectedFile(null);
-      setDocumentName('');
-      setDocumentDescription('');
-      setDocumentType('lease');
-      setUploading(false);
+  const handleSubmit = async () => {
+    if (!selectedFile || !documentName || !documentType) {
+      toast({
+        variant: "destructive",
+        title: "Missing information",
+        description: "Please complete all required fields."
+      });
+      return;
     }
-  }, [isOpen]);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files && e.target.files[0];
-    setSelectedFile(file || null);
-    if (file) {
-      setDocumentName(file.name.replace(/\.[^/.]+$/, "")); // Set default name to filename
-    }
-  };
+    setIsUploading(true);
 
-  const handleUpload = async () => {
-    if (!selectedFile || !property) return;
-    
     try {
-      setUploading(true);
-      
-      // Use the updated uploadDocument function with correct parameters
       await uploadDocument(
-        property.id,
+        propertyId,
         selectedFile,
         documentName,
         documentType,
         documentDescription
       );
-      
+
       toast({
         title: "Document uploaded",
-        description: `${documentName} has been uploaded successfully.`,
+        description: "Your document has been uploaded successfully."
       });
-      
-      setIsOpen(false);
+
+      // Reset form
+      setSelectedFile(null);
+      setDocumentName('');
+      setDocumentDescription('');
+      setDocumentType('lease' as DocumentType);
+
+      // Close dialog
+      onOpenChange(false);
+
+      // Callback
       if (onDocumentUploaded) {
         onDocumentUploaded();
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error uploading document:', error);
       toast({
         variant: "destructive",
         title: "Upload failed",
-        description: error?.message || "There was an error uploading the document.",
+        description: "There was an error uploading your document."
       });
     } finally {
-      setUploading(false);
+      setIsUploading(false);
     }
   };
 
+  const handleNameChange = (value: string) => {
+    setDocumentName(value);
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Upload New Document</DialogTitle>
-          <DialogDescription>
-            Upload a new document for this property.
-          </DialogDescription>
+          <DialogTitle>Upload Document</DialogTitle>
         </DialogHeader>
+
         <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="documentName">Document Name</Label>
-            <Input
-              id="documentName"
-              value={documentName}
-              onChange={(e) => setDocumentName(e.target.value)}
-              placeholder="e.g. Lease Agreement 2023"
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="documentDescription">Description</Label>
-            <Textarea
-              id="documentDescription"
-              value={documentDescription}
-              onChange={(e) => setDocumentDescription(e.target.value)}
-              placeholder="Brief description of the document"
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="documentType">Document Type</Label>
-            <Select onValueChange={(value) => setDocumentType(value as FolderType)}>
-              <SelectTrigger id="documentType">
-                <SelectValue placeholder="Select document type" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(DOCUMENT_TYPES).map(([key, value]) => (
-                  <SelectItem key={key} value={key as FolderType}>
-                    {value}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="file">Upload File</Label>
-            <Input
-              type="file"
-              id="file"
-              className="hidden"
-              onChange={handleFileSelect}
-            />
-            <Button variant="outline" asChild>
-              <label htmlFor="file" className="cursor-pointer">
-                {selectedFile ? selectedFile.name : <><FilePlus className="mr-2 h-4 w-4" /> Select File</>}
-              </label>
-            </Button>
-          </div>
+          <FileUploadArea
+            selectedFile={selectedFile}
+            setSelectedFile={setSelectedFile}
+          />
+
+          <DocumentTypeSelector
+            documentType={documentType}
+            setDocumentType={setDocumentType}
+          />
+
+          <DocumentNameField
+            documentName={documentName}
+            onDocumentNameChange={handleNameChange}
+          />
+
+          <DocumentDescriptionField
+            documentDescription={documentDescription}
+            setDocumentDescription={setDocumentDescription}
+          />
         </div>
-        <DialogFooter>
-          <Button type="button" variant="secondary" onClick={() => setIsOpen(false)}>
-            Cancel
-          </Button>
-          <Button type="submit" disabled={uploading || !selectedFile || !documentName} onClick={handleUpload}>
-            {uploading ? 'Uploading...' : 'Upload'}
-          </Button>
-        </DialogFooter>
+
+        <DocumentDialogFooter
+          onCancel={() => onOpenChange(false)}
+          onUpload={handleSubmit}
+          isUploading={isUploading}
+          uploadDisabled={!selectedFile || !documentName}
+        />
       </DialogContent>
     </Dialog>
   );

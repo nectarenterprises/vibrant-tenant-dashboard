@@ -12,10 +12,12 @@ export const usePropertyPhoto = ({ propertyId }: UsePropertyPhotoProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const queryClient = useQueryClient();
   
   // Define upload function that will be used by the mutation
-  const uploadPhotoFn = async (file: File) => {
+  const uploadPhoto = async (file: File) => {
     if (!propertyId) return null;
     
     try {
@@ -49,7 +51,7 @@ export const usePropertyPhoto = ({ propertyId }: UsePropertyPhotoProps) => {
   };
   
   const uploadMutation = useMutation({
-    mutationFn: uploadPhotoFn,
+    mutationFn: uploadPhoto,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents', propertyId] });
       toast({
@@ -80,12 +82,17 @@ export const usePropertyPhoto = ({ propertyId }: UsePropertyPhotoProps) => {
 
   return {
     isUploading,
+    setIsUploading,
     uploadDialogOpen,
     setUploadDialogOpen,
     selectedFile,
     setSelectedFile,
-    uploadPhoto: uploadPhotoFn,
+    uploadPhoto,
     uploadMutation,
-    handleUpload
+    handleUpload,
+    photoUrl,
+    setPhotoUrl,
+    isLoading,
+    setIsLoading
   };
 };

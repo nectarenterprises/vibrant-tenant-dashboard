@@ -56,3 +56,20 @@ export const getDocumentVersionHistory = async (documentId: string) => {
   console.warn('getDocumentVersionHistory is deprecated');
   return []; // Placeholder for backward compatibility
 };
+
+// Add the missing getPropertyDocuments function
+export const getPropertyDocuments = async (propertyId: string, documentType?: string) => {
+  if (!propertyId) {
+    throw new Error('Property ID is required');
+  }
+  
+  // Use the existing getDocuments function
+  const docs = await getDocuments(propertyId);
+  
+  // Filter by document type if provided
+  if (documentType) {
+    return docs.filter(doc => doc.documentType === documentType);
+  }
+  
+  return docs;
+};
