@@ -72,7 +72,7 @@ export const useDocumentQueries = (
   // Recent documents query
   const recentDocumentsQuery = useQuery({
     queryKey: ['recent-documents'],
-    queryFn: () => getRecentDocuments(5, undefined),
+    queryFn: () => getRecentDocuments(5),
     enabled: true,
     retry: 1,
     meta: {
@@ -90,7 +90,7 @@ export const useDocumentQueries = (
   // Expiring documents query
   const expiringDocumentsQuery = useQuery({
     queryKey: ['expiring-documents'],
-    queryFn: () => getExpiringDocuments(30, undefined), // Documents expiring in next 30 days
+    queryFn: () => getExpiringDocuments(30), // Documents expiring in next 30 days
     enabled: true,
     retry: 1,
     meta: {
