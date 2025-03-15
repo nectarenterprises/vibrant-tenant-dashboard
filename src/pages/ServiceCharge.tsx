@@ -1,9 +1,10 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Sidebar from '@/components/layout/Sidebar';
 import { Property } from '@/types/property';
 import { cn } from '@/lib/utils';
-import { Search } from 'lucide-react';
+import { Search, BarChart3, PieChart, AlertTriangle, MessageSquare } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ServiceChargeDetails from '@/components/service-charge/ServiceChargeDetails';
 import ServiceChargeComparisonDashboard from '@/components/service-charge/ServiceChargeComparisonDashboard';
