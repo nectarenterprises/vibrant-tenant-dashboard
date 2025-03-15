@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Property } from '@/types/property';
@@ -18,15 +19,18 @@ const ServiceChargeCategoryBreakdown: React.FC<ServiceChargeCategoryBreakdownPro
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   
   const calculateCategoryData = () => {
+    // Define the total amount for all categories
     const totalAmount = 23520;
     
+    // Create the categories with values that add up to the total
+    // Percentages are calculated based on the value's portion of the total
     return [
-      { category: 'Maintenance', value: 6300, percent: 26.8, color: '#f97316' },
-      { category: 'Security', value: 4200, percent: 17.9, color: '#3b82f6' },
-      { category: 'Cleaning', value: 3360, percent: 14.3, color: '#22c55e' },
-      { category: 'Utilities', value: 5040, percent: 21.4, color: '#8b5cf6' },
-      { category: 'Insurance', value: 2100, percent: 8.9, color: '#ec4899' },
-      { category: 'Management Fee', value: 2520, percent: 10.7, color: '#f59e0b' }
+      { category: 'Maintenance', value: 6300, percent: (6300/totalAmount) * 100, color: '#f97316' },
+      { category: 'Security', value: 4200, percent: (4200/totalAmount) * 100, color: '#3b82f6' },
+      { category: 'Cleaning', value: 3360, percent: (3360/totalAmount) * 100, color: '#22c55e' },
+      { category: 'Utilities', value: 5040, percent: (5040/totalAmount) * 100, color: '#8b5cf6' },
+      { category: 'Insurance', value: 2100, percent: (2100/totalAmount) * 100, color: '#ec4899' },
+      { category: 'Management Fee', value: 2520, percent: (2520/totalAmount) * 100, color: '#f59e0b' }
     ];
   };
   
@@ -35,17 +39,19 @@ const ServiceChargeCategoryBreakdown: React.FC<ServiceChargeCategoryBreakdownPro
   const getSubcategoryData = (category: string): SubcategoryData[] => {
     switch(category) {
       case 'Maintenance':
+        const maintenanceTotal = 6300;
         return [
-          { name: 'Building Fabric', value: 2500, percent: 39.7, color: '#f97316' },
-          { name: 'HVAC Systems', value: 1600, percent: 25.4, color: '#fb923c' },
-          { name: 'Electrical', value: 1200, percent: 19.0, color: '#fdba74' },
-          { name: 'Plumbing', value: 1000, percent: 15.9, color: '#fed7aa' }
+          { name: 'Building Fabric', value: 2500, percent: (2500/maintenanceTotal) * 100, color: '#f97316' },
+          { name: 'HVAC Systems', value: 1600, percent: (1600/maintenanceTotal) * 100, color: '#fb923c' },
+          { name: 'Electrical', value: 1200, percent: (1200/maintenanceTotal) * 100, color: '#fdba74' },
+          { name: 'Plumbing', value: 1000, percent: (1000/maintenanceTotal) * 100, color: '#fed7aa' }
         ];
       case 'Utilities':
+        const utilitiesTotal = 5040;
         return [
-          { name: 'Electricity', value: 2800, percent: 55.6, color: '#8b5cf6' },
-          { name: 'Water', value: 1200, percent: 23.8, color: '#a78bfa' },
-          { name: 'Gas', value: 1040, percent: 20.6, color: '#c4b5fd' }
+          { name: 'Electricity', value: 2800, percent: (2800/utilitiesTotal) * 100, color: '#8b5cf6' },
+          { name: 'Water', value: 1200, percent: (1200/utilitiesTotal) * 100, color: '#a78bfa' },
+          { name: 'Gas', value: 1040, percent: (1040/utilitiesTotal) * 100, color: '#c4b5fd' }
         ];
       default:
         return [];
