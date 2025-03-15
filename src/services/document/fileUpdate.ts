@@ -44,11 +44,14 @@ export const uploadNewDocumentVersion = async (
   versionNotes?: string
 ): Promise<boolean> => {
   try {
+    console.log(`Uploading new version for document: ${documentId}`);
+    
     // Get document info to determine path
     const documents = await fetchDocumentMetadata('', undefined);
     const document = documents.find(doc => doc.id === documentId);
     
     if (!document) {
+      console.error('Document not found');
       toast({
         variant: "destructive",
         title: "Document not found",
@@ -61,12 +64,17 @@ export const uploadNewDocumentVersion = async (
     const fileExtension = file.name.split('.').pop() || '';
     const filePath = `${document.propertyId}/${document.documentType}/${uuidv4()}_v${(document.version || 1) + 1}.${fileExtension}`;
     
+    console.log(`Generated new version path: ${filePath}`);
+    
     // Upload the new file version
     const uploadSuccess = await uploadFile(STORAGE_BUCKET, filePath, file);
     
     if (!uploadSuccess) {
+      console.error('Failed to upload new version');
       return false;
     }
+    
+    console.log('New version uploaded, updating metadata');
     
     // Update document metadata with version info
     return addDocumentVersion(documentId, filePath, versionNotes);

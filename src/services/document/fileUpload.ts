@@ -23,16 +23,22 @@ export const uploadPropertyDocument = async (
   notificationPeriod?: number
 ): Promise<boolean> => {
   try {
+    console.log('Starting document upload process');
     // Generate a unique file path
     const fileExtension = file.name.split('.').pop() || '';
     const filePath = `${propertyId}/${documentType}/${uuidv4()}.${fileExtension}`;
+    
+    console.log(`Generated file path: ${filePath}`);
     
     // Upload the file to storage
     const uploadSuccess = await uploadFile(STORAGE_BUCKET, filePath, file);
     
     if (!uploadSuccess) {
+      console.error('File upload failed');
       return false;
     }
+    
+    console.log('File uploaded successfully, saving metadata');
     
     // Save document metadata
     const docType = documentType as FolderType; // Type assertion since DocumentType and FolderType are the same
@@ -48,6 +54,7 @@ export const uploadPropertyDocument = async (
       notificationPeriod
     );
     
+    console.log('Document upload complete:', !!metadata);
     return !!metadata;
   } catch (error) {
     console.error('Error uploading document:', error);

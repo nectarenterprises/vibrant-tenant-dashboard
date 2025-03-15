@@ -8,5 +8,6 @@ const STORAGE_BUCKET = 'documents';
  * Downloads a document
  */
 export const downloadDocument = async (filePath: string): Promise<void> => {
+  console.log(`Downloading document: ${filePath}`);
   await downloadFile(STORAGE_BUCKET, filePath);
 };

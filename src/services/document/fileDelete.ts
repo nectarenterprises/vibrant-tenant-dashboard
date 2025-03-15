@@ -13,16 +13,22 @@ export const deleteDocument = async (
   filePath: string
 ): Promise<boolean> => {
   try {
+    console.log(`Deleting document: ${documentId}, filePath: ${filePath}`);
+    
     // Delete the file from storage
     const deleteFileSuccess = await deleteFile(STORAGE_BUCKET, filePath);
     
     if (!deleteFileSuccess) {
+      console.error('Failed to delete file from storage');
       return false;
     }
+    
+    console.log('File deleted from storage, now deleting metadata');
     
     // Delete document metadata
     const deleteMetadataSuccess = await deleteDocumentMetadata(documentId);
     
+    console.log('Document deletion complete:', deleteMetadataSuccess);
     return deleteMetadataSuccess;
   } catch (error) {
     console.error('Error deleting document:', error);

@@ -11,6 +11,7 @@ export const uploadFile = async (
   file: File
 ): Promise<boolean> => {
   try {
+    console.log(`Uploading file to bucket: ${bucketName}, path: ${filePath}`);
     const { error } = await supabase.storage
       .from(bucketName)
       .upload(filePath, file, {
@@ -18,6 +19,7 @@ export const uploadFile = async (
       });
 
     if (error) {
+      console.error('Upload error:', error);
       toast({
         variant: "destructive",
         title: "Upload failed",
@@ -26,8 +28,10 @@ export const uploadFile = async (
       return false;
     }
     
+    console.log('File uploaded successfully');
     return true;
   } catch (error: any) {
+    console.error('Error in uploadFile:', error);
     toast({
       variant: "destructive",
       title: "Upload failed",
@@ -45,11 +49,13 @@ export const downloadFile = async (
   filePath: string
 ): Promise<void> => {
   try {
+    console.log(`Downloading file from bucket: ${bucketName}, path: ${filePath}`);
     const { data, error } = await supabase.storage
       .from(bucketName)
       .download(filePath);
       
     if (error) {
+      console.error('Download error:', error);
       toast({
         variant: "destructive",
         title: "Download failed",
@@ -73,6 +79,7 @@ export const downloadFile = async (
       description: "Your document is being downloaded.",
     });
   } catch (error: any) {
+    console.error('Error in downloadFile:', error);
     toast({
       variant: "destructive",
       title: "Download failed",
@@ -89,11 +96,13 @@ export const deleteFile = async (
   filePath: string
 ): Promise<boolean> => {
   try {
+    console.log(`Deleting file from bucket: ${bucketName}, path: ${filePath}`);
     const { error } = await supabase.storage
       .from(bucketName)
       .remove([filePath]);
       
     if (error) {
+      console.error('Delete error:', error);
       toast({
         variant: "destructive",
         title: "Delete failed",
@@ -104,10 +113,11 @@ export const deleteFile = async (
     
     return true;
   } catch (error: any) {
+    console.error('Error in deleteFile:', error);
     toast({
       variant: "destructive",
-      title: "Delete failed",
-      description: error.message || "An error occurred while deleting the file",
+        title: "Delete failed",
+        description: error.message || "An error occurred while deleting the file",
     });
     return false;
   }
