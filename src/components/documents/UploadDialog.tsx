@@ -12,6 +12,15 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { FolderType, DOCUMENT_TYPES } from '@/services/document/types';
 
 interface UploadDialogProps {
   isOpen: boolean;
@@ -19,10 +28,12 @@ interface UploadDialogProps {
   fileUpload: File | null;
   documentName: string;
   documentDescription: string;
+  documentType: FolderType;
   isUploading: boolean;
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onNameChange: (name: string) => void;
   onDescriptionChange: (description: string) => void;
+  onTypeChange: (type: FolderType) => void;
   onUpload: () => void;
 }
 
@@ -32,10 +43,12 @@ const UploadDialog = ({
   fileUpload,
   documentName,
   documentDescription,
+  documentType,
   isUploading,
   onFileSelect,
   onNameChange,
   onDescriptionChange,
+  onTypeChange,
   onUpload
 }: UploadDialogProps) => {
   return (
@@ -66,6 +79,25 @@ const UploadDialog = ({
                 Selected: {fileUpload.name} ({(fileUpload.size / 1024).toFixed(2)} KB)
               </p>
             )}
+          </div>
+          
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="document-type">Document Type</Label>
+            <Select
+              value={documentType}
+              onValueChange={(value) => onTypeChange(value as FolderType)}
+            >
+              <SelectTrigger id="document-type">
+                <SelectValue placeholder="Select document type" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(DOCUMENT_TYPES).map(([type, label]) => (
+                  <SelectItem key={type} value={type}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
           <div className="grid w-full max-w-sm items-center gap-1.5">

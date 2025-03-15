@@ -8,7 +8,10 @@ import {
   uploadPropertyDocument,
   downloadDocument,
   deleteDocument,
-  getPropertyDocuments
+  getPropertyDocuments,
+  getRecentDocuments,
+  getExpiringDocuments,
+  recordDocumentAccess
 } from '@/services/document';
 import { FolderType, DocumentFolder } from '@/services/document/types';
 
@@ -20,6 +23,7 @@ export const usePropertyDocuments = () => {
   const [documentName, setDocumentName] = useState('');
   const [documentDescription, setDocumentDescription] = useState('');
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [documentType, setDocumentType] = useState<FolderType>('lease');
   
   const queryClient = useQueryClient();
 
@@ -52,6 +56,20 @@ export const usePropertyDocuments = () => {
     enabled: !!selectedProperty?.id && !!selectedFolder
   });
 
+  // Recent documents query
+  const { data: recentDocuments = [], isLoading: recentDocumentsLoading } = useQuery({
+    queryKey: ['recent-documents'],
+    queryFn: () => getRecentDocuments(5),
+    enabled: true
+  });
+
+  // Expiring documents query
+  const { data: expiringDocuments = [], isLoading: expiringDocumentsLoading } = useQuery({
+    queryKey: ['expiring-documents'],
+    queryFn: () => getExpiringDocuments(30), // Documents expiring in next 30 days
+    enabled: true
+  });
+
   // Upload document mutation
   const uploadMutation = useMutation({
     mutationFn: async () => {
@@ -60,15 +78,22 @@ export const usePropertyDocuments = () => {
       return uploadPropertyDocument(
         selectedProperty.id,
         fileUpload,
-        selectedFolder.type,
+        documentType,
         documentName || fileUpload.name,
         documentDescription
       );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['property-documents', selectedProperty?.id, selectedFolder?.type] });
+      queryClient.invalidateQueries({ queryKey: ['recent-documents'] });
+      queryClient.invalidateQueries({ queryKey: ['expiring-documents'] });
       setUploadDialogOpen(false);
       resetUploadForm();
+      
+      toast({
+        title: "Document uploaded",
+        description: "Your document has been uploaded successfully.",
+      });
     }
   });
 
@@ -79,6 +104,13 @@ export const usePropertyDocuments = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['property-documents', selectedProperty?.id, selectedFolder?.type] });
+      queryClient.invalidateQueries({ queryKey: ['recent-documents'] });
+      queryClient.invalidateQueries({ queryKey: ['expiring-documents'] });
+      
+      toast({
+        title: "Document deleted",
+        description: "The document has been deleted successfully.",
+      });
     }
   });
 
@@ -87,6 +119,7 @@ export const usePropertyDocuments = () => {
     setFileUpload(null);
     setDocumentName('');
     setDocumentDescription('');
+    setDocumentType('lease');
   };
 
   // Handle property selection
@@ -99,6 +132,7 @@ export const usePropertyDocuments = () => {
   // Handle folder selection
   const handleFolderSelect = (folder: DocumentFolder) => {
     setSelectedFolder(folder);
+    setDocumentType(folder.type);
   };
 
   // Handle file selection
@@ -145,6 +179,18 @@ export const usePropertyDocuments = () => {
       : documents;
   };
 
+  // Get documents by type for a specific property
+  const getDocumentsByType = async (propertyId: string, docType: FolderType): Promise<PropertyDocument[]> => {
+    if (!propertyId) return [];
+    
+    try {
+      return await getPropertyDocuments(propertyId, docType);
+    } catch (error) {
+      console.error('Error fetching documents by type:', error);
+      return [];
+    }
+  };
+
   return {
     selectedProperty,
     selectedFolder,
@@ -152,10 +198,15 @@ export const usePropertyDocuments = () => {
     fileUpload,
     documentName,
     documentDescription,
+    documentType,
     uploadDialogOpen,
     setUploadDialogOpen,
     documents,
     documentsLoading,
+    recentDocuments,
+    recentDocumentsLoading,
+    expiringDocuments,
+    expiringDocumentsLoading,
     uploadMutation,
     deleteMutation,
     resetUploadForm,
@@ -166,10 +217,13 @@ export const usePropertyDocuments = () => {
     handleDownload,
     handleDelete,
     setSearchQuery,
+    setDocumentType,
     getFilteredDocuments,
+    getDocumentsByType,
     setDocumentName,
     setDocumentDescription,
     refetchDocuments,
-    fetchProperties
+    fetchProperties,
+    recordDocumentAccess
   };
 };

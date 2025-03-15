@@ -25,7 +25,8 @@ export {
   getExpiringDocuments
 } from './fileQuery';
 
-// Export the file access function
+// Export the file access functions
 export {
-  recordDocumentAccess
+  recordDocumentAccess,
+  getRecentlyAccessedDocuments
 } from './fileAccess';

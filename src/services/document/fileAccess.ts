@@ -25,3 +25,26 @@ export const recordDocumentAccess = async (documentId: string): Promise<boolean>
     return false;
   }
 };
+
+/**
+ * Gets documents that have been recently accessed
+ */
+export const getRecentlyAccessedDocuments = async (limit: number = 5): Promise<any[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('property_documents')
+      .select('*')
+      .order('last_accessed', { ascending: false })
+      .limit(limit);
+    
+    if (error) {
+      console.error('Error fetching recently accessed documents:', error);
+      return [];
+    }
+    
+    return data || [];
+  } catch (error) {
+    console.error('Exception fetching recently accessed documents:', error);
+    return [];
+  }
+};

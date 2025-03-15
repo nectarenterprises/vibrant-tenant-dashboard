@@ -26,9 +26,11 @@ const Documents = () => {
     fileUpload,
     documentName,
     documentDescription,
+    documentType,
     uploadDialogOpen,
     setUploadDialogOpen,
     documentsLoading,
+    uploadMutation,
     handlePropertySelect,
     handleFolderSelect,
     handleFileSelect,
@@ -36,6 +38,7 @@ const Documents = () => {
     handleDownload,
     handleDelete,
     setSearchQuery,
+    setDocumentType,
     getFilteredDocuments,
     setDocumentName,
     setDocumentDescription,
@@ -123,10 +126,12 @@ const Documents = () => {
                       fileUpload={fileUpload}
                       documentName={documentName}
                       documentDescription={documentDescription}
-                      isUploading={false}
+                      documentType={documentType}
+                      isUploading={uploadMutation.isPending}
                       onFileSelect={handleFileSelect}
                       onNameChange={setDocumentName}
                       onDescriptionChange={setDocumentDescription}
+                      onTypeChange={setDocumentType}
                       onUpload={handleUpload}
                     />
                   </CardContent>
