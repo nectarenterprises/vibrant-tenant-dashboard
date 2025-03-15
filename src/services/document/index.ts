@@ -19,12 +19,13 @@ export {
 } from './fileUpdate';
 
 export {
-  recordDocumentAccess
-} from './fileAccess';
-
-export {
   getPropertyDocuments,
   getDocumentVersionHistory,
   getRecentDocuments,
   getExpiringDocuments
 } from './fileQuery';
+
+// Export the file access function
+export {
+  recordDocumentAccess
+} from './fileAccess';

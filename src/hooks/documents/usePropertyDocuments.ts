@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,7 +9,7 @@ import {
   downloadDocument,
   deleteDocument,
   getPropertyDocuments
-} from '@/services/FileStorageService';
+} from '@/services/document';
 import { FolderType, DocumentFolder } from '@/services/document/types';
 
 export const usePropertyDocuments = () => {
@@ -124,7 +125,7 @@ export const usePropertyDocuments = () => {
 
   // Handle download
   const handleDownload = (document: PropertyDocument) => {
-    downloadDocument(document.filePath);
+    downloadDocument(document.filePath, document.id);
   };
 
   // Handle delete
