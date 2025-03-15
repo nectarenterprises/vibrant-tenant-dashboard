@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { PropertyDocument, DocumentType } from '@/types/property';
 import { 
@@ -56,7 +56,7 @@ export const useDocumentQueries = (
   }, [propertyId, folderType]);
 
   // Function to manually trigger a document refresh
-  const refetchDocuments = async () => {
+  const refetchDocuments = useCallback(async () => {
     if (!propertyId || !folderType) {
       return;
     }
@@ -83,65 +83,63 @@ export const useDocumentQueries = (
     } finally {
       setDocumentsLoading(false);
     }
-  };
+  }, [propertyId, folderType]);
 
   // Recent documents query
-  const { 
-    data: recentDocuments = [], 
-    isLoading: recentDocumentsLoading,
-    refetch: refetchRecentDocuments 
-  } = useQuery({
+  const recentDocumentsQuery = useQuery({
     queryKey: ['recent-documents'],
     queryFn: () => getRecentDocuments(5),
     enabled: true,
     retry: 1,
-    meta: {
-      onSuccess: (data: PropertyDocument[]) => {
-        console.log('Recent documents fetched successfully:', data);
-      },
-      onError: (error: Error) => {
-        console.error('Error fetching recent documents:', error);
-        const errorMessage = error.message.includes('JSON') 
-          ? 'Invalid response format from server. Please try again.' 
-          : error.message;
-        
-        toast({
-          variant: "destructive",
-          title: "Failed to fetch recent documents",
-          description: errorMessage,
-        });
-      }
-    }
   });
 
+  // Log success or errors for recent documents
+  useEffect(() => {
+    if (recentDocumentsQuery.data) {
+      console.log('Recent documents fetched successfully:', recentDocumentsQuery.data);
+    }
+    if (recentDocumentsQuery.error) {
+      const error = recentDocumentsQuery.error as Error;
+      console.error('Error fetching recent documents:', error);
+      const errorMessage = error.message.includes('JSON') 
+        ? 'Invalid response format from server. Please try again.' 
+        : error.message;
+      
+      toast({
+        variant: "destructive",
+        title: "Failed to fetch recent documents",
+        description: errorMessage,
+      });
+    }
+  }, [recentDocumentsQuery.data, recentDocumentsQuery.error]);
+
   // Expiring documents query
-  const { 
-    data: expiringDocuments = [], 
-    isLoading: expiringDocumentsLoading,
-    refetch: refetchExpiringDocuments
-  } = useQuery({
+  const expiringDocumentsQuery = useQuery({
     queryKey: ['expiring-documents'],
     queryFn: () => getExpiringDocuments(30), // Documents expiring in next 30 days
     enabled: true,
     retry: 1,
-    meta: {
-      onSuccess: (data: PropertyDocument[]) => {
-        console.log('Expiring documents fetched successfully:', data);
-      },
-      onError: (error: Error) => {
-        console.error('Error fetching expiring documents:', error);
-        const errorMessage = error.message.includes('JSON') 
-          ? 'Invalid response format from server. Please try again.' 
-          : error.message;
-        
-        toast({
-          variant: "destructive",
-          title: "Failed to fetch expiring documents",
-          description: errorMessage,
-        });
-      }
-    }
   });
+
+  // Log success or errors for expiring documents
+  useEffect(() => {
+    if (expiringDocumentsQuery.data) {
+      console.log('Expiring documents fetched successfully:', expiringDocumentsQuery.data);
+    }
+    if (expiringDocumentsQuery.error) {
+      const error = expiringDocumentsQuery.error as Error;
+      console.error('Error fetching expiring documents:', error);
+      const errorMessage = error.message.includes('JSON') 
+        ? 'Invalid response format from server. Please try again.' 
+        : error.message;
+      
+      toast({
+        variant: "destructive",
+        title: "Failed to fetch expiring documents",
+        description: errorMessage,
+      });
+    }
+  }, [expiringDocumentsQuery.data, expiringDocumentsQuery.error]);
 
   // Get documents by type for a specific property
   const getDocumentsByType = async (propertyId: string, docType: FolderType): Promise<PropertyDocument[]> => {
@@ -171,12 +169,12 @@ export const useDocumentQueries = (
     documents,
     documentsLoading,
     refetchDocuments,
-    recentDocuments,
-    recentDocumentsLoading,
-    refetchRecentDocuments,
-    expiringDocuments,
-    expiringDocumentsLoading,
-    refetchExpiringDocuments,
+    recentDocuments: recentDocumentsQuery.data || [],
+    recentDocumentsLoading: recentDocumentsQuery.isLoading,
+    refetchRecentDocuments: recentDocumentsQuery.refetch,
+    expiringDocuments: expiringDocumentsQuery.data || [],
+    expiringDocumentsLoading: expiringDocumentsQuery.isLoading,
+    refetchExpiringDocuments: expiringDocumentsQuery.refetch,
     getDocumentsByType
   };
 };
