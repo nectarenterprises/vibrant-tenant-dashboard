@@ -26,7 +26,6 @@ export const useUtilityBills = (propertyId: string) => {
         throw new Error(error.message);
       }
       
-      // Map the database response to our frontend model
       const bills: UtilityBill[] = data.map(bill => ({
         id: bill.id,
         propertyId: bill.property_id,
@@ -57,7 +56,6 @@ export const useUtilityBills = (propertyId: string) => {
     queryFn: fetchUtilityBills
   });
 
-  // Function to get utility usage data for charts
   const getUtilityUsageData = (utilityType: UtilityType) => {
     return bills
       .filter(bill => bill.utilityType === utilityType)
@@ -70,8 +68,9 @@ export const useUtilityBills = (propertyId: string) => {
       .reverse();
   };
 
-  // Function to get utility cost data for charts
   const getUtilityCostData = () => {
+    if (bills.length === 0) return [];
+
     const costMap = new Map();
     
     bills.forEach(bill => {
@@ -100,8 +99,9 @@ export const useUtilityBills = (propertyId: string) => {
       .slice(-6);
   };
 
-  // Function to detect anomalies in utility bills
   const detectAnomalies = () => {
+    if (bills.length === 0) return [];
+
     const anomalies = [];
     const utilityTypes: UtilityType[] = ['electricity', 'gas', 'water'];
     
@@ -114,7 +114,6 @@ export const useUtilityBills = (propertyId: string) => {
         const latest = typeData[typeData.length - 1];
         const previous = typeData[typeData.length - 2];
         
-        // Check for significant increases in cost
         if (latest.totalAmount > previous.totalAmount * 1.3) {
           anomalies.push({
             id: latest.id,
@@ -126,7 +125,6 @@ export const useUtilityBills = (propertyId: string) => {
           });
         }
         
-        // Check for significant increases in usage
         if (latest.usageQuantity && previous.usageQuantity && latest.usageQuantity > previous.usageQuantity * 1.3) {
           anomalies.push({
             id: latest.id + '_usage',
@@ -143,7 +141,6 @@ export const useUtilityBills = (propertyId: string) => {
     return anomalies;
   };
 
-  // We create a wrapper function to handle the string input
   const handleSetSelectedUtilityType = (value: string) => {
     setSelectedUtilityType(value as UtilityFilterType);
   };
