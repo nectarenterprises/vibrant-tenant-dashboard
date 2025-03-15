@@ -62,7 +62,7 @@ function App() {
           <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
           <Route path="/leases" element={<ProtectedRoute><Leases /></ProtectedRoute>} />
           <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
-          <Route path="/documents/category/:category" element={<ProtectedRoute><DocumentCategory /></ProtectedRoute>} />
+          <Route path="/documents/:propertyId/:category" element={<ProtectedRoute><DocumentCategory /></ProtectedRoute>} />
           <Route path="/service-charge" element={<ProtectedRoute><ServiceCharge /></ProtectedRoute>} />
           <Route path="/compliance" element={<ProtectedRoute><Compliance /></ProtectedRoute>} />
           <Route path="/utilities" element={<ProtectedRoute><Utilities /></ProtectedRoute>} />
