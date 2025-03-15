@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Property } from '@/types/property';
@@ -18,17 +17,21 @@ const ServiceChargeCategoryBreakdown: React.FC<ServiceChargeCategoryBreakdownPro
   const [chartType, setChartType] = useState<'pie' | 'bar'>('pie');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   
-  // Mock data - would be replaced with real data from API
-  const categoryData: CategoryData[] = [
-    { category: 'Maintenance', value: 6300, percent: 26.9, color: '#f97316' },
-    { category: 'Security', value: 4200, percent: 17.9, color: '#3b82f6' },
-    { category: 'Cleaning', value: 3360, percent: 14.3, color: '#22c55e' },
-    { category: 'Utilities', value: 5040, percent: 21.5, color: '#8b5cf6' },
-    { category: 'Insurance', value: 2100, percent: 9.0, color: '#ec4899' },
-    { category: 'Management Fee', value: 2520, percent: 10.8, color: '#f59e0b' }
-  ];
+  const calculateCategoryData = () => {
+    const totalAmount = 23520;
+    
+    return [
+      { category: 'Maintenance', value: 6300, percent: 26.8, color: '#f97316' },
+      { category: 'Security', value: 4200, percent: 17.9, color: '#3b82f6' },
+      { category: 'Cleaning', value: 3360, percent: 14.3, color: '#22c55e' },
+      { category: 'Utilities', value: 5040, percent: 21.4, color: '#8b5cf6' },
+      { category: 'Insurance', value: 2100, percent: 8.9, color: '#ec4899' },
+      { category: 'Management Fee', value: 2520, percent: 10.7, color: '#f59e0b' }
+    ];
+  };
   
-  // Mock subcategories for a category detail drill-down
+  const categoryData: CategoryData[] = calculateCategoryData();
+  
   const getSubcategoryData = (category: string): SubcategoryData[] => {
     switch(category) {
       case 'Maintenance':
@@ -59,7 +62,7 @@ const ServiceChargeCategoryBreakdown: React.FC<ServiceChargeCategoryBreakdownPro
         <div className="bg-white p-4 border rounded-md shadow-md">
           <p className="font-medium">{payload[0].name}</p>
           <p className="text-sm">{formatCurrency(payload[0].value)}</p>
-          <p className="text-xs text-muted-foreground">{payload[0].payload.percent}% of total</p>
+          <p className="text-xs text-muted-foreground">{payload[0].payload.percent.toFixed(1)}% of total</p>
         </div>
       );
     }

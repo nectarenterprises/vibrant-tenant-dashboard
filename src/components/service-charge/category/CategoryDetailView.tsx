@@ -85,7 +85,7 @@ const CategoryDetailView: React.FC<CategoryDetailViewProps> = ({
                       fill="#8884d8"
                       dataKey="value"
                       nameKey="name"
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
                     >
                       {subcategories.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
@@ -128,7 +128,7 @@ const CategoryDetailView: React.FC<CategoryDetailViewProps> = ({
               
               <div>
                 <p className="text-sm text-muted-foreground">% of Total Service Charge</p>
-                <p className="text-xl font-medium">{categoryInfo.percent}%</p>
+                <p className="text-xl font-medium">{categoryInfo.percent.toFixed(1)}%</p>
               </div>
               
               <div>
