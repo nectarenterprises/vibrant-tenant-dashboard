@@ -42,6 +42,9 @@ export const DOCUMENT_TYPES: Record<FolderType, string> = {
   'other': 'Other Documents'
 };
 
+// Adding PropertyDocumentResponse type alias for the basic.ts file
+export type PropertyDocumentResponse = any;
+
 /**
  * Safely transforms a database record to PropertyDocument
  */
@@ -135,6 +138,3 @@ export const getDocumentFolders = (): DocumentFolder[] => {
 export const getFolderTypeMap = (): Record<string, string> => {
   return DOCUMENT_TYPES;
 };
-
-// Adding this type alias to support the basic.ts file
-export type PropertyDocumentResponse = any;

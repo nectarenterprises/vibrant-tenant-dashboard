@@ -1,4 +1,3 @@
-
 export interface Property {
   id: string;
   name: string;
@@ -69,6 +68,8 @@ export interface PropertyDocument {
     rentReview?: string[];
   };
   notificationPeriod?: number; // in days
+  lastAccessed?: string; // Adding lastAccessed property to fix the type error
+  versionNotes?: string; // Also adding versionNotes for consistency
 }
 
 export interface DocumentTag {
