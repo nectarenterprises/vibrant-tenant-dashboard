@@ -17,6 +17,19 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   searchQuery,
   onPropertySelect
 }) => {
+  // Filter out duplicate properties based on their name and address
+  const uniqueProperties = filteredProperties.reduce((acc: Property[], current) => {
+    const x = acc.find(item => 
+      item.name === current.name && 
+      item.address === current.address
+    );
+    if (!x) {
+      return acc.concat([current]);
+    } else {
+      return acc;
+    }
+  }, []);
+
   if (propertiesLoading) {
     return (
       <div className="col-span-full flex flex-col items-center justify-center py-12">
@@ -26,7 +39,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
     );
   }
 
-  if (filteredProperties.length === 0) {
+  if (uniqueProperties.length === 0) {
     return (
       <div className="col-span-full flex flex-col items-center justify-center py-12 text-muted-foreground">
         <Search className="h-12 w-12 mb-4 opacity-50" />
@@ -37,7 +50,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
 
   return (
     <>
-      {filteredProperties.map((property, index) => (
+      {uniqueProperties.map((property, index) => (
         <div 
           key={property.id} 
           className="cursor-pointer transition-transform hover:scale-[1.02]"
