@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Property } from '@/types/property';
+import React, { useState, useEffect } from 'react';
+import { Property, PropertyDocument } from '@/types/property';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, FileUp, Upload } from 'lucide-react';
@@ -10,6 +10,7 @@ import { useDocumentUpload } from '@/hooks/documents/useDocumentUpload';
 import { useDocumentMutations } from '@/hooks/documents/useDocumentMutations';
 import CategoryCard from './categories/CategoryCard';
 import UploadDialog from './UploadDialog';
+import { FolderType } from '@/services/document/types';
 
 interface DocumentCategoriesProps {
   property: Property;
@@ -18,6 +19,14 @@ interface DocumentCategoriesProps {
 const DocumentCategories: React.FC<DocumentCategoriesProps> = ({ property }) => {
   const navigate = useNavigate();
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  
+  // Document counts state
+  const [documentCounts, setDocumentCounts] = useState({
+    lease: 0,
+    utility: 0,
+    compliance: 0,
+    'service-charge': 0
+  });
   
   // Document upload state
   const {
@@ -37,6 +46,28 @@ const DocumentCategories: React.FC<DocumentCategoriesProps> = ({ property }) => 
   // Document mutations - handle document uploads
   const { uploadMutation } = useDocumentMutations(property.id, resetUploadForm);
   
+  // Document queries hook
+  const { getDocumentsByType } = useDocumentQueries(property.id, undefined);
+  
+  // Fetch document counts on component mount
+  useEffect(() => {
+    const fetchDocumentCounts = async () => {
+      const leaseCount = await getDocumentsByType(property.id, 'lease');
+      const utilityCount = await getDocumentsByType(property.id, 'utility');
+      const complianceCount = await getDocumentsByType(property.id, 'compliance');
+      const serviceChargeCount = await getDocumentsByType(property.id, 'service-charge');
+      
+      setDocumentCounts({
+        lease: leaseCount.length,
+        utility: utilityCount.length,
+        compliance: complianceCount.length,
+        'service-charge': serviceChargeCount.length
+      });
+    };
+    
+    fetchDocumentCounts();
+  }, [property.id, getDocumentsByType]);
+  
   // Handle document upload
   const handleUpload = () => {
     const uploadData = prepareUpload();
@@ -44,13 +75,6 @@ const DocumentCategories: React.FC<DocumentCategoriesProps> = ({ property }) => 
       uploadMutation.mutate(uploadData);
     }
   };
-  
-  // Get document counts for each category
-  const { getDocumentsByType } = useDocumentQueries(property.id);
-  const leaseDocuments = getDocumentsByType('lease');
-  const utilityDocuments = getDocumentsByType('utility');
-  const complianceDocuments = getDocumentsByType('compliance');
-  const serviceChargeDocuments = getDocumentsByType('service-charge');
   
   return (
     <div className="space-y-6">
@@ -69,28 +93,28 @@ const DocumentCategories: React.FC<DocumentCategoriesProps> = ({ property }) => 
         <CategoryCard
           title="Lease Documents"
           icon={<FileText className="h-8 w-8 text-tenant-yellow" />}
-          count={leaseDocuments.length}
+          count={documentCounts.lease}
           onClick={() => navigate(`/documents/${property.id}/lease`)}
         />
         
         <CategoryCard
           title="Utility Documents"
           icon={<FileText className="h-8 w-8 text-tenant-green" />}
-          count={utilityDocuments.length}
+          count={documentCounts.utility}
           onClick={() => navigate(`/documents/${property.id}/utility`)}
         />
         
         <CategoryCard
           title="Compliance Documents"
           icon={<FileText className="h-8 w-8 text-tenant-blue" />} 
-          count={complianceDocuments.length}
+          count={documentCounts.compliance}
           onClick={() => navigate(`/documents/${property.id}/compliance`)}
         />
         
         <CategoryCard
           title="Service Charge Documents"
           icon={<FileText className="h-8 w-8 text-tenant-orange" />}
-          count={serviceChargeDocuments.length}
+          count={documentCounts['service-charge']}
           onClick={() => navigate(`/documents/${property.id}/service-charge`)}
         />
       </div>
