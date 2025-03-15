@@ -15,11 +15,18 @@ import {
 import { useRole } from '@/contexts/RoleContext';
 
 interface SidebarLinksProps {
-  collapsed: boolean;
+  collapsed?: boolean;
+  location?: ReturnType<typeof useLocation>;
+  onClick?: () => void;
 }
 
-const SidebarLinks: React.FC<SidebarLinksProps> = ({ collapsed }) => {
-  const location = useLocation();
+const SidebarLinks: React.FC<SidebarLinksProps> = ({ 
+  collapsed = false, 
+  location: propLocation,
+  onClick 
+}) => {
+  const locationFromHook = useLocation();
+  const location = propLocation || locationFromHook;
   const { isAdmin } = useRole();
   
   const isActive = (path: string) => {
@@ -56,6 +63,7 @@ const SidebarLinks: React.FC<SidebarLinksProps> = ({ collapsed }) => {
                 ? 'bg-tenant-green text-white'
                 : 'text-gray-700 hover:bg-gray-100'
             } rounded-md transition-colors`}
+            onClick={onClick}
           >
             <span className={collapsed ? '' : 'mr-3'}>{link.icon}</span>
             {!collapsed && <span>{link.label}</span>}

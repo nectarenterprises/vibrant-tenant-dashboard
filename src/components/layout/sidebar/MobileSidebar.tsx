@@ -12,7 +12,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { SidebarLinks } from './SidebarLinks';
+import SidebarLinks from './SidebarLinks';
 import { UserProfile } from './UserProfile';
 
 interface MobileSidebarProps {
@@ -20,6 +20,14 @@ interface MobileSidebarProps {
 }
 
 export const MobileSidebar = ({ location }: MobileSidebarProps) => {
+  const handleLinkClick = () => {
+    // Close the sidebar when a link is clicked
+    const closeButton = document.querySelector('[data-radix-collection-item]');
+    if (closeButton instanceof HTMLElement) {
+      closeButton.click();
+    }
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -36,7 +44,7 @@ export const MobileSidebar = ({ location }: MobileSidebarProps) => {
         </SheetHeader>
         <Separator className="my-4" />
         <div className="flex-1 overflow-auto">
-          <SidebarLinks location={location} onClick={() => {}} />
+          <SidebarLinks location={location} onClick={handleLinkClick} />
         </div>
         <Separator className="my-4" />
         <UserProfile />

@@ -4,7 +4,7 @@ import { Location } from 'react-router-dom';
 import { Hexagon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from "@/components/ui/separator";
-import { SidebarLinks } from './SidebarLinks';
+import SidebarLinks from './SidebarLinks';
 import { UserProfile } from './UserProfile';
 import { cn } from '@/lib/utils';
 

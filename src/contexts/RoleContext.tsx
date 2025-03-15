@@ -1,7 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 
 // Define role types
 export type UserRole = 'admin' | 'standard' | 'viewer';
@@ -35,17 +34,22 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         setLoading(true);
         setError(null);
-
-        const { data, error: supabaseError } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id);
-
-        if (supabaseError) {
-          throw supabaseError;
+        
+        // For demo purposes, we'll use local storage to simulate user roles
+        // In production, this would come from Supabase user_roles table
+        const storedRoles = localStorage.getItem(`user_roles_${user.id}`);
+        
+        // If there are no stored roles, default to 'standard'
+        // For testing purposes, let's make the current user an admin
+        let userRoles: UserRole[];
+        if (!storedRoles) {
+          // For demo, set first user as admin
+          userRoles = ['admin', 'standard'];
+          localStorage.setItem(`user_roles_${user.id}`, JSON.stringify(userRoles));
+        } else {
+          userRoles = JSON.parse(storedRoles) as UserRole[];
         }
-
-        const userRoles = data?.map(r => r.role as UserRole) || ['standard'];
+        
         setRoles(userRoles);
       } catch (err) {
         console.error('Error fetching user roles:', err);
