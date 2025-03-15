@@ -22,7 +22,7 @@ export const useUtilityBillProcessing = (propertyId: string, documentType: Docum
   const [isFallbackData, setIsFallbackData] = useState(false);
   const queryClient = useQueryClient();
   
-  const { uploadProgress, uploadDocument } = useUtilityBillUpload(propertyId, documentType);
+  const { uploadProgress, uploadDocument } = useUtilityBillUpload(propertyId);
   const { processDocument } = useUtilityBillExtraction();
   const { saveUtilityBill } = useUtilityBillSave(propertyId, queryClient);
   
@@ -38,7 +38,8 @@ export const useUtilityBillProcessing = (propertyId: string, documentType: Docum
       
       // Process document with AI
       setProcessingStatus('processing');
-      const processingResult = await processDocument(documentId, propertyId);
+      // Passing the documentType argument to processDocument
+      const processingResult = await processDocument(documentId, propertyId, documentType);
       
       setProcessingStatus('verifying');
       setExtractionResult(processingResult);
