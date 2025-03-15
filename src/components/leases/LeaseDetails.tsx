@@ -1,13 +1,16 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Property, Incentive, DocumentType } from '@/types/property';
 import { Card, CardContent } from '@/components/ui/card';
 import LeaseContent from './LeaseContent';
 import LeaseDialogs, { LeaseDialogsProps } from './dialogs';
+import PropertyPhotoHeader from './PropertyPhotoHeader';
+import { supabase } from '@/integrations/supabase/client';
+import { getPropertyImageUrl } from '@/services/property/PropertyImageService';
 
 interface LeaseDetailsProps extends LeaseDialogsProps {
   property: Property;
-  propertyId: string; // Adding the missing propertyId prop
+  propertyId: string;
   isLoading?: boolean;
   refreshDocuments: number;
 }
@@ -64,16 +67,47 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({
   onTenantSaved,
   isLoading
 }) => {
+  const [backgroundImage, setBackgroundImage] = useState<string | undefined>(undefined);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  useEffect(() => {
+    // Fetch the property image if it exists
+    const fetchPropertyImage = async () => {
+      try {
+        const { data: propertyData, error } = await supabase
+          .from('properties')
+          .select('image_path')
+          .eq('id', propertyId)
+          .single();
+        
+        if (error) throw error;
+        
+        if (propertyData?.image_path) {
+          const imageUrl = getPropertyImageUrl(propertyData.image_path);
+          setBackgroundImage(imageUrl);
+        }
+      } catch (error) {
+        console.error('Error fetching property image:', error);
+      }
+    };
+
+    fetchPropertyImage();
+  }, [propertyId, refreshTrigger]);
+
+  const handlePhotoUpdated = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <Card className="overflow-hidden">
-        <div className="h-48 mellow-gradient relative">
-          <div className="absolute inset-0 bg-[url('/placeholder.svg')] bg-cover bg-center mix-blend-overlay opacity-30"></div>
-          <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black/60 to-transparent">
-            <h2 className="text-white font-bold text-2xl">{property.name}</h2>
-            <p className="text-white/90">{property.address}</p>
-          </div>
-        </div>
+        <PropertyPhotoHeader
+          propertyId={propertyId}
+          propertyName={property.name}
+          address={property.address}
+          backgroundImage={backgroundImage}
+          onPhotoUpdated={handlePhotoUpdated}
+        />
         
         <CardContent className="pt-6">
           <LeaseContent 
@@ -102,7 +136,7 @@ const LeaseDetails: React.FC<LeaseDetailsProps> = ({
           />
           
           <LeaseDialogs 
-            propertyId={propertyId} // Using the passed propertyId
+            propertyId={propertyId}
             showPropertyDialog={showPropertyDialog}
             setShowPropertyDialog={setShowPropertyDialog}
             propertyType={propertyType}

@@ -49,3 +49,33 @@ export const uploadPropertyImage = async (file: File): Promise<string | null> =>
     return null;
   }
 };
+
+/**
+ * Updates the property with the new image path
+ */
+export const updatePropertyImage = async (propertyId: string, imagePath: string): Promise<boolean> => {
+  try {
+    const { error } = await supabase
+      .from('properties')
+      .update({ image_path: imagePath })
+      .eq('id', propertyId);
+    
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Failed to update property",
+        description: error.message,
+      });
+      return false;
+    }
+    
+    return true;
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Update failed",
+      description: error.message || "An error occurred during the update",
+    });
+    return false;
+  }
+};

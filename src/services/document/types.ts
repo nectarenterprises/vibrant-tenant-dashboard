@@ -1,14 +1,14 @@
-
 import { DocumentTag } from '@/types/property';
 
-export type FolderType = 'lease' | 'utility' | 'compliance' | 'service-charge' | 'other';
+export type FolderType = 'lease' | 'utility' | 'compliance' | 'service-charge' | 'photo' | 'other';
 
 export const DOCUMENT_TYPES: Record<FolderType, string> = {
-  'lease': 'Lease Agreement',
-  'utility': 'Utility Bill',
-  'compliance': 'Compliance Document',
-  'service-charge': 'Service Charge Statement',
-  'other': 'Other Document'
+  lease: 'Lease Documents',
+  utility: 'Utility Documents',
+  compliance: 'Compliance Documents',
+  'service-charge': 'Service Charge Documents',
+  photo: 'Property Photos',
+  other: 'Other Documents'
 };
 
 // Define a folder structure type for Documents page
@@ -88,6 +88,12 @@ export const getPropertyFolderStructure = (propertyId: string): DocumentFolder[]
       name: DOCUMENT_TYPES['service-charge'],
       path: `${propertyId}/service-charge`,
       type: 'service-charge'
+    },
+    {
+      id: 'photo',
+      name: DOCUMENT_TYPES['photo'],
+      path: `${propertyId}/photo`,
+      type: 'photo'
     },
     {
       id: 'other',
