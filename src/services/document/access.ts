@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { PropertyDocument } from '@/types/property';
 
 /**
  * Record document access timestamp
@@ -24,4 +25,12 @@ export const recordDocumentAccess = async (documentId: string) => {
     console.error('Error recording document access:', error);
     return { success: false };
   }
+};
+
+/**
+ * For backward compatibility - accepts either a document ID or a document object
+ */
+export const updateDocumentAccessTimestamp = async (document: string | PropertyDocument) => {
+  const documentId = typeof document === 'string' ? document : document.id;
+  return recordDocumentAccess(documentId);
 };

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -26,7 +25,26 @@ const DocumentVersionHistory: React.FC<DocumentVersionHistoryProps> = ({
   const handleDownload = async (filePath: string) => {
     await downloadDocument(filePath);
   };
-  
+
+  const handleVersionDownload = async (version: any) => {
+    try {
+      await downloadDocument(version.filePath, document.name);
+      await updateDocumentAccessTimestamp(document.id);
+      
+      toast({
+        title: "Version downloaded",
+        description: `Version ${version.version} has been downloaded successfully.`
+      });
+    } catch (error) {
+      console.error('Error downloading version:', error);
+      toast({
+        variant: "destructive",
+        title: "Download failed",
+        description: "There was an error downloading the document version."
+      });
+    }
+  };
+
   if (!document) return null;
   
   return (
@@ -73,7 +91,7 @@ const DocumentVersionHistory: React.FC<DocumentVersionHistoryProps> = ({
                     <Button 
                       variant="ghost" 
                       size="icon"
-                      onClick={() => handleDownload(version.filePath)}
+                      onClick={() => handleVersionDownload(version)}
                     >
                       <Download className="h-4 w-4" />
                     </Button>

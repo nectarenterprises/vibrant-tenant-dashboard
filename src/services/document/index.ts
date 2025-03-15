@@ -19,7 +19,10 @@ import {
   getRecentDocuments,
   getExpiringDocuments
 } from './fileQuery';
-import { recordDocumentAccess } from './access';
+import { 
+  recordDocumentAccess,
+  updateDocumentAccessTimestamp
+} from './access';
 
 // Export all functions
 export {
@@ -39,5 +42,6 @@ export {
   getDocumentsByFolderId,
   getRecentDocuments,
   getExpiringDocuments,
-  recordDocumentAccess
+  recordDocumentAccess,
+  updateDocumentAccessTimestamp
 };

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -8,7 +7,7 @@ import UtilityBaseChart from './shared/UtilityBaseChart';
 import { getPropertyDocuments } from '@/services/FileStorageService';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
-import { downloadDocument } from '@/services/document';
+import { downloadDocument, updateDocumentAccessTimestamp } from '@/services/document';
 
 interface UtilityDetailViewProps {
   title: string;
@@ -51,9 +50,7 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
       
       setIsLoading(true);
       try {
-        // Fetch documents of type 'utility'
         const documents = await getPropertyDocuments(propertyId, 'utility');
-        // Filter documents based on utility type (looking for keywords in name/description)
         const filteredDocs = documents.filter(doc => {
           const searchText = `${doc.name.toLowerCase()} ${doc.description?.toLowerCase() || ''}`;
           return searchText.includes(utilityType.toLowerCase());
@@ -70,9 +67,11 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
     fetchUtilityDocuments();
   }, [propertyId, utilityType]);
 
-  const handleDownloadDocument = async (document: PropertyDocument) => {
+  const handleDownload = async (document: any) => {
     try {
       await downloadDocument(document.filePath, document.name);
+      updateDocumentAccessTimestamp(document.id);
+      
       toast({
         title: "Document downloaded",
         description: `${document.name} has been downloaded successfully.`
@@ -207,7 +206,7 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
                     variant="ghost" 
                     size="sm" 
                     className="flex items-center gap-1"
-                    onClick={() => handleDownloadDocument(document)}
+                    onClick={() => handleDownload(document)}
                   >
                     <Download className="h-4 w-4" />
                     Download

@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 import { PropertyDocument, DocumentType } from '@/types/property';
@@ -96,6 +95,59 @@ export const uploadPropertyDocument = async (
     return transformToPropertyDocument(data);
   } catch (error) {
     console.error('Error uploading property document:', error);
+    throw error;
+  }
+};
+
+/**
+ * Upload a document to a property
+ * @param propertyId The property ID to associate with the document
+ * @param file The file to upload
+ * @param name Name for the document
+ * @param documentType Type of document
+ * @param description Optional description
+ * @param additionalMetadata Optional additional metadata
+ * @returns The uploaded document metadata
+ */
+export const uploadDocument = async (
+  propertyId: string,
+  file: File,
+  name: string,
+  documentType: string,
+  description?: string,
+  additionalMetadata?: any
+) => {
+  try {
+    // Upload the file
+    const filePath = await uploadFile(`properties/${propertyId}/${Date.now()}_${file.name}`, file);
+    
+    if (!filePath) {
+      throw new Error('File upload failed');
+    }
+    
+    // Create document metadata in the database
+    const { data, error } = await supabase
+      .from('property_documents')
+      .insert({
+        property_id: propertyId,
+        name: name,
+        description: description,
+        file_path: filePath,
+        document_type: documentType,
+        upload_date: new Date().toISOString(),
+        version: 1,
+        ...additionalMetadata
+      })
+      .select()
+      .single();
+    
+    if (error) {
+      throw error;
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Error uploading document:', error);
     throw error;
   }
 };

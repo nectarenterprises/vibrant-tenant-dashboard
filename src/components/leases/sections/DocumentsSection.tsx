@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { PropertyDocument } from '@/types/property';
 import { toast } from '@/components/ui/use-toast';
-import { getPropertyDocuments, downloadDocument, deleteDocument } from '@/services/FileStorageService';
+import { getPropertyDocuments, downloadDocument, deleteDocument, updateDocumentAccessTimestamp } from '@/services/FileStorageService';
 import DocumentSectionHeader from './documents/DocumentSectionHeader';
 import DocumentsList from './documents/DocumentsList';
 import EmptyDocumentState from './documents/EmptyDocumentState';
@@ -38,7 +37,13 @@ const DocumentsSection = ({ setShowDocumentDialog, propertyId }: DocumentsSectio
   }, [propertyId]);
 
   const handleDownload = async (document: PropertyDocument) => {
-    await downloadDocument(document.filePath);
+    await downloadDocument(document.filePath, document.name);
+    await updateDocumentAccessTimestamp(document.id);
+    
+    toast({
+      title: "Document downloaded",
+      description: `${document.name} has been downloaded successfully.`
+    });
   };
 
   const handleDelete = async (document: PropertyDocument) => {

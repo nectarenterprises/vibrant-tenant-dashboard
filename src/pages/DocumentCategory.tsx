@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -107,6 +106,9 @@ const DocumentCategory = () => {
   const handleDownload = async (document: any) => {
     try {
       await downloadDocument(document.filePath, document.name);
+      // Record access
+      await updateDocumentAccessTimestamp(document.id);
+      
       toast({
         title: "Document downloaded",
         description: `${document.name} has been downloaded successfully.`

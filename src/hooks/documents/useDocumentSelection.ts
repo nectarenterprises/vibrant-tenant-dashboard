@@ -1,8 +1,7 @@
-
 import { useState } from 'react';
 import { Property, PropertyDocument } from '@/types/property';
-import { DocumentFolder, FolderType } from '@/services/document/types';
-import { downloadDocument, recordDocumentAccess } from '@/services/document';
+import { FolderType } from '@/services/document/types';
+import { downloadDocument, updateDocumentAccessTimestamp } from '@/services/document';
 import { toast } from '@/components/ui/use-toast';
 
 /**
@@ -46,7 +45,7 @@ export const useDocumentSelection = () => {
       await downloadDocument(document.filePath, document.name);
       // Record access after successful download
       if (document.id) {
-        await recordDocumentAccess(document.id);
+        await updateDocumentAccessTimestamp(document);
       }
       
       toast({
@@ -60,6 +59,15 @@ export const useDocumentSelection = () => {
         title: "Download failed",
         description: "There was an error downloading the document."
       });
+    }
+  };
+
+  // Record that a document was accessed
+  const recordDocumentAccess = async (document: PropertyDocument) => {
+    try {
+      await updateDocumentAccessTimestamp(document);
+    } catch (error) {
+      console.error('Error recording document access:', error);
     }
   };
 

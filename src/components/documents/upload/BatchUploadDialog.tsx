@@ -1,190 +1,189 @@
-
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { FolderType } from '@/services/document/types';
-import { DocumentType } from '@/types/property';
+import React, { useState, useCallback } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { useDropzone } from 'react-dropzone';
+import { File } from 'lucide-react';
+import { Progress } from "@/components/ui/progress"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Property } from '@/types/property';
+import { uploadDocument } from '@/services/document';
 import { toast } from '@/components/ui/use-toast';
-import DragAndDropUpload from './DragAndDropUpload';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { uploadPropertyDocument } from '@/services/document';
-import { Loader2 } from 'lucide-react';
 
 interface BatchUploadDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  propertyId: string;
-  onComplete: () => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  property: Property | null;
 }
 
-const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
-  isOpen,
-  onClose,
-  propertyId,
-  onComplete
-}) => {
-  const [files, setFiles] = useState<File[]>([]);
-  const [documentType, setDocumentType] = useState<FolderType>('other');
+const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({ open, setOpen, property }) => {
+  const [selected, setSelected] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
-  
-  const handleFilesSelected = (selectedFiles: File[]) => {
-    setFiles(selectedFiles);
+  const [progress, setProgress] = useState(0);
+  const [filenames, setFilenames] = useState<string[]>([]);
+  const [descriptions, setDescriptions] = useState<string[]>([]);
+  const [selectedDocumentType, setSelectedDocumentType] = useState('lease');
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setSelected(acceptedFiles);
+    setFilenames(acceptedFiles.map(file => file.name));
+    setDescriptions(acceptedFiles.map(() => '')); // Initialize descriptions
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: {
+    'image/*': ['.jpeg', '.jpg', '.png'],
+    'application/pdf': ['.pdf']
+  } })
+
+  const handleFilenameChange = (index: number, value: string) => {
+    const newFilenames = [...filenames];
+    newFilenames[index] = value;
+    setFilenames(newFilenames);
   };
-  
+
+  const handleDescriptionChange = (index: number, value: string) => {
+    const newDescriptions = [...descriptions];
+    newDescriptions[index] = value;
+    setDescriptions(newDescriptions);
+  };
+
+  // Update the uploadDocument call to match the correct signature
   const handleUpload = async () => {
-    if (files.length === 0) {
-      toast({
-        title: "No files selected",
-        description: "Please select files to upload",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    if (!propertyId) {
-      toast({
-        title: "No property selected",
-        description: "Please select a property to upload documents to",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    setUploading(true);
-    let successCount = 0;
+    if (!selected || !property) return;
     
     try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const progress = Math.round(((i) / files.length) * 100);
+      setUploading(true);
+      
+      // Process each selected file
+      const uploadPromises = selected.map(async (file, index) => {
+        const fileName = filenames[index] || file.name;
         
-        setUploadProgress(prev => ({
-          ...prev,
-          [file.name]: progress
-        }));
-        
-        const result = await uploadPropertyDocument(
-          propertyId,
+        // Use the updated uploadDocument function with correct parameters
+        return uploadDocument(
+          property.id,
           file,
-          documentType as DocumentType,
-          file.name,
-          `Uploaded as part of batch upload on ${new Date().toLocaleDateString()}`
+          fileName,
+          selectedDocumentType,
+          descriptions[index]
         );
-        
-        if (result) {
-          successCount++;
-          setUploadProgress(prev => ({
-            ...prev,
-            [file.name]: 100
-          }));
-        }
+      });
+      
+      // Execute all uploads in parallel
+      const results = await Promise.all(uploadPromises);
+      
+      // Check for any errors during upload
+      const uploadErrors = results.filter(result => !result);
+      if (uploadErrors.length > 0) {
+        throw new Error(`Failed to upload ${uploadErrors.length} documents.`);
       }
       
       toast({
-        title: "Batch upload complete",
-        description: `Successfully uploaded ${successCount} of ${files.length} files.`
+        title: "Success",
+        description: "All documents uploaded successfully."
       });
       
-      onComplete();
-      handleClose();
-    } catch (error) {
-      console.error('Error during batch upload:', error);
+      setOpen(false);
+    } catch (error: any) {
       toast({
-        title: "Upload error",
-        description: "There was a problem uploading your files",
-        variant: "destructive"
+        variant: "destructive",
+        title: "Upload failed",
+        description: error.message || "An error occurred during upload."
       });
     } finally {
       setUploading(false);
+      setProgress(0);
     }
   };
-  
-  const handleClose = () => {
-    if (!uploading) {
-      setFiles([]);
-      setUploadProgress({});
-      onClose();
-    }
-  };
-  
+
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[550px]">
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Batch Upload Documents</DialogTitle>
           <DialogDescription>
-            Upload multiple documents at once to the selected property
+            Upload multiple documents at once.
           </DialogDescription>
         </DialogHeader>
-        
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="documentType">Document Type (for all files)</Label>
-            <Select
-              value={documentType}
-              onValueChange={(value) => setDocumentType(value as FolderType)}
-            >
-              <SelectTrigger id="documentType">
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="documentType" className="text-right">
+              Document Type
+            </Label>
+            <Select onValueChange={setSelectedDocumentType} defaultValue={selectedDocumentType}>
+              <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select document type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="lease">Lease Documents</SelectItem>
-                <SelectItem value="utility">Utility Bills</SelectItem>
-                <SelectItem value="compliance">Compliance Documents</SelectItem>
-                <SelectItem value="service-charge">Service Charge Documents</SelectItem>
+                <SelectItem value="lease">Lease</SelectItem>
+                <SelectItem value="utility">Utility</SelectItem>
+                <SelectItem value="compliance">Compliance</SelectItem>
+                <SelectItem value="service-charge">Service Charge</SelectItem>
+                <SelectItem value="photo">Photo</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
                 <SelectItem value="correspondence">Correspondence</SelectItem>
-                <SelectItem value="photo">Property Photos</SelectItem>
-                <SelectItem value="insurance">Insurance Documents</SelectItem>
-                <SelectItem value="tax">Tax Documents</SelectItem>
-                <SelectItem value="other">Other Documents</SelectItem>
+                <SelectItem value="tax">Tax</SelectItem>
+                <SelectItem value="insurance">Insurance</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          
-          <DragAndDropUpload 
-            onFilesSelected={handleFilesSelected}
-            acceptMultiple={true}
-          />
-          
-          {files.length > 0 && (
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Selected files: {files.length}</p>
-              <div className="max-h-40 overflow-y-auto border rounded p-2">
-                {files.map((file, index) => (
-                  <div key={index} className="text-sm py-1 border-b last:border-0 flex justify-between">
-                    <span className="truncate max-w-[250px]">{file.name}</span>
-                    {uploading && uploadProgress[file.name] !== undefined && (
-                      <span className="text-xs text-muted-foreground">
-                        {uploadProgress[file.name]}%
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
+          <div {...getRootProps()} className="dropzone">
+            <input {...getInputProps()} />
+            {
+              isDragActive ?
+                <p>Drop the files here ...</p> :
+                <p>Drag 'n' drop some files here, or click to select files</p>
+            }
+          </div>
+          {selected.length > 0 && (
+            <div className="file-list">
+              {selected.map((file, index) => (
+                <div key={index} className="file-item">
+                  <File className="inline-block h-4 w-4 mr-2" />
+                  <Input
+                    type="text"
+                    placeholder="File Name"
+                    value={filenames[index] || file.name}
+                    onChange={(e) => handleFilenameChange(index, e.target.value)}
+                  />
+                  <Input
+                    type="text"
+                    placeholder="Description"
+                    value={descriptions[index] || ''}
+                    onChange={(e) => handleDescriptionChange(index, e.target.value)}
+                  />
+                </div>
+              ))}
             </div>
           )}
+          {uploading && (
+            <Progress value={progress} />
+          )}
         </div>
-        
-        <div className="flex justify-end space-x-2">
-          <Button variant="outline" onClick={handleClose} disabled={uploading}>
+        <DialogFooter>
+          <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={handleUpload} disabled={files.length === 0 || uploading}>
-            {uploading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Uploading {files.length} files...
-              </>
-            ) : (
-              `Upload ${files.length} files`
-            )}
+          <Button type="submit" onClick={handleUpload} disabled={uploading || selected.length === 0}>
+            {uploading ? 'Uploading...' : 'Upload'}
           </Button>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
 export default BatchUploadDialog;
