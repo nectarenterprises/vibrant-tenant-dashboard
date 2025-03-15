@@ -1,3 +1,4 @@
+
 export interface Property {
   id: string;
   name: string;
@@ -51,6 +52,29 @@ export interface PropertyDocument {
   filePath: string;
   documentType: DocumentType;
   uploadDate: string;
+  tags?: DocumentTag[];
+  isFavorite?: boolean;
+  version?: number;
+  previousVersions?: {
+    version: number;
+    uploadDate: string;
+    filePath: string;
+    notes?: string;
+  }[];
+  expiryDate?: string;
+  keyDates?: {
+    commencement?: string;
+    expiry?: string;
+    breakOption?: string[];
+    rentReview?: string[];
+  };
+  notificationPeriod?: number; // in days
+}
+
+export interface DocumentTag {
+  id: string;
+  name: string;
+  color: string;
 }
 
 export interface ComplianceStatus {

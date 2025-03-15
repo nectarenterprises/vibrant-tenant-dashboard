@@ -1,4 +1,6 @@
 
+import { DocumentTag } from '@/types/property';
+
 export type FolderType = 'lease' | 'utility' | 'compliance' | 'service-charge' | 'other';
 
 export const DOCUMENT_TYPES: Record<FolderType, string> = {
@@ -15,6 +17,28 @@ export interface DocumentFolder {
   name: string;
   path: string;
   type: FolderType;
+}
+
+// Document metadata interface
+export interface DocumentMetadata {
+  id: string;
+  name: string;
+  description?: string;
+  documentType: FolderType;
+  tags?: DocumentTag[];
+  uploadDate: string;
+  uploadedBy: string;
+  isFavorite?: boolean;
+  version?: number;
+  versionNotes?: string;
+  expiryDate?: string;
+  notificationPeriod?: number; // in days
+  keyDates?: {
+    commencement?: string;
+    expiry?: string;
+    breakOption?: string[];
+    rentReview?: string[];
+  };
 }
 
 // Function to get folder structure for a property
@@ -52,3 +76,24 @@ export const getPropertyFolderStructure = (propertyId: string): DocumentFolder[]
     }
   ];
 };
+
+// Define interface for document search and filter options
+export interface DocumentSearchOptions {
+  searchQuery?: string;
+  documentType?: FolderType;
+  tags?: string[];
+  startDate?: Date;
+  endDate?: Date;
+  sortBy?: 'date' | 'name' | 'type';
+  sortOrder?: 'asc' | 'desc';
+  isFavorite?: boolean;
+}
+
+// Define interface for document version
+export interface DocumentVersion {
+  version: number;
+  uploadDate: string;
+  uploadedBy: string;
+  filePath: string;
+  notes?: string;
+}
