@@ -10,6 +10,7 @@ export interface DocumentVersion {
   filePath: string;
   versionNotes?: string;
   uploadedBy?: string;
+  notes?: string; // Added notes property to match usage in components
 }
 
 export interface DocumentSearchOptions {
@@ -28,16 +29,16 @@ export interface DocumentFolder {
   type: FolderType;
   icon: string;
   description?: string;
+  propertyId?: string; // Added propertyId to match usage in folders.ts
 }
 
+// Update DocumentType values in the record to match the types in PropertyDocument
 export const DOCUMENT_TYPES: Record<FolderType, string> = {
   'lease': 'Lease Documents',
   'utility': 'Utility Bills',
   'compliance': 'Compliance Documents',
-  'insurance': 'Insurance Documents',
-  'tax': 'Tax Documents',
   'service-charge': 'Service Charge Documents',
-  'correspondence': 'Correspondence',
+  'photo': 'Property Photos',
   'other': 'Other Documents'
 };
 
@@ -53,7 +54,7 @@ export const transformToPropertyDocument = (record: any): PropertyDocument => {
       filePath: record.file_path || '',
       documentType: record.document_type || 'other',
       uploadDate: record.upload_date || new Date().toISOString(),
-      property_id: record.property_id || '',
+      propertyId: record.property_id || '', // Changed to propertyId to match PropertyDocument type
       tags: Array.isArray(record.tags) ? record.tags : [],
       isFavorite: record.is_favorite || false,
       version: record.version || 1,
@@ -73,7 +74,7 @@ export const transformToPropertyDocument = (record: any): PropertyDocument => {
       filePath: '',
       documentType: 'other',
       uploadDate: new Date().toISOString(),
-      property_id: record.property_id || '',
+      propertyId: record.property_id || '', // Changed to propertyId to match PropertyDocument type
       tags: [],
       isFavorite: false,
       version: 1
@@ -115,25 +116,11 @@ export const getDocumentFolders = (): DocumentFolder[] => {
       description: 'Service charge budgets and statements'
     },
     {
-      id: 'insurance',
-      name: 'Insurance',
-      type: 'insurance',
-      icon: 'umbrella',
-      description: 'Insurance policies and certificates'
-    },
-    {
-      id: 'tax',
-      name: 'Tax Documents',
-      type: 'tax',
-      icon: 'landmark',
-      description: 'Tax forms and payment records'
-    },
-    {
-      id: 'correspondence',
-      name: 'Correspondence',
-      type: 'correspondence',
-      icon: 'mail',
-      description: 'Letters and emails related to the property'
+      id: 'photo',
+      name: 'Property Photos',
+      type: 'photo',
+      icon: 'image',
+      description: 'Photos of the property'
     },
     {
       id: 'other',
@@ -148,3 +135,6 @@ export const getDocumentFolders = (): DocumentFolder[] => {
 export const getFolderTypeMap = (): Record<string, string> => {
   return DOCUMENT_TYPES;
 };
+
+// Adding this type alias to support the basic.ts file
+export type PropertyDocumentResponse = any;

@@ -75,13 +75,15 @@ export const useDocumentQueries = (
     queryFn: () => getRecentDocuments(5),
     enabled: true,
     retry: 1,
-    onError: (error) => {
-      console.error('Error fetching recent documents:', error);
-      toast({
-        variant: "destructive",
-        title: "Failed to fetch recent documents",
-        description: "There was an error loading your recent documents.",
-      });
+    meta: {
+      onError: (error: any) => {
+        console.error('Error fetching recent documents:', error);
+        toast({
+          variant: "destructive",
+          title: "Failed to fetch recent documents",
+          description: "There was an error loading your recent documents.",
+        });
+      }
     }
   });
 
@@ -91,13 +93,15 @@ export const useDocumentQueries = (
     queryFn: () => getExpiringDocuments(30), // Documents expiring in next 30 days
     enabled: true,
     retry: 1,
-    onError: (error) => {
-      console.error('Error fetching expiring documents:', error);
-      toast({
-        variant: "destructive",
-        title: "Failed to fetch expiring documents",
-        description: "There was an error loading your expiring documents.",
-      });
+    meta: {
+      onError: (error: any) => {
+        console.error('Error fetching expiring documents:', error);
+        toast({
+          variant: "destructive",
+          title: "Failed to fetch expiring documents",
+          description: "There was an error loading your expiring documents.",
+        });
+      }
     }
   });
 

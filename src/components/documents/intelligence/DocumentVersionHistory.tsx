@@ -64,9 +64,9 @@ const DocumentVersionHistory: React.FC<DocumentVersionHistoryProps> = ({
                       <p className="text-sm text-muted-foreground mt-1">
                         Uploaded on {format(new Date(version.uploadDate), 'PPP')}
                       </p>
-                      {version.notes && (
+                      {(version.versionNotes || version.notes) && (
                         <p className="text-sm mt-2 bg-muted p-2 rounded">
-                          {version.notes}
+                          {version.versionNotes || version.notes}
                         </p>
                       )}
                     </div>
