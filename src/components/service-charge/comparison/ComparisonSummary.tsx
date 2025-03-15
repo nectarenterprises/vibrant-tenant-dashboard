@@ -44,7 +44,7 @@ const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({ data, formatCurre
             <h3 className="text-sm font-medium text-muted-foreground">Biggest Increase</h3>
             <Badge 
               variant="outline" 
-              className="bg-red-100 text-red-800 border-red-200 flex items-center gap-1 min-w-[70px] h-7 justify-center"
+              className="bg-red-100 text-red-800 border-red-200 flex items-center gap-1 w-24 h-7 justify-center"
             >
               <ArrowUp className="h-3 w-3" />
               {Math.abs(biggestIncrease.percentChange).toFixed(1)}%
@@ -63,7 +63,7 @@ const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({ data, formatCurre
             <h3 className="text-sm font-medium text-muted-foreground">Biggest Decrease</h3>
             <Badge 
               variant="outline" 
-              className="bg-emerald-100 text-emerald-800 border-emerald-200 flex items-center gap-1 min-w-[70px] h-7 justify-center"
+              className="bg-emerald-100 text-emerald-800 border-emerald-200 flex items-center gap-1 w-24 h-7 justify-center"
             >
               <ArrowDown className="h-3 w-3" />
               {Math.abs(biggestDecrease.percentChange).toFixed(1)}%
@@ -82,7 +82,7 @@ const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({ data, formatCurre
             <h3 className="text-sm font-medium text-muted-foreground">Overall Change</h3>
             <Badge 
               variant="outline" 
-              className={`flex items-center gap-1 min-w-[70px] h-7 justify-center ${
+              className={`flex items-center gap-1 w-24 h-7 justify-center ${
                 overallChange.percentChange < 0 
                   ? "bg-emerald-100 text-emerald-800 border-emerald-200" 
                   : overallChange.percentChange <= 5 
