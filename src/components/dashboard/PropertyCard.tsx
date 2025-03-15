@@ -26,8 +26,19 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
   const isUtilitiesPage = location.pathname.includes('utilities');
   
   const handleViewDetails = () => {
-    // Navigate to leases page with the property ID in the URL
-    navigate(`/leases?propertyId=${property.id}`);
+    // Handle navigation based on current page
+    if (isCompliancePage) {
+      // Stay on compliance page but show property details
+      // This will be handled by the Compliance.tsx page's state
+      navigate(`/compliance?propertyId=${property.id}`);
+    } else if (isServiceChargePage) {
+      navigate(`/service-charge?propertyId=${property.id}`);
+    } else if (isUtilitiesPage) {
+      navigate(`/utilities?propertyId=${property.id}`);
+    } else {
+      // Default to leases page for other cases
+      navigate(`/leases?propertyId=${property.id}`);
+    }
   };
   
   return (
@@ -38,7 +49,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, delay = 0 }) => {
       )}
       style={{ animationDelay: `${delay * 0.1}s` }}
     >
-      <div className="h-40 mellow-gradient relative">
+      <div 
+        className="h-40 mellow-gradient relative cursor-pointer"
+        onClick={handleViewDetails}
+      >
         <div className="absolute inset-0 bg-[url('/placeholder.svg')] bg-cover bg-center mix-blend-overlay opacity-30"></div>
         <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/60 to-transparent">
           <h3 className="text-white font-bold text-xl truncate">{name}</h3>
