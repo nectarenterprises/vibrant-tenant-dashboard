@@ -160,7 +160,7 @@ const ServiceChargeCategoryBreakdown: React.FC<ServiceChargeCategoryBreakdownPro
                       <XAxis dataKey="name" />
                       <YAxis tickFormatter={(value) => `£${value}`} />
                       <Tooltip formatter={(value) => [`£${value}`, '']} />
-                      <Bar dataKey="value" nameKey="name">
+                      <Bar dataKey="value">
                         {subcategories.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
@@ -264,7 +264,7 @@ const ServiceChargeCategoryBreakdown: React.FC<ServiceChargeCategoryBreakdownPro
                     <XAxis dataKey="category" />
                     <YAxis tickFormatter={(value) => `£${value}`} />
                     <Tooltip formatter={(value) => [`£${value}`, '']} />
-                    <Bar dataKey="value" nameKey="category">
+                    <Bar dataKey="value">
                       {categoryData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}

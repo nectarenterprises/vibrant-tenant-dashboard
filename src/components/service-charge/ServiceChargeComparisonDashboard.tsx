@@ -29,6 +29,7 @@ import { ArrowUpDown, ArrowUp, ArrowDown, BarChart3, Filter } from 'lucide-react
 import { Property } from '@/types/property';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface ServiceChargeComparisonDashboardProps {
   property: Property;
