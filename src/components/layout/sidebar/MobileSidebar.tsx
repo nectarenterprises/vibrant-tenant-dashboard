@@ -23,7 +23,11 @@ export const MobileSidebar = ({ location }: MobileSidebarProps) => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden fixed top-4 left-4 z-50 bg-background animate-[rotate_20s_linear_infinite] focus:bg-transparent">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="md:hidden fixed top-4 left-4 z-50 bg-background animate-[rotate_13.33s_linear_infinite] focus:bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0" 
+        >
           <Hexagon className="h-8 w-8 text-black fill-black" />
         </Button>
       </SheetTrigger>
