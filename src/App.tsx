@@ -16,6 +16,8 @@ import Compliance from './pages/Compliance';
 import Utilities from './pages/Utilities';
 import Calendar from './pages/Calendar';
 import Reports from './pages/Reports';
+import Profile from './pages/Profile';
+import Billing from './pages/Billing';
 import Sidebar from './components/layout/Sidebar';
 
 function App() {
@@ -68,6 +70,8 @@ function App() {
           <Route path="/utilities" element={<ProtectedRoute><Utilities /></ProtectedRoute>} />
           <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
           <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/billing" element={<ProtectedRoute><Billing /></ProtectedRoute>} />
           <Route path="/auth" element={<Auth />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

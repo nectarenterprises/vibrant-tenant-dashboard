@@ -1,47 +1,144 @@
 
 import React from 'react';
-import { NavLink, Location } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { Location } from 'react-router-dom';
 import { 
-  Home, FileClock, FileText, FileSpreadsheet, 
-  LayoutDashboard, Zap, BarChart2, CalendarDays
+  Home, 
+  FileText, 
+  Folder, 
+  BarChart3, 
+  Gauge, 
+  CalendarIcon, 
+  PieChart, 
+  UserCircle, 
+  CreditCard,
+  Zap 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface SidebarLinksProps {
+interface SidebarLinkProps {
+  icon: React.ReactNode;
+  label: string;
+  to: string;
+  active: boolean;
   collapsed?: boolean;
-  location: Location;
   onClick?: () => void;
 }
 
-export const SidebarLinks = ({ collapsed, location, onClick }: SidebarLinksProps) => {
-  const links = [
-    { name: 'Dashboard', href: '/', icon: <Home className="h-5 w-5" /> },
-    { name: 'Leases', href: '/leases', icon: <FileClock className="h-5 w-5" /> },
-    { name: 'Documents', href: '/documents', icon: <FileText className="h-5 w-5" /> },
-    { name: 'Service Charge', href: '/service-charge', icon: <LayoutDashboard className="h-5 w-5" /> },
-    { name: 'Compliance', href: '/compliance', icon: <FileSpreadsheet className="h-5 w-5" /> },
-    { name: 'Utilities', href: '/utilities', icon: <Zap className="h-5 w-5" /> },
-    { name: 'Calendar', href: '/calendar', icon: <CalendarDays className="h-5 w-5" /> },
-    { name: 'Reports', href: '/reports', icon: <BarChart2 className="h-5 w-5" /> }
-  ];
+const SidebarLink = ({ icon, label, to, active, collapsed, onClick }: SidebarLinkProps) => (
+  <Link
+    to={to}
+    onClick={onClick}
+    className={cn(
+      "flex items-center px-4 py-3 text-base font-medium transition-colors relative",
+      collapsed ? "justify-center px-0" : "",
+      active 
+        ? "bg-sidebar-accent text-sidebar-foreground"
+        : "hover:bg-sidebar-accent/80 text-sidebar-foreground/80 hover:text-sidebar-foreground"
+    )}
+  >
+    <span className={cn("flex items-center justify-center", collapsed ? "w-full" : "w-10")}>
+      {icon}
+    </span>
+    {!collapsed && <span className="truncate">{label}</span>}
+  </Link>
+);
 
+interface SidebarLinksProps {
+  location: Location;
+  collapsed?: boolean;
+  onClick?: () => void;
+}
+
+export const SidebarLinks = ({ location, collapsed, onClick }: SidebarLinksProps) => {
   return (
-    <div className={cn("flex flex-col", collapsed ? "space-y-0" : "space-y-1", "px-2")}>
-      {links.map((link) => (
-        <NavLink
-          key={link.name}
-          to={link.href}
-          className={({ isActive }) =>
-            `flex items-center ${collapsed ? "justify-center" : "space-x-2"} rounded-md p-2 text-sm font-medium hover:bg-secondary hover:text-foreground ${
-              isActive ? 'bg-secondary text-foreground' : 'text-muted-foreground'
-            }`
-          }
+    <div className="flex flex-col py-2">
+      <SidebarLink 
+        icon={<Home className="h-5 w-5" />} 
+        label="Dashboard" 
+        to="/" 
+        active={location.pathname === '/'} 
+        collapsed={collapsed} 
+        onClick={onClick}
+      />
+      <SidebarLink 
+        icon={<FileText className="h-5 w-5" />} 
+        label="Leases" 
+        to="/leases" 
+        active={location.pathname.startsWith('/leases')} 
+        collapsed={collapsed} 
+        onClick={onClick}
+      />
+      <SidebarLink 
+        icon={<Folder className="h-5 w-5" />} 
+        label="Documents" 
+        to="/documents" 
+        active={location.pathname.startsWith('/documents')} 
+        collapsed={collapsed} 
+        onClick={onClick}
+      />
+      <SidebarLink 
+        icon={<BarChart3 className="h-5 w-5" />} 
+        label="Service Charge" 
+        to="/service-charge" 
+        active={location.pathname.startsWith('/service-charge')} 
+        collapsed={collapsed} 
+        onClick={onClick}
+      />
+      <SidebarLink 
+        icon={<Gauge className="h-5 w-5" />} 
+        label="Compliance" 
+        to="/compliance" 
+        active={location.pathname.startsWith('/compliance')} 
+        collapsed={collapsed} 
+        onClick={onClick}
+      />
+      <SidebarLink 
+        icon={<Zap className="h-5 w-5" />} 
+        label="Utilities" 
+        to="/utilities" 
+        active={location.pathname.startsWith('/utilities')} 
+        collapsed={collapsed} 
+        onClick={onClick}
+      />
+      <SidebarLink 
+        icon={<CalendarIcon className="h-5 w-5" />} 
+        label="Calendar" 
+        to="/calendar" 
+        active={location.pathname.startsWith('/calendar')} 
+        collapsed={collapsed} 
+        onClick={onClick}
+      />
+      <SidebarLink 
+        icon={<PieChart className="h-5 w-5" />} 
+        label="Reports" 
+        to="/reports" 
+        active={location.pathname.startsWith('/reports')} 
+        collapsed={collapsed} 
+        onClick={onClick}
+      />
+      
+      <div className="py-2">
+        <div className={cn("px-4 py-2 text-xs uppercase font-semibold text-sidebar-foreground/60", collapsed && "sr-only")}>
+          Account
+        </div>
+        <SidebarLink 
+          icon={<UserCircle className="h-5 w-5" />} 
+          label="Profile" 
+          to="/profile" 
+          active={location.pathname.startsWith('/profile')} 
+          collapsed={collapsed} 
           onClick={onClick}
-        >
-          {link.icon}
-          {!collapsed && <span>{link.name}</span>}
-        </NavLink>
-      ))}
+        />
+        <SidebarLink 
+          icon={<CreditCard className="h-5 w-5" />} 
+          label="Billing" 
+          to="/billing" 
+          active={location.pathname.startsWith('/billing')} 
+          collapsed={collapsed} 
+          onClick={onClick}
+        />
+      </div>
     </div>
   );
 };

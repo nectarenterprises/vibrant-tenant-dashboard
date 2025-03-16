@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from '@/lib/utils';
+import { UserCircle, CreditCard } from 'lucide-react';
 
 interface UserProfileProps {
   collapsed?: boolean;
@@ -45,9 +46,16 @@ export const UserProfile = ({ collapsed }: UserProfileProps) => {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => navigate('/profile')}>Profile</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
+            <UserCircle className="mr-2 h-4 w-4" />
+            <span>Profile</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate('/billing')} className="cursor-pointer">
+            <CreditCard className="mr-2 h-4 w-4" />
+            <span>Billing</span>
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => signOut()}>Log out</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer">Log out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
