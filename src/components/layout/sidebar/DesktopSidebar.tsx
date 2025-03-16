@@ -28,7 +28,7 @@ export const DesktopSidebar = ({ collapsed, setCollapsed, location }: DesktopSid
           onClick={() => setCollapsed(!collapsed)}
           className={cn(
             collapsed ? "mx-auto" : "ml-auto",
-            "transition-all duration-3000 animate-[rotate_30s_linear_infinite]"
+            "transition-all duration-3000 animate-[rotate_20s_linear_infinite] focus:bg-transparent"
           )}
         >
           <Hexagon className="h-8 w-8 text-black fill-black" />
