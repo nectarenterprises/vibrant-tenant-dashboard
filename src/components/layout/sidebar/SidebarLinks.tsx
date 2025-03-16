@@ -34,7 +34,7 @@ const SidebarLink = ({ icon, label, to, active, collapsed, onClick }: SidebarLin
       collapsed ? "justify-center px-0" : "",
       active 
         ? "bg-sidebar-accent text-sidebar-foreground rounded-md"
-        : "hover:bg-sidebar-accent/80 text-sidebar-foreground/80 hover:text-sidebar-foreground hover:rounded-md"
+        : "text-sidebar-foreground hover:bg-sidebar-accent/80 hover:text-sidebar-foreground hover:rounded-md"
     )}
   >
     <span className={cn("flex items-center justify-center", collapsed ? "w-full" : "w-10")}>
