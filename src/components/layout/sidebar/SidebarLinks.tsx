@@ -33,8 +33,8 @@ const SidebarLink = ({ icon, label, to, active, collapsed, onClick }: SidebarLin
       "flex items-center px-4 py-3 text-base font-medium transition-colors relative",
       collapsed ? "justify-center px-0" : "",
       active 
-        ? "bg-sidebar-accent text-sidebar-foreground"
-        : "hover:bg-sidebar-accent/80 text-sidebar-foreground/80 hover:text-sidebar-foreground"
+        ? "bg-sidebar-accent text-sidebar-foreground rounded-md"
+        : "hover:bg-sidebar-accent/80 text-sidebar-foreground/80 hover:text-sidebar-foreground hover:rounded-md"
     )}
   >
     <span className={cn("flex items-center justify-center", collapsed ? "w-full" : "w-10")}>
@@ -52,7 +52,7 @@ interface SidebarLinksProps {
 
 export const SidebarLinks = ({ location, collapsed, onClick }: SidebarLinksProps) => {
   return (
-    <div className="flex flex-col py-2">
+    <div className="flex flex-col py-2 space-y-1">
       <SidebarLink 
         icon={<Home className="h-5 w-5" />} 
         label="Dashboard" 
