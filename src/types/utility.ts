@@ -29,3 +29,18 @@ export interface ConfidenceScores {
   usageQuantity: number;
   usageUnit: number;
 }
+
+export interface UtilityBill {
+  id: string;
+  propertyId: string;
+  utilityType: UtilityType;
+  billDate: string;
+  periodStart: string;
+  periodEnd: string;
+  totalAmount: number;
+  meterReference: string;
+  usageQuantity?: number;
+  usageUnit?: string;
+  createdAt: string;
+  updatedAt: string;
+}

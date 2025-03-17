@@ -7,7 +7,7 @@ interface UtilityToggleButtonsProps {
     water: boolean;
     electricity: boolean;
   };
-  toggleUtility: (utility: keyof typeof activeUtilities) => void;
+  toggleUtility: (utility: 'gas' | 'water' | 'electricity') => void;
 }
 
 const UtilityToggleButtons: React.FC<UtilityToggleButtonsProps> = ({ 

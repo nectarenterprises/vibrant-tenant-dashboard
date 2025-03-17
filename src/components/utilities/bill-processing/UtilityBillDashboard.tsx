@@ -26,7 +26,8 @@ const UtilityBillDashboard: React.FC<UtilityBillDashboardProps> = ({
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const {
     bills: utilityBills,
-    isLoading: isLoadingBills,
+    isLoadingBills,
+    isLoading,
     selectedUtilityType,
     setSelectedUtilityType,
     getUtilityUsageData,
@@ -106,7 +107,7 @@ const UtilityBillDashboard: React.FC<UtilityBillDashboardProps> = ({
       
       <BillHistorySection 
         utilityBills={utilityBills}
-        isLoading={isLoadingBills}
+        isLoading={isLoading}
         selectedUtilityType={selectedUtilityType}
         setSelectedUtilityType={setSelectedUtilityType}
         onUploadClick={() => setUploadDialogOpen(true)}
