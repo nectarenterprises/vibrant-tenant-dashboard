@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import WelcomeHeader from '@/components/dashboard/WelcomeHeader';
 import PropertyCard from '@/components/dashboard/PropertyCard';
 import CalendarWidget from '@/components/dashboard/CalendarWidget';
-import UtilityChart from '@/components/dashboard/UtilityChart';
 import { fetchUserProperties, fetchPropertyEvents } from '@/services/property';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -80,10 +79,6 @@ const Index = () => {
           <div>
             <CalendarWidget events={events} properties={uniqueProperties} />
           </div>
-        </div>
-        
-        <div className="mt-8">
-          <UtilityChart data={[]} properties={uniqueProperties} />
         </div>
       </div>
     </div>

@@ -11,7 +11,6 @@ import NotFound from './pages/NotFound';
 import Leases from './pages/Leases';
 import Documents from './pages/Documents';
 import DocumentCategory from './pages/DocumentCategory';
-import ServiceCharge from './pages/ServiceCharge';
 import Profile from './pages/Profile';
 import Billing from './pages/Billing';
 import Landing from './pages/Landing';
@@ -82,7 +81,6 @@ function App() {
           <Route path="/leases" element={<ProtectedRoute><Leases /></ProtectedRoute>} />
           <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
           <Route path="/documents/:propertyId/:category" element={<ProtectedRoute><DocumentCategory /></ProtectedRoute>} />
-          <Route path="/service-charge" element={<ProtectedRoute><ServiceCharge /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/billing" element={<ProtectedRoute><Billing /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
