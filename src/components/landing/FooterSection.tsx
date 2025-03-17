@@ -12,7 +12,7 @@ const FooterSection = () => {
               SweetLease
             </h3>
             <p className="text-muted-foreground">
-              Simplified property occupation management for tenants and property occupiers.
+              Simplified property management for commercial occupiers.
             </p>
           </div>
           
