@@ -18,6 +18,7 @@ import Calendar from './pages/Calendar';
 import Reports from './pages/Reports';
 import Profile from './pages/Profile';
 import Billing from './pages/Billing';
+import Landing from './pages/Landing';
 import Sidebar from './components/layout/Sidebar';
 
 function App() {
@@ -33,10 +34,14 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!loading && !session && location.pathname !== '/auth') {
+    if (!loading && !session && location.pathname !== '/auth' && !isPublicRoute(location.pathname)) {
       navigate('/auth');
     }
   }, [loading, session, navigate, location]);
+
+  const isPublicRoute = (path: string) => {
+    return path === '/' && !session; // The root path is public when not authenticated
+  };
 
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     if (!loading && !session) {
@@ -54,14 +59,20 @@ function App() {
     );
   }
 
-  // We're removing the sidebar from individual pages and adding it globally here
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {session && <Sidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />}
+      {/* Show sidebar only for authenticated users and non-public routes */}
+      {session && !isPublicRoute(location.pathname) && (
+        <Sidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
+      )}
       
-      <div className={`transition-all duration-300 ease-in-out ${session ? (sidebarCollapsed ? "ml-20" : "ml-64") : ""}`}>
+      <div className={`transition-all duration-300 ease-in-out ${session && !isPublicRoute(location.pathname) ? (sidebarCollapsed ? "ml-20" : "ml-64") : ""}`}>
         <Routes>
-          <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+          {/* Public routes */}
+          <Route path="/" element={!session ? <Landing /> : <Index />} />
+          <Route path="/auth" element={<Auth />} />
+          
+          {/* Protected routes */}
           <Route path="/leases" element={<ProtectedRoute><Leases /></ProtectedRoute>} />
           <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
           <Route path="/documents/:propertyId/:category" element={<ProtectedRoute><DocumentCategory /></ProtectedRoute>} />
@@ -72,7 +83,6 @@ function App() {
           <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/billing" element={<ProtectedRoute><Billing /></ProtectedRoute>} />
-          <Route path="/auth" element={<Auth />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

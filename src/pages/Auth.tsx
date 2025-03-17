@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,13 @@ const Auth = () => {
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+
+  // Extract tab from URL query parameters
+  const queryParams = new URLSearchParams(location.search);
+  const tabParam = queryParams.get('tab');
+  const initialTab = tabParam === 'register' ? 'register' : 'login';
 
   useEffect(() => {
     // Check if user is already logged in
@@ -105,7 +111,7 @@ const Auth = () => {
           </CardDescription>
         </CardHeader>
         
-        <Tabs defaultValue="login" className="w-full">
+        <Tabs defaultValue={initialTab} className="w-full">
           <TabsList className="grid grid-cols-2 mb-4 mx-4">
             <TabsTrigger value="login">Sign In</TabsTrigger>
             <TabsTrigger value="register">Sign Up</TabsTrigger>
