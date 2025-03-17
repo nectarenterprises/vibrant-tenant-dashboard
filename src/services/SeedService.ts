@@ -6,8 +6,9 @@ import { toast } from '@/components/ui/use-toast';
 
 /**
  * Seeds the database with initial data for testing
+ * Now requires explicit user action rather than running automatically
  */
-export const seedInitialData = async (): Promise<void> => {
+export const seedInitialData = async (forceSeed: boolean = false): Promise<void> => {
   try {
     // Get the current user's ID
     const { data: { user } } = await supabase.auth.getUser();
@@ -33,7 +34,7 @@ export const seedInitialData = async (): Promise<void> => {
     }
     
     // If user already has ANY properties, don't seed
-    if (existingProperties && existingProperties.length > 0) {
+    if (!forceSeed && existingProperties && existingProperties.length > 0) {
       console.log('User already has properties, skipping seed');
       return;
     }
