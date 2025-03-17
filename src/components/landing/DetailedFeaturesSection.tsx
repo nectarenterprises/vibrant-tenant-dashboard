@@ -21,7 +21,8 @@ const DetailedFeaturesSection = () => {
           title: "Secure Access",
           description: "Access your documents anytime, anywhere with secure authentication and role-based permissions."
         }
-      ]
+      ],
+      image: "/images/feature-documents.png"
     },
     {
       title: "Service Charge Management",
@@ -37,7 +38,8 @@ const DetailedFeaturesSection = () => {
           title: "Historical Analysis",
           description: "Compare current charges with previous periods to identify trends and anomalies."
         }
-      ]
+      ],
+      image: "/images/feature-service-charge.png"
     },
     {
       title: "Utilities & Compliance",
@@ -53,7 +55,8 @@ const DetailedFeaturesSection = () => {
           title: "Energy Efficiency",
           description: "Get insights on how to improve energy efficiency and reduce your utility bills."
         }
-      ]
+      ],
+      image: "/images/feature-utilities.png"
     },
     {
       title: "Property Management",
@@ -69,7 +72,8 @@ const DetailedFeaturesSection = () => {
           title: "Key Dates",
           description: "Stay on top of important dates like rent payments, lease renewals, and maintenance schedules."
         }
-      ]
+      ],
+      image: "/images/feature-property.png"
     },
     {
       title: "Reporting",
@@ -85,7 +89,8 @@ const DetailedFeaturesSection = () => {
           title: "Custom Reports",
           description: "Create custom reports with the metrics that matter most to your organization for informed decision-making."
         }
-      ]
+      ],
+      image: "/images/feature-reports.png"
     }
   ];
 
@@ -111,9 +116,11 @@ const DetailedFeaturesSection = () => {
                 </div>
               </div>
               <div className="md:w-1/2 rounded-xl overflow-hidden shadow-lg border border-border">
-                <div className="aspect-w-16 aspect-h-9 bg-gradient-to-br from-muted/30 to-background w-full h-64 flex items-center justify-center">
-                  <div className="text-6xl text-muted/40">{groupIndex + 1}</div>
-                </div>
+                <img 
+                  src={group.image}
+                  alt={`${group.title} screenshot`}
+                  className="w-full h-auto object-cover"
+                />
               </div>
             </div>
           ))}
