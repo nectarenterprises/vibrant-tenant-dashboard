@@ -29,3 +29,21 @@ export interface BudgetComparisonProps {
   currentBudget?: ServiceChargeBudget;
   previousBudget?: ServiceChargeBudget;
 }
+
+export interface ServiceChargeDataItem {
+  id: string;
+  propertyId: string;
+  category: string;
+  amount: number;
+  periodStart: string;
+  periodEnd: string;
+  periodType: string;
+  year: number;
+}
+
+export interface FileComparisonData {
+  fileName: string;
+  year: number;
+  totalAmount: number;
+  breakdown: ServiceChargeCategoryBreakdown[];
+}

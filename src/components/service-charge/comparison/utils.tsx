@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Minus } from 'lucide-react';
 
 export const getChangeColor = (percentChange: number): string => {
   if (percentChange < 0) return 'text-emerald-600';

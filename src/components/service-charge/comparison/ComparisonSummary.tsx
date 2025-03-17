@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ArrowUp, ArrowDown } from 'lucide-react';
 import { ServiceChargeComparisonItem } from './types';
+import { Badge } from '@/components/ui/badge';
+import { ArrowUp, ArrowDown, Minus } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ComparisonSummaryProps {
   data: ServiceChargeComparisonItem[];
@@ -11,98 +11,83 @@ interface ComparisonSummaryProps {
 }
 
 const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({ data, formatCurrency }) => {
-  const getBiggestIncrease = () => {
-    return data.reduce((max, current) => 
-      current.percentChange > max.percentChange ? current : max, data[0]);
+  // Calculate totals
+  const totalCurrentYear = data.reduce((sum, item) => sum + item.currentYear, 0);
+  const totalPreviousYear = data.reduce((sum, item) => sum + item.previousYear, 0);
+  const totalChange = totalCurrentYear - totalPreviousYear;
+  const percentChange = ((totalChange) / totalPreviousYear) * 100;
+  
+  // Calculate highest increase and decrease
+  const sortedByChange = [...data].sort((a, b) => b.percentChange - a.percentChange);
+  const highestIncrease = sortedByChange[0];
+  const highestDecrease = sortedByChange[sortedByChange.length - 1];
+  
+  // Get color for the change badge
+  const getChangeBadgeColor = (change: number) => {
+    if (change < 0) return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+    if (change <= 5) return 'bg-amber-100 text-amber-800 border-amber-200';
+    return 'bg-red-100 text-red-800 border-red-200';
   };
-
-  const getBiggestDecrease = () => {
-    return data.reduce((min, current) => 
-      current.percentChange < min.percentChange ? current : min, data[0]);
+  
+  // Get icon for the change badge
+  const getChangeIcon = (change: number) => {
+    if (change < 0) return <ArrowDown className="h-3 w-3" />;
+    if (change > 0) return <ArrowUp className="h-3 w-3" />;
+    return <Minus className="h-3 w-3" />;
   };
-
-  const getOverallChange = () => {
-    const totalCurrent = data.reduce((sum, item) => sum + item.currentYear, 0);
-    const totalPrevious = data.reduce((sum, item) => sum + item.previousYear, 0);
-    const percentChange = ((totalCurrent - totalPrevious) / totalPrevious) * 100;
-    return {
-      totalCurrent,
-      totalPrevious,
-      percentChange: Number(percentChange.toFixed(1))
-    };
-  };
-
-  const biggestIncrease = getBiggestIncrease();
-  const biggestDecrease = getBiggestDecrease();
-  const overallChange = getOverallChange();
 
   return (
-    <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <Card className="bg-muted/20">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-muted-foreground">Biggest Increase</h3>
-            <Badge 
-              variant="outline" 
-              className="bg-red-100 text-red-800 border-red-200 flex items-center gap-1 w-24 h-7 justify-center"
-            >
-              <ArrowUp className="h-3 w-3" />
-              {Math.abs(biggestIncrease.percentChange).toFixed(1)}%
-            </Badge>
-          </div>
-          <p className="text-lg font-semibold mt-1">{biggestIncrease.category}</p>
-          <p className="text-sm text-muted-foreground mt-1">
-            {formatCurrency(biggestIncrease.currentYear)} vs {formatCurrency(biggestIncrease.previousYear)}
-          </p>
-        </CardContent>
-      </Card>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-muted/30 rounded-md">
+      <div className="space-y-1">
+        <p className="text-sm text-muted-foreground">Total Change</p>
+        <div className="flex items-baseline gap-2">
+          <p className="text-2xl font-semibold">{formatCurrency(totalChange)}</p>
+          <Badge
+            variant="outline"
+            className={cn(
+              "flex items-center gap-1",
+              getChangeBadgeColor(percentChange)
+            )}
+          >
+            {getChangeIcon(percentChange)}
+            <span>{Math.abs(percentChange).toFixed(1)}%</span>
+          </Badge>
+        </div>
+      </div>
       
-      <Card className="bg-muted/20">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-muted-foreground">Biggest Decrease</h3>
-            <Badge 
-              variant="outline" 
-              className="bg-emerald-100 text-emerald-800 border-emerald-200 flex items-center gap-1 w-24 h-7 justify-center"
-            >
-              <ArrowDown className="h-3 w-3" />
-              {Math.abs(biggestDecrease.percentChange).toFixed(1)}%
-            </Badge>
-          </div>
-          <p className="text-lg font-semibold mt-1">{biggestDecrease.category}</p>
-          <p className="text-sm text-muted-foreground mt-1">
-            {formatCurrency(biggestDecrease.currentYear)} vs {formatCurrency(biggestDecrease.previousYear)}
-          </p>
-        </CardContent>
-      </Card>
+      <div className="space-y-1">
+        <p className="text-sm text-muted-foreground">Highest Increase</p>
+        <div className="flex items-center gap-2">
+          <p className="font-medium">{highestIncrease.category}:</p>
+          <Badge
+            variant="outline"
+            className={cn(
+              "flex items-center gap-1",
+              getChangeBadgeColor(highestIncrease.percentChange)
+            )}
+          >
+            <ArrowUp className="h-3 w-3" />
+            <span>{highestIncrease.percentChange.toFixed(1)}%</span>
+          </Badge>
+        </div>
+      </div>
       
-      <Card className="bg-muted/20">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-muted-foreground">Overall Change</h3>
-            <Badge 
-              variant="outline" 
-              className={`flex items-center gap-1 w-24 h-7 justify-center ${
-                overallChange.percentChange < 0 
-                  ? "bg-emerald-100 text-emerald-800 border-emerald-200" 
-                  : overallChange.percentChange <= 5 
-                    ? "bg-amber-100 text-amber-800 border-amber-200"
-                    : "bg-red-100 text-red-800 border-red-200"
-              }`}
-            >
-              {overallChange.percentChange < 0 
-                ? <ArrowDown className="h-3 w-3" /> 
-                : <ArrowUp className="h-3 w-3" />
-              }
-              {Math.abs(overallChange.percentChange).toFixed(1)}%
-            </Badge>
-          </div>
-          <p className="text-lg font-semibold mt-1">Total Service Charge</p>
-          <p className="text-sm text-muted-foreground mt-1">
-            {formatCurrency(overallChange.totalCurrent)} vs {formatCurrency(overallChange.totalPrevious)}
-          </p>
-        </CardContent>
-      </Card>
+      <div className="space-y-1">
+        <p className="text-sm text-muted-foreground">Highest Decrease</p>
+        <div className="flex items-center gap-2">
+          <p className="font-medium">{highestDecrease.category}:</p>
+          <Badge
+            variant="outline"
+            className={cn(
+              "flex items-center gap-1",
+              getChangeBadgeColor(highestDecrease.percentChange)
+            )}
+          >
+            <ArrowDown className="h-3 w-3" />
+            <span>{Math.abs(highestDecrease.percentChange).toFixed(1)}%</span>
+          </Badge>
+        </div>
+      </div>
     </div>
   );
 };

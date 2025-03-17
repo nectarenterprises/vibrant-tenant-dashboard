@@ -1,89 +1,84 @@
 
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
-import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { ServiceChargeComparisonItem } from './types';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface ComparisonTableProps {
   data: ServiceChargeComparisonItem[];
   formatCurrency: (value: number) => string;
   getChangeColor: (percentChange: number) => string;
   getChangeBadgeColor: (percentChange: number) => string;
-  getChangeIcon: (percentChange: number) => React.ReactNode;
+  getChangeIcon: (percentChange: number) => React.ReactElement;
 }
 
-const ComparisonTable: React.FC<ComparisonTableProps> = ({ 
-  data, 
-  formatCurrency, 
-  getChangeColor, 
-  getChangeBadgeColor, 
-  getChangeIcon 
+const ComparisonTable: React.FC<ComparisonTableProps> = ({
+  data,
+  formatCurrency,
+  getChangeColor,
+  getChangeBadgeColor,
+  getChangeIcon
 }) => {
-  const totalCurrent = data.reduce((sum, item) => sum + item.currentYear, 0);
-  const totalPrevious = data.reduce((sum, item) => sum + item.previousYear, 0);
-  const totalPercentChange = Number((((totalCurrent - totalPrevious) / totalPrevious) * 100).toFixed(1));
+  // Calculate totals
+  const totalCurrentYear = data.reduce((sum, item) => sum + item.currentYear, 0);
+  const totalPreviousYear = data.reduce((sum, item) => sum + item.previousYear, 0);
+  const totalPercentChange = ((totalCurrentYear - totalPreviousYear) / totalPreviousYear) * 100;
 
   return (
-    <div className="mt-4 overflow-x-auto">
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-muted">
-            <th className="text-left p-2 border-b">Category</th>
-            <th className="text-right p-2 border-b">Current Year</th>
-            <th className="text-right p-2 border-b">Previous Year</th>
-            <th className="text-right p-2 border-b">
-              <div className="flex items-center justify-end gap-1">
-                <ArrowUpDown className="h-4 w-4" />
-                <span>Change</span>
-              </div>
-            </th>
+    <div className="relative overflow-x-auto rounded-md border mt-4">
+      <table className="w-full text-sm text-left">
+        <thead className="text-xs uppercase bg-muted">
+          <tr>
+            <th className="px-4 py-3">Category</th>
+            <th className="px-4 py-3 text-right">Current Year</th>
+            <th className="px-4 py-3 text-right">Previous Year</th>
+            <th className="px-4 py-3 text-right">Difference</th>
+            <th className="px-4 py-3 text-right">Change</th>
           </tr>
         </thead>
         <tbody>
           {data.map((item, index) => (
-            <tr 
-              key={index} 
-              className={index % 2 === 0 ? 'bg-background' : 'bg-muted/30'}
-            >
-              <td className="p-2 border-b">{item.category}</td>
-              <td className="text-right p-2 border-b font-medium">{formatCurrency(item.currentYear)}</td>
-              <td className="text-right p-2 border-b text-muted-foreground">{formatCurrency(item.previousYear)}</td>
-              <td className="text-right p-2 border-b">
+            <tr key={index} className="border-b">
+              <td className="px-4 py-3 font-medium">{item.category}</td>
+              <td className="px-4 py-3 text-right">{formatCurrency(item.currentYear)}</td>
+              <td className="px-4 py-3 text-right">{formatCurrency(item.previousYear)}</td>
+              <td className="px-4 py-3 text-right">
+                {formatCurrency(item.currentYear - item.previousYear)}
+              </td>
+              <td className="px-4 py-3">
                 <div className="flex justify-end">
                   <Badge 
                     variant="outline" 
                     className={cn(
-                      "flex items-center gap-1 w-24 h-7 justify-center",
+                      "flex items-center gap-1 text-xs",
                       getChangeBadgeColor(item.percentChange)
                     )}
                   >
                     {getChangeIcon(item.percentChange)}
-                    {Math.abs(item.percentChange).toFixed(1)}%
+                    <span>{Math.abs(item.percentChange).toFixed(1)}%</span>
                   </Badge>
                 </div>
               </td>
             </tr>
           ))}
           <tr className="bg-muted/50 font-medium">
-            <td className="p-2 border-b">Total</td>
-            <td className="text-right p-2 border-b">
-              {formatCurrency(totalCurrent)}
+            <td className="px-4 py-3">Total</td>
+            <td className="px-4 py-3 text-right">{formatCurrency(totalCurrentYear)}</td>
+            <td className="px-4 py-3 text-right">{formatCurrency(totalPreviousYear)}</td>
+            <td className="px-4 py-3 text-right">
+              {formatCurrency(totalCurrentYear - totalPreviousYear)}
             </td>
-            <td className="text-right p-2 border-b">
-              {formatCurrency(totalPrevious)}
-            </td>
-            <td className="text-right p-2 border-b">
+            <td className="px-4 py-3">
               <div className="flex justify-end">
                 <Badge 
                   variant="outline" 
                   className={cn(
-                    "flex items-center gap-1 w-24 h-7 justify-center",
+                    "flex items-center gap-1 text-xs",
                     getChangeBadgeColor(totalPercentChange)
                   )}
                 >
                   {getChangeIcon(totalPercentChange)}
-                  {Math.abs(totalPercentChange).toFixed(1)}%
+                  <span>{Math.abs(totalPercentChange).toFixed(1)}%</span>
                 </Badge>
               </div>
             </td>
