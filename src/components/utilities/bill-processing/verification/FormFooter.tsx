@@ -1,26 +1,31 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { DialogFooter } from '@/components/ui/dialog';
 
 interface FormFooterProps {
   onSave: () => void;
   onCancel: () => void;
+  isSaving?: boolean;
 }
 
-const FormFooter: React.FC<FormFooterProps> = ({ onSave, onCancel }) => {
+const FormFooter: React.FC<FormFooterProps> = ({ 
+  onSave, 
+  onCancel, 
+  isSaving = false 
+}) => {
   return (
-    <DialogFooter className="mt-6">
-      <Button variant="outline" onClick={onCancel}>
+    <>
+      <Button variant="outline" onClick={onCancel} disabled={isSaving}>
         Cancel
       </Button>
       <Button 
+        type="submit"
         onClick={onSave}
-        className="bg-tenant-green hover:bg-tenant-darkGreen"
+        disabled={isSaving}
       >
-        Save & Process
+        {isSaving ? 'Saving...' : 'Save'}
       </Button>
-    </DialogFooter>
+    </>
   );
 };
 
