@@ -34,13 +34,19 @@ const SidebarLink = ({ icon, label, to, active, collapsed, onClick }: SidebarLin
       collapsed ? "justify-center px-0" : "",
       active 
         ? "bg-sidebar-accent text-white font-semibold" // Active state with white text
-        : "text-white hover:bg-sidebar-accent/50" // Inactive state with white text and hover effect
+        : "text-black hover:bg-sidebar-accent/50 hover:text-white" // Inactive state with black text, hover to white
     )}
   >
     <span className={cn("flex items-center justify-center", collapsed ? "w-full" : "w-10")}>
-      {React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5 text-white" })}
+      {React.cloneElement(icon as React.ReactElement, { 
+        className: cn(
+          "h-5 w-5",
+          active ? "text-white" : "text-black",
+          "group-hover:text-white"
+        )
+      })}
     </span>
-    {!collapsed && <span className="text-white truncate">{label}</span>}
+    {!collapsed && <span className={cn("truncate")}>{label}</span>}
   </Link>
 );
 
