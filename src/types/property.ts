@@ -1,3 +1,4 @@
+
 export interface Property {
   id: string;
   name: string;
@@ -12,7 +13,6 @@ export interface Property {
   updatedAt?: string;
   serviceChargeAmount?: number;
   utilityData?: UtilityData[];
-  complianceStatus?: ComplianceStatus;
   leaseStart?: string;
   leaseType?: string;
 }
@@ -79,28 +79,4 @@ export interface DocumentTag {
   id: string;
   name: string;
   color: string;
-}
-
-export interface ComplianceStatus {
-  fireRiskAssessment: ComplianceItem;
-  electricalSafety: ComplianceItem;
-  gasInspection: ComplianceItem;
-  buildingInsurance: ComplianceItem;
-  asbestosReport: ComplianceItem;
-  energyPerformance: ComplianceItem;
-  [key: string]: ComplianceItem;
-}
-
-export interface ComplianceItem {
-  lastCompleted: string;
-  nextDue: string;
-  status: 'completed' | 'upcoming' | 'overdue';
-  certificates?: ComplianceCertificate[];
-}
-
-export interface ComplianceCertificate {
-  id: string;
-  name: string;
-  date: string;
-  fileUrl: string;
 }

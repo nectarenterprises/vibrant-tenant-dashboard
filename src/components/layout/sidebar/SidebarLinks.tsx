@@ -7,7 +7,6 @@ import {
   FileText, 
   Folder, 
   BarChart3, 
-  Gauge, 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -84,14 +83,6 @@ export const SidebarLinks = ({ location, collapsed, onClick }: SidebarLinksProps
         label="Service Charge" 
         to="/service-charge" 
         active={location.pathname.startsWith('/service-charge')} 
-        collapsed={collapsed} 
-        onClick={onClick}
-      />
-      <SidebarLink 
-        icon={<Gauge className="h-5 w-5" />} 
-        label="Compliance" 
-        to="/compliance" 
-        active={location.pathname.startsWith('/compliance')} 
         collapsed={collapsed} 
         onClick={onClick}
       />
