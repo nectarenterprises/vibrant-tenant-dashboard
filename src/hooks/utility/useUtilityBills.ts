@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,6 +11,10 @@ export const useUtilityBills = (propertyId: string) => {
 
   const fetchUtilityBills = async (): Promise<UtilityBill[]> => {
     try {
+      if (!propertyId || propertyId === 'all') {
+        return [];
+      }
+      
       let query = supabase
         .from('utility_bills')
         .select('*')
@@ -47,7 +52,7 @@ export const useUtilityBills = (propertyId: string) => {
       return bills;
     } catch (err) {
       console.error('Error fetching utility bills:', err);
-      throw err;
+      return [];
     }
   };
 
