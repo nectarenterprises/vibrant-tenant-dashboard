@@ -8,9 +8,6 @@ import {
   Folder, 
   BarChart3, 
   Gauge, 
-  CalendarIcon, 
-  PieChart, 
-  Zap 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -95,30 +92,6 @@ export const SidebarLinks = ({ location, collapsed, onClick }: SidebarLinksProps
         label="Compliance" 
         to="/compliance" 
         active={location.pathname.startsWith('/compliance')} 
-        collapsed={collapsed} 
-        onClick={onClick}
-      />
-      <SidebarLink 
-        icon={<Zap className="h-5 w-5" />} 
-        label="Utilities" 
-        to="/utilities" 
-        active={location.pathname.startsWith('/utilities')} 
-        collapsed={collapsed} 
-        onClick={onClick}
-      />
-      <SidebarLink 
-        icon={<CalendarIcon className="h-5 w-5" />} 
-        label="Calendar" 
-        to="/calendar" 
-        active={location.pathname.startsWith('/calendar')} 
-        collapsed={collapsed} 
-        onClick={onClick}
-      />
-      <SidebarLink 
-        icon={<PieChart className="h-5 w-5" />} 
-        label="Reports" 
-        to="/reports" 
-        active={location.pathname.startsWith('/reports')} 
         collapsed={collapsed} 
         onClick={onClick}
       />

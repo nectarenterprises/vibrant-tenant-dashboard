@@ -12,10 +12,6 @@ import Leases from './pages/Leases';
 import Documents from './pages/Documents';
 import DocumentCategory from './pages/DocumentCategory';
 import ServiceCharge from './pages/ServiceCharge';
-import Compliance from './pages/Compliance';
-import Utilities from './pages/Utilities';
-import Calendar from './pages/Calendar';
-import Reports from './pages/Reports';
 import Profile from './pages/Profile';
 import Billing from './pages/Billing';
 import Landing from './pages/Landing';
@@ -87,10 +83,6 @@ function App() {
           <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
           <Route path="/documents/:propertyId/:category" element={<ProtectedRoute><DocumentCategory /></ProtectedRoute>} />
           <Route path="/service-charge" element={<ProtectedRoute><ServiceCharge /></ProtectedRoute>} />
-          <Route path="/compliance" element={<ProtectedRoute><Compliance /></ProtectedRoute>} />
-          <Route path="/utilities" element={<ProtectedRoute><Utilities /></ProtectedRoute>} />
-          <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
-          <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/billing" element={<ProtectedRoute><Billing /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
