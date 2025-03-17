@@ -10,8 +10,6 @@ import {
   Gauge, 
   CalendarIcon, 
   PieChart, 
-  UserCircle, 
-  CreditCard,
   Zap 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -124,29 +122,6 @@ export const SidebarLinks = ({ location, collapsed, onClick }: SidebarLinksProps
         collapsed={collapsed} 
         onClick={onClick}
       />
-      
-      {/* Account Section */}
-      <div className="py-2 mt-4">
-        <div className={cn("px-4 py-2 text-xs uppercase font-semibold text-black", collapsed && "sr-only")}>
-          Account
-        </div>
-        <SidebarLink 
-          icon={<UserCircle className="h-5 w-5" />} 
-          label="Profile" 
-          to="/profile" 
-          active={location.pathname.startsWith('/profile')} 
-          collapsed={collapsed} 
-          onClick={onClick}
-        />
-        <SidebarLink 
-          icon={<CreditCard className="h-5 w-5" />} 
-          label="Billing" 
-          to="/billing" 
-          active={location.pathname.startsWith('/billing')} 
-          collapsed={collapsed} 
-          onClick={onClick}
-        />
-      </div>
     </div>
   );
 };
