@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils';
 
@@ -23,6 +23,8 @@ const NavLink = ({ to, label, isActive }: NavLinkProps) => (
 );
 
 const LandingNavigation = () => {
+  const location = useLocation();
+  
   return (
     <div className="border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto flex items-center justify-between py-4">
@@ -35,10 +37,10 @@ const LandingNavigation = () => {
         </div>
         
         <div className="hidden md:flex items-center space-x-1">
-          <NavLink to="/" label="Home" isActive={true} />
-          <NavLink to="/features" label="Features" />
-          <NavLink to="/pricing" label="Pricing" />
-          <NavLink to="/about" label="About" />
+          <NavLink to="/" label="Home" isActive={location.pathname === '/'} />
+          <NavLink to="/features" label="Features" isActive={location.pathname === '/features'} />
+          <NavLink to="/pricing" label="Pricing" isActive={location.pathname === '/pricing'} />
+          <NavLink to="/about" label="About" isActive={location.pathname === '/about'} />
         </div>
         
         <div className="flex items-center space-x-4">

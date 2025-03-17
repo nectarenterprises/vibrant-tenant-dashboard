@@ -19,6 +19,9 @@ import Reports from './pages/Reports';
 import Profile from './pages/Profile';
 import Billing from './pages/Billing';
 import Landing from './pages/Landing';
+import Features from './pages/landing/Features';
+import Pricing from './pages/landing/Pricing';
+import About from './pages/landing/About';
 import Sidebar from './components/layout/Sidebar';
 
 function App() {
@@ -40,7 +43,7 @@ function App() {
   }, [loading, session, navigate, location]);
 
   const isPublicRoute = (path: string) => {
-    return path === '/' && !session; // The root path is public when not authenticated
+    return path === '/' || path === '/features' || path === '/pricing' || path === '/about'; // Public routes
   };
 
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -71,6 +74,9 @@ function App() {
           {/* Public routes */}
           <Route path="/" element={!session ? <Landing /> : <Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/features" element={<Features />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/about" element={<About />} />
           
           {/* Protected routes */}
           <Route path="/leases" element={<ProtectedRoute><Leases /></ProtectedRoute>} />
