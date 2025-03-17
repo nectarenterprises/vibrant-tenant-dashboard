@@ -7,6 +7,7 @@ import GasChart from '@/components/utilities/GasChart';
 import { Property } from '@/types/property';
 import UtilityDetailView from './UtilityDetailView';
 import { Button } from '@/components/ui/button';
+import UtilityBillUploadDialog from './bill-processing/UtilityBillUploadDialog';
 
 interface UtilityDashboardProps {
   property: Property;
@@ -16,21 +17,20 @@ type UtilityType = 'electricity' | 'water' | 'gas' | null;
 
 const UtilityDashboard: React.FC<UtilityDashboardProps> = ({ property }) => {
   const [selectedUtility, setSelectedUtility] = useState<UtilityType>(null);
-  const [showUploadButton, setShowUploadButton] = useState(false);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [currentUtilityType, setCurrentUtilityType] = useState<UtilityType>('electricity');
 
-  // Empty data arrays instead of mock data
-  const emptyData: Array<{ month: string; usage: number; cost: number }> = [];
-
-  const handleUploadBill = () => {
-    // This will be implemented in the future
-    console.log('Upload bill clicked');
+  const handleOpenUploadDialog = (utilityType: UtilityType = null) => {
+    if (utilityType) {
+      setCurrentUtilityType(utilityType);
+    }
+    setUploadDialogOpen(true);
   };
 
   if (selectedUtility === 'electricity') {
     return (
       <UtilityDetailView
         title="Electricity Usage"
-        data={emptyData}
         Icon={Zap}
         iconColor="text-tenant-purple"
         iconBgColor="bg-purple-100"
@@ -40,7 +40,7 @@ const UtilityDashboard: React.FC<UtilityDashboardProps> = ({ property }) => {
         onBack={() => setSelectedUtility(null)}
         propertyId={property.id}
         utilityType="electricity"
-        onUploadBill={handleUploadBill}
+        onUploadBill={() => handleOpenUploadDialog('electricity')}
       />
     );
   }
@@ -49,7 +49,6 @@ const UtilityDashboard: React.FC<UtilityDashboardProps> = ({ property }) => {
     return (
       <UtilityDetailView
         title="Water Usage"
-        data={emptyData}
         Icon={Droplets}
         iconColor="text-tenant-teal"
         iconBgColor="bg-blue-100"
@@ -59,7 +58,7 @@ const UtilityDashboard: React.FC<UtilityDashboardProps> = ({ property }) => {
         onBack={() => setSelectedUtility(null)}
         propertyId={property.id}
         utilityType="water"
-        onUploadBill={handleUploadBill}
+        onUploadBill={() => handleOpenUploadDialog('water')}
       />
     );
   }
@@ -68,7 +67,6 @@ const UtilityDashboard: React.FC<UtilityDashboardProps> = ({ property }) => {
     return (
       <UtilityDetailView
         title="Gas Usage"
-        data={emptyData}
         Icon={Flame}
         iconColor="text-tenant-orange"
         iconBgColor="bg-orange-100"
@@ -78,7 +76,7 @@ const UtilityDashboard: React.FC<UtilityDashboardProps> = ({ property }) => {
         onBack={() => setSelectedUtility(null)}
         propertyId={property.id}
         utilityType="gas"
-        onUploadBill={handleUploadBill}
+        onUploadBill={() => handleOpenUploadDialog('gas')}
       />
     );
   }
@@ -99,16 +97,22 @@ const UtilityDashboard: React.FC<UtilityDashboardProps> = ({ property }) => {
         
         <div className="space-y-6">
           <div className="cursor-pointer transition-all hover:shadow-md" onClick={() => setSelectedUtility('electricity')}>
-            <ElectricityChart />
+            <ElectricityChart propertyId={property.id} />
           </div>
           <div className="cursor-pointer transition-all hover:shadow-md" onClick={() => setSelectedUtility('water')}>
-            <WaterChart />
+            <WaterChart propertyId={property.id} />
           </div>
           <div className="cursor-pointer transition-all hover:shadow-md" onClick={() => setSelectedUtility('gas')}>
-            <GasChart />
+            <GasChart propertyId={property.id} />
           </div>
         </div>
       </div>
+
+      <UtilityBillUploadDialog
+        isOpen={uploadDialogOpen}
+        onClose={() => setUploadDialogOpen(false)}
+        propertyId={property.id}
+      />
     </div>
   );
 };

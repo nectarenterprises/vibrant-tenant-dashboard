@@ -12,10 +12,11 @@ import StatsCards from './detail/StatsCards';
 import UtilityDataTable from './detail/UtilityDataTable';
 import DocumentsList from './detail/DocumentsList';
 import { Button } from '@/components/ui/button';
+import { useUtilityBills } from '@/hooks/utility/useUtilityBills';
+import { UtilityType } from '@/types/utility';
 
 interface UtilityDetailViewProps {
   title: string;
-  data: Array<{ month: string; usage: number; cost: number }>;
   Icon: LucideIcon;
   iconColor: string;
   iconBgColor: string;
@@ -24,14 +25,12 @@ interface UtilityDetailViewProps {
   usageUnit: string;
   onBack: () => void;
   propertyId: string;
-  utilityType: 'electricity' | 'water' | 'gas';
-  isLoading?: boolean;
+  utilityType: UtilityType;
   onUploadBill?: () => void;
 }
 
 const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
   title,
-  data,
   Icon,
   iconColor,
   iconBgColor,
@@ -41,17 +40,32 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
   onBack,
   propertyId,
   utilityType,
-  isLoading = false,
   onUploadBill
 }) => {
   const [utilityDocuments, setUtilityDocuments] = useState<PropertyDocument[]>([]);
   const [isDocumentsLoading, setIsDocumentsLoading] = useState(true);
-
-  // Calculate stats - use 0 if no data available
-  const totalUsage = data.reduce((acc, item) => acc + item.usage, 0);
-  const totalCost = data.reduce((acc, item) => acc + item.cost, 0);
-  const averageUsage = data.length ? totalUsage / data.length : 0;
-  const averageCost = data.length ? totalCost / data.length : 0;
+  
+  const { 
+    bills, 
+    isLoadingBills, 
+    getUtilityUsageData 
+  } = useUtilityBills(propertyId);
+  
+  // Get real usage data for this utility type
+  const utilityData = getUtilityUsageData(utilityType);
+  
+  // Format data for chart
+  const chartData = utilityData.map(item => ({
+    month: item.period,
+    usage: item.usage,
+    cost: item.cost
+  }));
+  
+  // Calculate stats from real data
+  const totalUsage = utilityData.reduce((acc, item) => acc + item.usage, 0);
+  const totalCost = utilityData.reduce((acc, item) => acc + item.cost, 0);
+  const averageUsage = utilityData.length ? totalUsage / utilityData.length : 0;
+  const averageCost = utilityData.length ? totalCost / utilityData.length : 0;
 
   useEffect(() => {
     const fetchUtilityDocuments = async () => {
@@ -106,7 +120,7 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
         iconBgColor={iconBgColor} 
       />
 
-      {data.length === 0 && (
+      {chartData.length === 0 && (
         <div className="p-8 text-center border-2 border-dashed rounded-lg bg-muted/20">
           <div className={`${iconBgColor} p-3 rounded-full mx-auto mb-4 w-12 h-12 flex items-center justify-center`}>
             <Icon className={`h-6 w-6 ${iconColor}`} />
@@ -124,10 +138,10 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
         </div>
       )}
 
-      {data.length > 0 && (
+      {chartData.length > 0 && (
         <>
           <UtilityBaseChart
-            data={data}
+            data={chartData}
             title={title}
             Icon={Icon}
             iconColor={iconColor}
@@ -135,7 +149,7 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
             primaryColor={primaryColor}
             secondaryColor={secondaryColor}
             usageUnit={usageUnit}
-            isLoading={isLoading}
+            isLoading={isLoadingBills}
           />
           
           <StatsCards
@@ -144,13 +158,13 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
             averageUsage={averageUsage}
             averageCost={averageCost}
             usageUnit={usageUnit}
-            isLoading={isLoading}
+            isLoading={isLoadingBills}
           />
 
           <UtilityDataTable 
-            data={data} 
+            data={chartData} 
             usageUnit={usageUnit}
-            isLoading={isLoading} 
+            isLoading={isLoadingBills} 
           />
         </>
       )}

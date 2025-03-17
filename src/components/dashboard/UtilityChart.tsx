@@ -1,17 +1,18 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UtilityData, Property } from '@/types/property';
 import UtilityToggleButtons from './charts/UtilityToggleButtons';
 import PropertySelector from './charts/PropertySelector';
 import { StyledAreaChart, TENANT_COLORS } from '@/components/ui/charts';
 import { Info } from 'lucide-react';
+import { useUtilityBills } from '@/hooks/utility/useUtilityBills';
 
 interface UtilityChartProps {
   data: UtilityData[];
   properties?: Property[];
 }
 
-const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) => {
+const UtilityChart: React.FC<UtilityChartProps> = ({ properties = [] }) => {
   const [activeUtilities, setActiveUtilities] = useState({
     gas: true,
     water: true,
@@ -22,6 +23,9 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
     properties.length > 0 ? properties[0].id : 'all'
   );
 
+  const { getUtilityCostData, isLoadingBills } = useUtilityBills(selectedProperty);
+  const utilityData = getUtilityCostData();
+
   const toggleUtility = (utility: keyof typeof activeUtilities) => {
     setActiveUtilities(prev => ({
       ...prev,
@@ -30,7 +34,7 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
   };
 
   // Format tooltip values as currency
-  const formatCurrency = (value: number) => `£${value}`;
+  const formatCurrency = (value: number) => `£${value.toFixed(2)}`;
 
   // Determine which lines to show based on active utilities
   const getAdditionalLines = () => {
@@ -38,7 +42,7 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
     
     if (activeUtilities.gas) {
       lines.push({
-        dataKey: 'gasCost',
+        dataKey: 'gas',
         stroke: TENANT_COLORS.orange,
         gradientId: 'orangeGradient'
       });
@@ -46,7 +50,7 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
     
     if (activeUtilities.water) {
       lines.push({
-        dataKey: 'waterCost',
+        dataKey: 'water',
         stroke: TENANT_COLORS.teal,
         gradientId: 'tealGradient'
       });
@@ -82,12 +86,16 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
         />
       </div>
       
-      {data.length === 0 ? (
+      {isLoadingBills ? (
+        <div className="flex justify-center items-center py-16">
+          <div className="animate-spin h-8 w-8 border-t-2 border-b-2 border-tenant-green rounded-full"></div>
+        </div>
+      ) : utilityData.length === 0 ? (
         renderEmptyState()
       ) : (
         <StyledAreaChart
-          data={data}
-          dataKey="electricityCost"
+          data={utilityData}
+          dataKey="electricity"
           xAxisDataKey="month"
           stroke={TENANT_COLORS.purple}
           gradientId="purpleGradient"
