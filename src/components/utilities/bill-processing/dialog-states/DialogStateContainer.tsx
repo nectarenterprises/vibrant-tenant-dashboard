@@ -2,14 +2,14 @@
 import React from 'react';
 import { ProcessingStatus } from '@/hooks/utility/useUtilityBillProcessing';
 import { ExtractedUtilityData, ProcessingResult } from '@/types/utility';
-
-// Import state components
-import UploadState from './UploadState';
-import UploadingState from './UploadingState';
-import ProcessingState from './ProcessingState';
-import CompletedState from './CompletedState';
-import FailedState from './FailedState';
-import UtilityBillVerificationForm from '../UtilityBillVerificationForm';
+import {
+  IdleStateHandler,
+  UploadingStateHandler,
+  ProcessingStateHandler,
+  VerifyingStateHandler,
+  CompletedStateHandler,
+  FailedStateHandler
+} from './handlers';
 
 interface DialogStateContainerProps {
   processingStatus: ProcessingStatus;
@@ -46,11 +46,11 @@ const DialogStateContainer: React.FC<DialogStateContainerProps> = ({
   handleSaveVerifiedData,
   resetProcessing
 }) => {
-  // Render different content based on processing status
+  // Render the appropriate component based on the processing status
   switch (processingStatus) {
     case 'idle':
       return (
-        <UploadState
+        <IdleStateHandler
           fileUpload={fileUpload}
           handleFileChange={handleFileChange}
           formRegister={formRegister}
@@ -63,30 +63,32 @@ const DialogStateContainer: React.FC<DialogStateContainerProps> = ({
       );
       
     case 'uploading':
-      return <UploadingState uploadProgress={uploadProgress} />;
+      return <UploadingStateHandler uploadProgress={uploadProgress} />;
       
     case 'processing':
-      return <ProcessingState />;
+      return <ProcessingStateHandler />;
       
     case 'verifying':
       return (
-        extractionResult && (
-          <UtilityBillVerificationForm 
-            extractedData={extractionResult.extractedData}
-            confidenceScores={extractionResult.confidenceScores}
-            onSave={handleSaveVerifiedData}
-            onCancel={handleClose}
-            isFallbackData={isFallbackData}
-            documentType={extractionResult.documentId ? 'utility' : 'utility'}
-          />
-        )
+        <VerifyingStateHandler
+          extractionResult={extractionResult}
+          handleSaveVerifiedData={handleSaveVerifiedData}
+          handleClose={handleClose}
+          isFallbackData={isFallbackData}
+        />
       );
       
     case 'completed':
-      return <CompletedState onClose={handleClose} />;
+      return <CompletedStateHandler onClose={handleClose} />;
       
     case 'failed':
-      return <FailedState onClose={handleClose} onReset={resetProcessing} errorMessage={processingError} />;
+      return (
+        <FailedStateHandler
+          onClose={handleClose}
+          onReset={resetProcessing}
+          errorMessage={processingError}
+        />
+      );
       
     default:
       return null;
