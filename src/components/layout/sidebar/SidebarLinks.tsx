@@ -59,6 +59,7 @@ interface SidebarLinksProps {
 export const SidebarLinks = ({ location, collapsed, onClick }: SidebarLinksProps) => {
   return (
     <div className="flex flex-col py-2 space-y-1">
+      {/* Main Navigation Links */}
       <SidebarLink 
         icon={<Home className="h-5 w-5" />} 
         label="Dashboard" 
@@ -124,8 +125,9 @@ export const SidebarLinks = ({ location, collapsed, onClick }: SidebarLinksProps
         onClick={onClick}
       />
       
-      <div className="py-2">
-        <div className={cn("px-4 py-2 text-xs uppercase font-semibold text-white", collapsed && "sr-only")}>
+      {/* Account Section */}
+      <div className="py-2 mt-4">
+        <div className={cn("px-4 py-2 text-xs uppercase font-semibold text-black", collapsed && "sr-only")}>
           Account
         </div>
         <SidebarLink 
