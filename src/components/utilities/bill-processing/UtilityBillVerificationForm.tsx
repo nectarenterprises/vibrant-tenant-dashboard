@@ -15,7 +15,7 @@ import {
   ConfidenceScores, 
   UtilityType 
 } from '@/types/utility';
-import { WarningIcon } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 interface UtilityBillVerificationFormProps {
@@ -84,7 +84,7 @@ const UtilityBillVerificationForm: React.FC<UtilityBillVerificationFormProps> = 
       {isFallbackData && (
         <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-4">
           <div className="flex items-center">
-            <WarningIcon className="h-5 w-5 text-yellow-500 mr-2" />
+            <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2" />
             <p className="text-sm text-yellow-700">
               We're using simulated data for this {documentType} document. Please verify all fields carefully.
             </p>

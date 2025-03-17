@@ -1,7 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
-import { ProcessingResult, ExtractedUtilityData } from '@/types/utility';
+import { ProcessingResult, ExtractedUtilityData, ConfidenceScores } from '@/types/utility';
 
 export const useUtilityBillExtraction = () => {
   const processDocument = async (
@@ -59,6 +59,17 @@ export const useUtilityBillExtraction = () => {
         usageUnit: 'kWh'
       };
       
+      // Create a default confidence scores object with all required properties
+      const defaultConfidenceScores: ConfidenceScores = {
+        utilityType: 0.5,
+        billDate: 0.5,
+        periodStart: 0.5,
+        periodEnd: 0.5,
+        totalAmount: 0.5,
+        usageQuantity: 0.5,
+        usageUnit: 0.5
+      };
+      
       toast({
         variant: "destructive",
         title: "Processing error",
@@ -67,7 +78,7 @@ export const useUtilityBillExtraction = () => {
       
       return {
         extractedData: defaultData,
-        confidenceScores: {},
+        confidenceScores: defaultConfidenceScores,
         documentId,
         fallback: true
       };
