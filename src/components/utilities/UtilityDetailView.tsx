@@ -11,6 +11,7 @@ import DetailHeader from './detail/DetailHeader';
 import StatsCards from './detail/StatsCards';
 import UtilityDataTable from './detail/UtilityDataTable';
 import DocumentsList from './detail/DocumentsList';
+import { Button } from '@/components/ui/button';
 
 interface UtilityDetailViewProps {
   title: string;
@@ -46,11 +47,11 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
   const [utilityDocuments, setUtilityDocuments] = useState<PropertyDocument[]>([]);
   const [isDocumentsLoading, setIsDocumentsLoading] = useState(true);
 
-  // Calculate stats
+  // Calculate stats - use 0 if no data available
   const totalUsage = data.reduce((acc, item) => acc + item.usage, 0);
   const totalCost = data.reduce((acc, item) => acc + item.cost, 0);
-  const averageUsage = totalUsage / (data.length || 1);
-  const averageCost = totalCost / (data.length || 1);
+  const averageUsage = data.length ? totalUsage / data.length : 0;
+  const averageCost = data.length ? totalCost / data.length : 0;
 
   useEffect(() => {
     const fetchUtilityDocuments = async () => {
@@ -105,32 +106,54 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
         iconBgColor={iconBgColor} 
       />
 
-      <UtilityBaseChart
-        data={data}
-        title={title}
-        Icon={Icon}
-        iconColor={iconColor}
-        iconBgColor={iconBgColor}
-        primaryColor={primaryColor}
-        secondaryColor={secondaryColor}
-        usageUnit={usageUnit}
-        isLoading={isLoading}
-      />
-      
-      <StatsCards
-        totalUsage={totalUsage}
-        totalCost={totalCost}
-        averageUsage={averageUsage}
-        averageCost={averageCost}
-        usageUnit={usageUnit}
-        isLoading={isLoading}
-      />
+      {data.length === 0 && (
+        <div className="p-8 text-center border-2 border-dashed rounded-lg bg-muted/20">
+          <div className={`${iconBgColor} p-3 rounded-full mx-auto mb-4 w-12 h-12 flex items-center justify-center`}>
+            <Icon className={`h-6 w-6 ${iconColor}`} />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">No {title} Data Available</h3>
+          <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+            Upload your utility bills to start tracking your usage and costs over time.
+          </p>
+          {onUploadBill && (
+            <Button onClick={onUploadBill} className="mx-auto">
+              <Upload className="mr-2 h-4 w-4" />
+              Upload {utilityType.charAt(0).toUpperCase() + utilityType.slice(1)} Bill
+            </Button>
+          )}
+        </div>
+      )}
 
-      <UtilityDataTable 
-        data={data} 
-        usageUnit={usageUnit}
-        isLoading={isLoading} 
-      />
+      {data.length > 0 && (
+        <>
+          <UtilityBaseChart
+            data={data}
+            title={title}
+            Icon={Icon}
+            iconColor={iconColor}
+            iconBgColor={iconBgColor}
+            primaryColor={primaryColor}
+            secondaryColor={secondaryColor}
+            usageUnit={usageUnit}
+            isLoading={isLoading}
+          />
+          
+          <StatsCards
+            totalUsage={totalUsage}
+            totalCost={totalCost}
+            averageUsage={averageUsage}
+            averageCost={averageCost}
+            usageUnit={usageUnit}
+            isLoading={isLoading}
+          />
+
+          <UtilityDataTable 
+            data={data} 
+            usageUnit={usageUnit}
+            isLoading={isLoading} 
+          />
+        </>
+      )}
 
       <DocumentsList
         title={title}

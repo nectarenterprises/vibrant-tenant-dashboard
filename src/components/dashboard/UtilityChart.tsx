@@ -4,6 +4,7 @@ import { UtilityData, Property } from '@/types/property';
 import UtilityToggleButtons from './charts/UtilityToggleButtons';
 import PropertySelector from './charts/PropertySelector';
 import { StyledAreaChart, TENANT_COLORS } from '@/components/ui/charts';
+import { Info } from 'lucide-react';
 
 interface UtilityChartProps {
   data: UtilityData[];
@@ -54,6 +55,16 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
     return lines;
   };
 
+  const renderEmptyState = () => (
+    <div className="flex flex-col items-center justify-center py-16 px-4 text-center border border-dashed rounded-lg">
+      <Info className="h-10 w-10 text-muted-foreground mb-4" />
+      <h3 className="text-lg font-semibold mb-2">No Utility Data Available</h3>
+      <p className="text-sm text-muted-foreground max-w-md">
+        Visit the Utilities section to upload your utility bills and track usage over time.
+      </p>
+    </div>
+  );
+
   return (
     <div className="utility-chart-container animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
@@ -71,19 +82,23 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ data, properties = [] }) =>
         />
       </div>
       
-      <StyledAreaChart
-        data={data}
-        dataKey="electricityCost"
-        xAxisDataKey="month"
-        stroke={TENANT_COLORS.purple}
-        gradientId="purpleGradient"
-        height={260}
-        tooltipFormatter={formatCurrency}
-        yAxisTickFormatter={formatCurrency}
-        additionalLines={getAdditionalLines()}
-        showGrid={false}
-        className={!activeUtilities.electricity ? "hidden" : ""}
-      />
+      {data.length === 0 ? (
+        renderEmptyState()
+      ) : (
+        <StyledAreaChart
+          data={data}
+          dataKey="electricityCost"
+          xAxisDataKey="month"
+          stroke={TENANT_COLORS.purple}
+          gradientId="purpleGradient"
+          height={260}
+          tooltipFormatter={formatCurrency}
+          yAxisTickFormatter={formatCurrency}
+          additionalLines={getAdditionalLines()}
+          showGrid={false}
+          className={!activeUtilities.electricity ? "hidden" : ""}
+        />
+      )}
     </div>
   );
 };
