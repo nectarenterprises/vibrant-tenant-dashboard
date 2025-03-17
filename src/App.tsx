@@ -69,7 +69,7 @@ function App() {
         <Sidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
       )}
       
-      <div className={`transition-all duration-300 ease-in-out ${session && !isPublicRoute(location.pathname) ? (sidebarCollapsed ? "ml-20" : "ml-64") : ""}`}>
+      <main className={`transition-all duration-300 ease-in-out ${session && !isPublicRoute(location.pathname) ? (sidebarCollapsed ? "md:ml-20" : "md:ml-64") : ""}`}>
         <Routes>
           {/* Public routes */}
           <Route path="/" element={!session ? <Landing /> : <Index />} />
@@ -91,7 +91,7 @@ function App() {
           <Route path="/billing" element={<ProtectedRoute><Billing /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </div>
+      </main>
 
       <Toaster />
     </div>
