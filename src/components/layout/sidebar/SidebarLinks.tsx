@@ -30,17 +30,17 @@ const SidebarLink = ({ icon, label, to, active, collapsed, onClick }: SidebarLin
     to={to}
     onClick={onClick}
     className={cn(
-      "flex items-center px-4 py-3 text-base font-medium transition-colors relative",
+      "flex items-center px-4 py-3 text-base font-medium transition-colors relative text-white", // Base text color as white
       collapsed ? "justify-center px-0" : "",
       active 
-        ? "bg-sidebar-accent text-white rounded-md" 
-        : "text-white hover:bg-sidebar-accent/80 hover:text-white hover:rounded-md"
+        ? "bg-sidebar-accent font-semibold" // Active state
+        : "hover:bg-sidebar-accent/50" // Hover state
     )}
   >
-    <span className={cn("flex items-center justify-center", collapsed ? "w-full" : "w-10")}>
+    <span className={cn("flex items-center justify-center text-white", collapsed ? "w-full" : "w-10")}>
       {icon}
     </span>
-    {!collapsed && <span className="truncate">{label}</span>}
+    {!collapsed && <span className="truncate text-white">{label}</span>}
   </Link>
 );
 
