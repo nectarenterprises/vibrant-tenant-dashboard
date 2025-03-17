@@ -9,10 +9,10 @@ const CTASection = () => {
     <div className="bg-tenant-darkGreen text-white py-16 md:py-24">
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
-          Ready to streamline your property management?
+          Ready to simplify your property experience?
         </h2>
         <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
-          Join thousands of property managers who save time and reduce stress with SweetLease.
+          Join thousands of tenants and occupiers who save time and reduce stress with SweetLease.
         </p>
         <Button size="lg" variant="secondary" asChild className="gap-2">
           <Link to="/auth?tab=register">

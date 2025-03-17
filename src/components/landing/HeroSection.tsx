@@ -10,21 +10,21 @@ const HeroSection = () => {
       <div className="flex flex-col md:flex-row items-center gap-12">
         <div className="flex-1 space-y-6">
           <h1 className="text-4xl md:text-5xl font-bold leading-tight bg-gradient-to-r from-tenant-forestGreen to-tenant-sage bg-clip-text text-transparent">
-            Simplified Property Management for Landlords & Property Managers
+            Simplified Property Management for Occupiers & Tenants
           </h1>
           
           <p className="text-xl text-muted-foreground">
-            Manage your properties, leases, documents, and service charges all in one place.
-            Save time and streamline your workflow with SweetLease.
+            Manage your tenancy, documents, and service charges all in one place.
+            Save time and streamline your experience with SweetLease.
           </p>
           
           <div className="space-y-3 py-4">
             {[
               'Centralized document management',
-              'Automated compliance tracking',
-              'Integrated service charge analysis',
+              'Service charge tracking and analysis',
               'Utility usage monitoring',
-              'Comprehensive reporting tools'
+              'Calendar for important dates',
+              'Easy communication tools'
             ].map((feature, index) => (
               <div key={index} className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-tenant-green" />

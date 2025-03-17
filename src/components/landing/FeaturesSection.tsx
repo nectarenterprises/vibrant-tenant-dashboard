@@ -1,37 +1,37 @@
 
 import React from 'react';
-import { BarChart3, Calendar, FileText, Folder, Gauge, Zap } from 'lucide-react';
+import { BarChart3, Calendar, FileText, Lock, MapPin, Users, WifiIcon } from 'lucide-react';
 
 const features = [
   {
     icon: <FileText className="h-12 w-12 text-tenant-green" />,
-    title: 'Lease Management',
-    description: 'Easily manage all your leases in one place. Keep track of important dates, terms, and tenant information.'
+    title: 'Document Management',
+    description: 'Securely store and access all your tenancy-related documents in one place for quick reference.'
   },
   {
-    icon: <Folder className="h-12 w-12 text-tenant-purple" />,
-    title: 'Document Storage',
-    description: 'Securely store and organize all your property-related documents for quick access whenever you need them.'
+    icon: <MapPin className="h-12 w-12 text-tenant-purple" />,
+    title: 'Property Details',
+    description: 'Keep track of all the important information about your property and tenancy agreement.'
   },
   {
     icon: <BarChart3 className="h-12 w-12 text-tenant-orange" />,
-    title: 'Service Charge Analysis',
-    description: 'Track and analyze service charges across your properties to identify trends and optimize your expenses.'
+    title: 'Service Charge Visibility',
+    description: 'Understand your service charges with detailed breakdowns and historical comparisons.'
   },
   {
-    icon: <Gauge className="h-12 w-12 text-tenant-teal" />,
-    title: 'Compliance Tracking',
-    description: 'Stay on top of regulatory requirements with automated compliance tracking and reminders.'
+    icon: <Lock className="h-12 w-12 text-tenant-teal" />,
+    title: 'Secure Communication',
+    description: 'Communicate securely with property management and keep records of all interactions.'
   },
   {
-    icon: <Zap className="h-12 w-12 text-tenant-chartGreen" />,
-    title: 'Utility Management',
-    description: 'Monitor utility usage and costs across your portfolio to identify savings opportunities.'
+    icon: <WifiIcon className="h-12 w-12 text-tenant-chartGreen" />,
+    title: 'Utility Tracking',
+    description: 'Monitor your utility usage and costs to identify savings opportunities and track expenses.'
   },
   {
     icon: <Calendar className="h-12 w-12 text-tenant-purple" />,
-    title: 'Calendar Integration',
-    description: 'Keep track of important dates, renewals, and appointments with our integrated calendar system.'
+    title: 'Important Dates',
+    description: 'Never miss a rent payment, lease renewal, or other important dates with integrated reminders.'
   }
 ];
 
@@ -40,10 +40,10 @@ const FeaturesSection = () => {
     <div className="container mx-auto px-4 py-16 md:py-24">
       <div className="text-center mb-16">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-tenant-darkGreen to-tenant-green bg-clip-text text-transparent mb-4">
-          Powerful Features for Property Professionals
+          Smart Features for Property Occupiers
         </h2>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-          SweetLease provides everything you need to manage your properties efficiently and professionally.
+          SweetLease provides everything you need to manage your tenancy efficiently and stay informed.
         </p>
       </div>
       
