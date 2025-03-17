@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart3, Calendar, FileText, Lock, MapPin, Users, WifiIcon } from 'lucide-react';
+import { BarChart3, Calendar, FileText, MapPin, Users, WifiIcon, FileBarChart2 } from 'lucide-react';
 
 const features = [
   {
@@ -19,9 +19,9 @@ const features = [
     description: 'Understand your service charges with detailed breakdowns and historical comparisons.'
   },
   {
-    icon: <Lock className="h-12 w-12 text-tenant-teal" />,
-    title: 'Secure Communication',
-    description: 'Communicate securely with property management and keep records of all interactions.'
+    icon: <FileBarChart2 className="h-12 w-12 text-tenant-teal" />,
+    title: 'Reporting Capabilities',
+    description: 'Generate comprehensive reports to capture total occupancy costs and gain valuable insights.'
   },
   {
     icon: <WifiIcon className="h-12 w-12 text-tenant-chartGreen" />,

@@ -2,7 +2,7 @@
 import React from 'react';
 import { 
   FileText, Shield, Calendar, ChartBar, Building, 
-  Lightbulb, MessageSquare, Gauge, Receipt, Sparkles 
+  Lightbulb, FileBarChart2, Gauge, Receipt, Sparkles 
 } from 'lucide-react';
 
 const DetailedFeaturesSection = () => {
@@ -72,18 +72,18 @@ const DetailedFeaturesSection = () => {
       ]
     },
     {
-      title: "Communication",
-      description: "Seamless communication with property management",
+      title: "Reporting",
+      description: "Comprehensive reporting for occupancy cost analysis",
       features: [
         {
-          icon: <MessageSquare className="h-6 w-6 text-tenant-chartGreen" />,
-          title: "Secure Messaging",
-          description: "Communicate with property management directly through the platform with a complete message history."
+          icon: <FileBarChart2 className="h-6 w-6 text-tenant-chartGreen" />,
+          title: "Cost Analytics",
+          description: "Generate comprehensive reports that capture your total occupancy costs across all expense categories."
         },
         {
           icon: <Sparkles className="h-6 w-6 text-tenant-chartGreen" />,
-          title: "Maintenance Requests",
-          description: "Submit and track maintenance requests easily, with photo attachments and status updates."
+          title: "Custom Reports",
+          description: "Create custom reports with the metrics that matter most to your organization for informed decision-making."
         }
       ]
     }
