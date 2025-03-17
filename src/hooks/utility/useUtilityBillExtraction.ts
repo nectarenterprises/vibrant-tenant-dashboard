@@ -1,74 +1,76 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { ProcessingResult } from '@/types/utility';
 import { toast } from '@/components/ui/use-toast';
+import { ProcessingResult, ExtractedUtilityData } from '@/types/utility';
 
 export const useUtilityBillExtraction = () => {
-  const processDocument = async (documentId: string, propertyId: string, documentType = 'utility'): Promise<ProcessingResult> => {
+  const processDocument = async (
+    documentId: string, 
+    propertyId: string, 
+    documentType: string = 'utility'
+  ): Promise<ProcessingResult> => {
     try {
-      console.log('Processing document:', documentId, 'for property:', propertyId, 'of type:', documentType);
+      console.log(`Processing ${documentType} document ${documentId} for property ${propertyId}`);
       
-      // Call the processing edge function
-      const { data: processingData, error: processingError } = await supabase.functions
-        .invoke('process-utility-bill', {
-          body: {
-            documentId,
-            propertyId,
-            documentType,
-            userId: (await supabase.auth.getUser()).data.user?.id
-          }
-        });
+      // Get the current user's ID for passing to the edge function
+      const { data: { user } } = await supabase.auth.getUser();
       
-      if (processingError) {
-        console.error('Edge function error:', processingError);
-        throw new Error('Error processing document: ' + processingError.message);
+      if (!user) {
+        throw new Error('User authentication required');
       }
       
-      if (!processingData) {
-        console.error('No data returned from edge function');
-        throw new Error('No data returned from document processing');
+      // Call the edge function to process the document
+      const { data, error } = await supabase.functions.invoke('process-utility-bill', {
+        body: {
+          documentId,
+          propertyId,
+          userId: user.id,
+          documentType
+        }
+      });
+      
+      if (error) {
+        console.error('Error processing document:', error);
+        throw new Error(`Failed to process document: ${error.message}`);
       }
       
-      // Verify that the data has the expected format
-      if (typeof processingData !== 'object' || processingData === null) {
-        console.error('Invalid data format returned from edge function:', processingData);
-        throw new Error('Invalid response format from document processing');
+      if (!data?.success) {
+        throw new Error('Document processing failed');
       }
       
-      console.log('Processing result:', processingData);
-      
-      // Return result from the edge function
-      const result: ProcessingResult = {
-        extractedData: processingData.extractedData,
-        confidenceScores: processingData.confidenceScores,
+      // Return the processing result
+      return {
+        extractedData: data.extractedData,
+        confidenceScores: data.confidenceScores,
         documentId,
-        fallback: processingData.fallback || false
+        fallback: data.fallback || false
       };
-      
-      return result;
     } catch (error) {
       console.error('Error in processDocument:', error);
       
-      // Improved error handling for JSON parse errors
-      let errorMessage = 'Failed to process document';
+      // Create a default result for fallback
+      const defaultData: ExtractedUtilityData = {
+        utilityType: 'electricity',
+        billDate: new Date().toISOString().split('T')[0],
+        periodStart: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        periodEnd: new Date().toISOString().split('T')[0],
+        totalAmount: 0,
+        usageQuantity: 0,
+        usageUnit: 'kWh'
+      };
       
-      if (error instanceof Error) {
-        errorMessage = error.message;
-        
-        // Special handling for JSON parse errors
-        if (errorMessage.includes('JSON')) {
-          errorMessage = 'Invalid response from document processing service. Please try again.';
-          
-          // Show toast for JSON errors
-          toast({
-            variant: "destructive",
-            title: "Document Processing Failed",
-            description: errorMessage
-          });
-        }
-      }
+      toast({
+        variant: "destructive",
+        title: "Processing error",
+        description: error.message || "Failed to process document",
+      });
       
-      throw new Error(errorMessage);
+      return {
+        extractedData: defaultData,
+        confidenceScores: {},
+        documentId,
+        fallback: true
+      };
     }
   };
   

@@ -11,9 +11,13 @@ export const useUtilityBills = (propertyId: string) => {
 
   const fetchUtilityBills = async (): Promise<UtilityBill[]> => {
     try {
+      // Return empty array if propertyId is missing or 'all'
       if (!propertyId || propertyId === 'all') {
+        console.log('No specific property selected, returning empty bills array');
         return [];
       }
+      
+      console.log(`Fetching utility bills for property: ${propertyId}, type: ${selectedUtilityType}`);
       
       let query = supabase
         .from('utility_bills')
@@ -28,8 +32,11 @@ export const useUtilityBills = (propertyId: string) => {
       const { data, error } = await query;
       
       if (error) {
+        console.error('Supabase error fetching utility bills:', error);
         throw new Error(error.message);
       }
+      
+      console.log(`Retrieved ${data?.length || 0} utility bills`);
       
       const bills: UtilityBill[] = data.map(bill => ({
         id: bill.id,
@@ -52,15 +59,17 @@ export const useUtilityBills = (propertyId: string) => {
       return bills;
     } catch (err) {
       console.error('Error fetching utility bills:', err);
-      return [];
+      return []; // Return empty array instead of throwing to prevent UI crashes
     }
   };
 
   const { data: bills = [], ...queryResult } = useQuery({
     queryKey: ['utilityBills', propertyId, selectedUtilityType],
-    queryFn: fetchUtilityBills
+    queryFn: fetchUtilityBills,
+    enabled: !!propertyId // Only run when propertyId is available
   });
 
+  // Utility function to get usage data for charts
   const getUtilityUsageData = (utilityType: UtilityType) => {
     return bills
       .filter(bill => bill.utilityType === utilityType)
@@ -73,6 +82,7 @@ export const useUtilityBills = (propertyId: string) => {
       .reverse();
   };
 
+  // Utility function to get cost data for charts
   const getUtilityCostData = () => {
     if (bills.length === 0) return [];
 
@@ -104,6 +114,7 @@ export const useUtilityBills = (propertyId: string) => {
       .slice(-6);
   };
 
+  // Utility function to detect anomalies
   const detectAnomalies = () => {
     if (bills.length === 0) return [];
 

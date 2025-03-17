@@ -37,6 +37,12 @@ const DocumentTypeField: React.FC<DocumentTypeFieldProps> = ({
           ))}
         </SelectContent>
       </Select>
+      
+      {documentType === 'utility' && (
+        <p className="text-xs text-muted-foreground mt-1">
+          Utility bills will be automatically processed and their data will be available in the Utilities section.
+        </p>
+      )}
     </div>
   );
 };
