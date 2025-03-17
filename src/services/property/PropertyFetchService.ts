@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import { Property, EventData, UtilityData, ComplianceStatus, Incentive } from '@/types/property';
+import { Property, EventData, UtilityData, Incentive } from '@/types/property';
 import { getPropertyImageUrl } from './PropertyImageService';
 import { toast } from '@/components/ui/use-toast';
 import { v4 as uuidv4 } from 'uuid';
@@ -36,7 +36,6 @@ export const fetchUserProperties = async (): Promise<Property[]> => {
       let incentives: Incentive[] = [];
       let serviceChargeAmount = 0;
       let utilityData: UtilityData[] = [];
-      let complianceStatus: ComplianceStatus = {} as ComplianceStatus;
       
       try {
         const incentivesData = property.incentives;
@@ -54,7 +53,6 @@ export const fetchUserProperties = async (): Promise<Property[]> => {
           else if (typeof parsedData === 'object') {
             serviceChargeAmount = parsedData.service_charge_amount || 0;
             utilityData = parsedData.utility_data || [];
-            complianceStatus = parsedData.compliance_status || {};
             // There might still be incentives in there
             if (parsedData.incentives && Array.isArray(parsedData.incentives)) {
               incentives = parsedData.incentives;
@@ -78,8 +76,7 @@ export const fetchUserProperties = async (): Promise<Property[]> => {
         premisesSchedule: property.premises_schedule || '',
         incentives,
         serviceChargeAmount,
-        utilityData,
-        complianceStatus
+        utilityData
       };
     });
   } catch (error: any) {
@@ -126,22 +123,6 @@ export const fetchPropertyEvents = async (): Promise<EventData[]> => {
         propertyId: property.id,
         propertyName: property.name
       });
-      
-      // Compliance events
-      if (property.complianceStatus) {
-        Object.entries(property.complianceStatus).forEach(([key, item]) => {
-          if (item.nextDue) {
-            events.push({
-              id: uuidv4(),
-              title: `${formatComplianceKey(key)} due: ${property.name}`,
-              date: item.nextDue,
-              type: 'inspection',
-              propertyId: property.id,
-              propertyName: property.name
-            });
-          }
-        });
-      }
       
       // Add a maintenance inspection event
       const maintenanceDate = new Date();

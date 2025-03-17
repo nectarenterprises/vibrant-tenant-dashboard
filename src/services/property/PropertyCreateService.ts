@@ -14,7 +14,6 @@ interface PropertyInput {
   image?: File | null;
   serviceChargeAmount?: number;
   utilityData?: any;
-  complianceStatus?: any;
   incentives: Array<any>;
 }
 
@@ -57,7 +56,6 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
     // Only use provided values, don't generate mock data
     const serviceChargeAmount = property.serviceChargeAmount || 0;
     const utilityData = property.utilityData || [];
-    const complianceStatus = property.complianceStatus || {};
 
     const insertData = {
       name: property.name,
@@ -71,8 +69,7 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
 
     const metadata = {
       service_charge_amount: serviceChargeAmount,
-      utility_data: utilityData,
-      compliance_status: complianceStatus
+      utility_data: utilityData
     };
 
     const dataToInsert = {
@@ -117,8 +114,7 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
       image: data.image_path ? getPropertyImageUrl(data.image_path) : undefined,
       incentives: property.incentives || [],
       serviceChargeAmount: metadataObj.service_charge_amount || 0,
-      utilityData: metadataObj.utility_data || [],
-      complianceStatus: metadataObj.compliance_status || {}
+      utilityData: metadataObj.utility_data || []
     };
   } catch (error: any) {
     toast({
@@ -129,5 +125,3 @@ export const addProperty = async (property: PropertyInput): Promise<Property | n
     return null;
   }
 };
-
-// Remove the unused mock data generation functions
