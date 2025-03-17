@@ -33,8 +33,8 @@ const SidebarLink = ({ icon, label, to, active, collapsed, onClick }: SidebarLin
       "flex items-center px-4 py-3 text-base font-medium transition-colors relative",
       collapsed ? "justify-center px-0" : "",
       active 
-        ? "bg-sidebar-accent text-sidebar-foreground rounded-md"
-        : "text-sidebar-foreground hover:bg-sidebar-accent/80 hover:text-sidebar-foreground hover:rounded-md"
+        ? "bg-sidebar-accent text-white rounded-md" 
+        : "text-white hover:bg-sidebar-accent/80 hover:text-white hover:rounded-md"
     )}
   >
     <span className={cn("flex items-center justify-center", collapsed ? "w-full" : "w-10")}>
@@ -119,7 +119,7 @@ export const SidebarLinks = ({ location, collapsed, onClick }: SidebarLinksProps
       />
       
       <div className="py-2">
-        <div className={cn("px-4 py-2 text-xs uppercase font-semibold text-sidebar-foreground/60", collapsed && "sr-only")}>
+        <div className={cn("px-4 py-2 text-xs uppercase font-semibold text-white", collapsed && "sr-only")}>
           Account
         </div>
         <SidebarLink 
