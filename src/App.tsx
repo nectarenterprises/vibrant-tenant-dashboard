@@ -43,7 +43,7 @@ function App() {
   }, [loading, session, navigate, location]);
 
   const isPublicRoute = (path: string) => {
-    return path === '/features' || path === '/pricing' || path === '/about'; // Exclude root path from public routes
+    return ['/features', '/pricing', '/about'].includes(path);
   };
 
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
