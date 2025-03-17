@@ -30,17 +30,17 @@ const SidebarLink = ({ icon, label, to, active, collapsed, onClick }: SidebarLin
     to={to}
     onClick={onClick}
     className={cn(
-      "flex items-center px-4 py-3 text-base font-medium transition-colors relative text-white", // Base text color as white
+      "flex items-center px-4 py-3 text-base font-medium transition-colors relative", 
       collapsed ? "justify-center px-0" : "",
       active 
-        ? "bg-sidebar-accent font-semibold" // Active state
-        : "hover:bg-sidebar-accent/50" // Hover state
+        ? "bg-sidebar-accent text-white font-semibold" // Active state with white text
+        : "text-white hover:bg-sidebar-accent/50" // Inactive state with white text and hover effect
     )}
   >
-    <span className={cn("flex items-center justify-center text-white", collapsed ? "w-full" : "w-10")}>
-      {icon}
+    <span className={cn("flex items-center justify-center", collapsed ? "w-full" : "w-10")}>
+      {React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5 text-white" })}
     </span>
-    {!collapsed && <span className="truncate text-white">{label}</span>}
+    {!collapsed && <span className="text-white truncate">{label}</span>}
   </Link>
 );
 
