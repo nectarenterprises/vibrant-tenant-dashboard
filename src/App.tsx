@@ -43,7 +43,7 @@ function App() {
   }, [loading, session, navigate, location]);
 
   const isPublicRoute = (path: string) => {
-    return path === '/' || path === '/features' || path === '/pricing' || path === '/about'; // Public routes
+    return path === '/features' || path === '/pricing' || path === '/about'; // Exclude root path from public routes
   };
 
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -62,14 +62,18 @@ function App() {
     );
   }
 
+  // Determine if we should show the sidebar - show it for authenticated users except on public routes
+  // The root path (/) should show the sidebar if the user is authenticated
+  const showSidebar = session && (!isPublicRoute(location.pathname) || location.pathname === '/');
+
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Show sidebar only for authenticated users and non-public routes */}
-      {session && !isPublicRoute(location.pathname) && (
+      {/* Show sidebar for authenticated users and non-public routes */}
+      {showSidebar && (
         <Sidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
       )}
       
-      <main className={`transition-all duration-300 ease-in-out ${session && !isPublicRoute(location.pathname) ? (sidebarCollapsed ? "md:ml-20" : "md:ml-64") : ""}`}>
+      <main className={`transition-all duration-300 ease-in-out ${showSidebar ? (sidebarCollapsed ? "md:ml-20" : "md:ml-64") : ""}`}>
         <Routes>
           {/* Public routes */}
           <Route path="/" element={!session ? <Landing /> : <Index />} />
