@@ -2,17 +2,15 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, File, Upload } from 'lucide-react';
+import { Download, File } from 'lucide-react';
 import { PropertyDocument } from '@/types/property';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
 
 interface DocumentsListProps {
   title: string;
   documents: PropertyDocument[];
   isLoading: boolean;
   onDownload: (document: PropertyDocument) => void;
-  onUpload?: () => void;
 }
 
 const DocumentsList: React.FC<DocumentsListProps> = ({
@@ -20,7 +18,6 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
   documents,
   isLoading,
   onDownload,
-  onUpload
 }) => {
   const renderSkeletonItems = () => (
     Array(3).fill(0).map((_, index) => (
@@ -36,14 +33,8 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
 
   return (
     <Card>
-      <CardHeader className={cn("pb-2", onUpload && "flex flex-row items-center justify-between")}>
+      <CardHeader className="pb-2">
         <CardTitle className="text-lg">{title} Invoices</CardTitle>
-        {onUpload && (
-          <Button size="sm" onClick={onUpload}>
-            <Upload className="h-4 w-4 mr-2" />
-            Upload
-          </Button>
-        )}
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -54,16 +45,9 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
           <div className="text-center py-8 border rounded-md border-dashed">
             <File className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
             <p className="text-muted-foreground mb-2">No invoices found</p>
-            {onUpload && (
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={onUpload}
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                Upload Invoice
-              </Button>
-            )}
+            <p className="text-sm text-muted-foreground">
+              Visit the Documents section to upload utility bills
+            </p>
           </div>
         ) : (
           <div className="space-y-3">

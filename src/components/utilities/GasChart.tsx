@@ -27,7 +27,9 @@ const GasChart: React.FC<GasChartProps> = ({ propertyId }) => {
         <div className="bg-orange-100 p-3 rounded-full inline-flex mb-3">
           <Flame className="h-6 w-6 text-tenant-orange" />
         </div>
-        <p className="text-sm text-muted-foreground">No gas data available</p>
+        <p className="text-sm text-muted-foreground">
+          No gas data available. Upload bills in the Documents section.
+        </p>
       </div>
     </div>
   );

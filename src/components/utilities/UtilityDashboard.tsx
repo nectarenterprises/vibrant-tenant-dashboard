@@ -1,13 +1,10 @@
 
 import React, { useState } from 'react';
-import { Zap, Droplets, Flame, Upload } from 'lucide-react';
+import { Zap, Droplets, Flame } from 'lucide-react';
 import ElectricityChart from '@/components/utilities/ElectricityChart';
 import WaterChart from '@/components/utilities/WaterChart';
 import GasChart from '@/components/utilities/GasChart';
 import { Property } from '@/types/property';
-import UtilityDetailView from './UtilityDetailView';
-import { Button } from '@/components/ui/button';
-import UtilityBillUploadDialog from './bill-processing/UtilityBillUploadDialog';
 
 interface UtilityDashboardProps {
   property: Property;
@@ -17,15 +14,6 @@ type UtilityType = 'electricity' | 'water' | 'gas' | null;
 
 const UtilityDashboard: React.FC<UtilityDashboardProps> = ({ property }) => {
   const [selectedUtility, setSelectedUtility] = useState<UtilityType>(null);
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [currentUtilityType, setCurrentUtilityType] = useState<UtilityType>('electricity');
-
-  const handleOpenUploadDialog = (utilityType: UtilityType = null) => {
-    if (utilityType) {
-      setCurrentUtilityType(utilityType);
-    }
-    setUploadDialogOpen(true);
-  };
 
   if (selectedUtility === 'electricity') {
     return (
@@ -40,7 +28,6 @@ const UtilityDashboard: React.FC<UtilityDashboardProps> = ({ property }) => {
         onBack={() => setSelectedUtility(null)}
         propertyId={property.id}
         utilityType="electricity"
-        onUploadBill={() => handleOpenUploadDialog('electricity')}
       />
     );
   }
@@ -58,7 +45,6 @@ const UtilityDashboard: React.FC<UtilityDashboardProps> = ({ property }) => {
         onBack={() => setSelectedUtility(null)}
         propertyId={property.id}
         utilityType="water"
-        onUploadBill={() => handleOpenUploadDialog('water')}
       />
     );
   }
@@ -76,7 +62,6 @@ const UtilityDashboard: React.FC<UtilityDashboardProps> = ({ property }) => {
         onBack={() => setSelectedUtility(null)}
         propertyId={property.id}
         utilityType="gas"
-        onUploadBill={() => handleOpenUploadDialog('gas')}
       />
     );
   }
@@ -107,14 +92,9 @@ const UtilityDashboard: React.FC<UtilityDashboardProps> = ({ property }) => {
           </div>
         </div>
       </div>
-
-      <UtilityBillUploadDialog
-        isOpen={uploadDialogOpen}
-        onClose={() => setUploadDialogOpen(false)}
-        propertyId={property.id}
-      />
     </div>
   );
 };
 
+import UtilityDetailView from './UtilityDetailView';
 export default UtilityDashboard;

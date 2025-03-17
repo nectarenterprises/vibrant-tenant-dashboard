@@ -27,7 +27,9 @@ const ElectricityChart: React.FC<ElectricityChartProps> = ({ propertyId }) => {
         <div className="bg-purple-100 p-3 rounded-full inline-flex mb-3">
           <Zap className="h-6 w-6 text-tenant-purple" />
         </div>
-        <p className="text-sm text-muted-foreground">No electricity data available</p>
+        <p className="text-sm text-muted-foreground">
+          No electricity data available. Upload bills in the Documents section.
+        </p>
       </div>
     </div>
   );

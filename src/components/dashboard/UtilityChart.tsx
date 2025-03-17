@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { UtilityData, Property } from '@/types/property';
 import UtilityToggleButtons from './charts/UtilityToggleButtons';
 import PropertySelector from './charts/PropertySelector';
@@ -64,7 +64,7 @@ const UtilityChart: React.FC<UtilityChartProps> = ({ properties = [] }) => {
       <Info className="h-10 w-10 text-muted-foreground mb-4" />
       <h3 className="text-lg font-semibold mb-2">No Utility Data Available</h3>
       <p className="text-sm text-muted-foreground max-w-md">
-        Visit the Utilities section to upload your utility bills and track usage over time.
+        Visit the Documents section to upload your utility bills and track usage over time.
       </p>
     </div>
   );

@@ -27,7 +27,9 @@ const WaterChart: React.FC<WaterChartProps> = ({ propertyId }) => {
         <div className="bg-blue-100 p-3 rounded-full inline-flex mb-3">
           <Droplets className="h-6 w-6 text-tenant-teal" />
         </div>
-        <p className="text-sm text-muted-foreground">No water data available</p>
+        <p className="text-sm text-muted-foreground">
+          No water data available. Upload bills in the Documents section.
+        </p>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { PropertyDocument } from '@/types/property';
-import { LucideIcon, Upload } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 import UtilityBaseChart from './shared/UtilityBaseChart';
 import { getPropertyDocuments } from '@/services/FileStorageService';
 import { toast } from '@/components/ui/use-toast';
@@ -11,7 +11,6 @@ import DetailHeader from './detail/DetailHeader';
 import StatsCards from './detail/StatsCards';
 import UtilityDataTable from './detail/UtilityDataTable';
 import DocumentsList from './detail/DocumentsList';
-import { Button } from '@/components/ui/button';
 import { useUtilityBills } from '@/hooks/utility/useUtilityBills';
 import { UtilityType } from '@/types/utility';
 
@@ -26,7 +25,6 @@ interface UtilityDetailViewProps {
   onBack: () => void;
   propertyId: string;
   utilityType: UtilityType;
-  onUploadBill?: () => void;
 }
 
 const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
@@ -40,7 +38,6 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
   onBack,
   propertyId,
   utilityType,
-  onUploadBill
 }) => {
   const [utilityDocuments, setUtilityDocuments] = useState<PropertyDocument[]>([]);
   const [isDocumentsLoading, setIsDocumentsLoading] = useState(true);
@@ -109,6 +106,18 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
     }
   };
 
+  const renderEmptyState = () => (
+    <div className="p-8 text-center border-2 border-dashed rounded-lg bg-muted/20">
+      <div className={`${iconBgColor} p-3 rounded-full mx-auto mb-4 w-12 h-12 flex items-center justify-center`}>
+        <Icon className={`h-6 w-6 ${iconColor}`} />
+      </div>
+      <h3 className="text-lg font-semibold mb-2">No {title} Data Available</h3>
+      <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+        Upload your utility bills in the Documents section to track your usage and costs over time.
+      </p>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       <BackButton onBack={onBack} />
@@ -120,25 +129,9 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
         iconBgColor={iconBgColor} 
       />
 
-      {chartData.length === 0 && (
-        <div className="p-8 text-center border-2 border-dashed rounded-lg bg-muted/20">
-          <div className={`${iconBgColor} p-3 rounded-full mx-auto mb-4 w-12 h-12 flex items-center justify-center`}>
-            <Icon className={`h-6 w-6 ${iconColor}`} />
-          </div>
-          <h3 className="text-lg font-semibold mb-2">No {title} Data Available</h3>
-          <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-            Upload your utility bills to start tracking your usage and costs over time.
-          </p>
-          {onUploadBill && (
-            <Button onClick={onUploadBill} className="mx-auto">
-              <Upload className="mr-2 h-4 w-4" />
-              Upload {utilityType.charAt(0).toUpperCase() + utilityType.slice(1)} Bill
-            </Button>
-          )}
-        </div>
-      )}
-
-      {chartData.length > 0 && (
+      {chartData.length === 0 ? (
+        renderEmptyState()
+      ) : (
         <>
           <UtilityBaseChart
             data={chartData}
@@ -174,7 +167,6 @@ const UtilityDetailView: React.FC<UtilityDetailViewProps> = ({
         documents={utilityDocuments}
         isLoading={isDocumentsLoading}
         onDownload={handleDownloadDocument}
-        onUpload={onUploadBill}
       />
     </div>
   );
